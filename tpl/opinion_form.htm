@@ -1,0 +1,23 @@
+<span id="opinion">
+<input type="hidden" name="op_id" id="op_id" value="{op_id}">
+<table width="100%" border="0">
+	<tr><td colspan="2"><h2>Отзывы о товаре:</р2></td></tr>
+    <tr><td colspan="2"><span id="OpinionList">{opinion_list}</span></td></tr>
+	<tr><td colspan="2" align="center"><br><br><b>Оставьте свой отзыв о товаре:</b></td></tr>
+	<tr valign="top">
+		<td width="60px">Имя: </td><td width="85%"><input type="text" name="op_name" id="op_name" value="" style="width:100%"></td>
+	</tr>
+	<tr valign="top">
+		<td width="60px">Отзыв: </td><td width="85%"><textarea name="op_desc" id="op_desc" style="width:100%; height:100px;"></textarea></td>
+	</tr>
+    <tr valign="top">
+		<td width="60px">Достоинства: </td><td width="85%"><textarea name="op_pos" id="op_pos" style="width:100%; height:100px;"></textarea></td>
+	</tr>
+    <tr valign="top">
+		<td width="60px">Недостатки: </td><td width="85%"><textarea name="op_neg" id="op_neg" style="width:100%; height:100px;"></textarea></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="right"><input type="button" value="Добавить" class="text" onclick="save_opinion_form();">&nbsp;<input type="button" value="Очистить" class="text" onclick="clear_opinion_form();"></td>
+	</tr>
+</table>
+</span>

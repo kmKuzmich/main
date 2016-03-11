@@ -1,0 +1,98 @@
+<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+<form method="post">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="modue_page" value="{module_page}">
+<input type="hidden" name="file" value="{file}">
+
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="top_id" value="{top_id}">
+<input type="hidden" name="cat_id" value="{cat_id}">
+<input type="hidden" name="model" value="{model}">
+<table width="100%" border="0" cellspacing="5">
+	<tr><td>{navigation}</td></tr>
+    <tr><td colspan="2"><hr></td></tr>
+	<tr><td colspan="2">
+    
+    
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td colspan="2" align="center"><h2>{action} модель</h2></td></tr>
+    <tr><td colspan="2" align="right"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table><br />  
+<table width="100%" border="0">
+    <tr><td width="10%"><strong>Артикул:</strong></td><td><input type="text" id="code" name="code" value="{code}" style="width: 200px;"></td></tr>
+    <tr><td width="10%"><strong>Краткое наименование:</strong></td><td><input type="text" id="short_caption" name="short_caption" value="{short_caption}" style="width: 500px;"></td></tr>
+	<tr><td width="10%"><strong>Наименование:</strong></td><td><b><input type="text" id="caption" name="caption" value="{caption}"  style="width: 500px;"></b></td></tr>
+<tr><td><br></td></tr>
+	<tr><td colspan="2">
+    	<table width="100%" border="0">
+        	<tr valign="top">
+            	<td width="50%">
+        
+        <table width="100%" border="0">
+	        <tr><td width="20%">Розница usd:</td><td><b><input type="text" id="price1" name="price1" value="{price1}"  style="width: 100px;"></b></td></tr>
+		    <tr><td width="20%">Мелкий опт, usd:</td><td><b><input type="text" id="price2" name="price2" value="{price2}"  style="width: 100px;"></b></td></tr>
+		    <tr><td width="20%">Опт, usd:</td><td><b><input type="text" id="price3" name="price3" value="{price3}"  style="width: 100px;"></b></td></tr>
+		    <tr><td width="20%">Опт 1, usd:</td><td><b><input type="text" id="price4" name="price4" value="{price4}"  style="width: 100px;"></b></td></tr>
+		    <tr><td width="20%">Опт2, usd:</td><td><b><input type="text" id="price5" name="price5" value="{price5}"  style="width: 100px;"></b></td></tr>
+			<tr><td><br></td></tr>
+            <tr><td width="10%"><strong>Наличие:</strong></td><td>{sklad_form}</td></tr>
+            <tr><td><br></td></tr>
+		    <tr><td width="20%">Специальное предложение:</td><td><b><input type="checkbox" id="special_offer" name="special_offer" value="1" {sp_offer}></b></td></tr>
+			<tr><td width="20%">Бестселлер:</td><td><b><input type="checkbox" id="red_price" name="red_price" value="1" {rd_price}></b></td></tr>
+		    <tr><td width="20%">Расспродажа:</td><td><b><input type="checkbox" id="sale" name="sale" value="1" {sl_price}></b></td></tr>
+		    <tr><td width="20%">Лучшая цена:</td><td><b><input type="checkbox" id="best" name="best" value="1" {bs_price}></b></td></tr>
+        </table>
+                
+                </td>
+                <td width="50%">
+                {params}
+                </td>
+            </tr>
+        </table>
+        
+    </td></tr>
+    <tr><td width="10%">Товар сгрупирированный по размерам/виду:</td><td><b><input type="checkbox" id="size_ex" name="size_ex" value="1" {size_ex}></b></td></tr>
+    <tr><td width="10%">Название групировки:</td><td><input type="text" id="sizes" name="sizes" value="{sizes}" style="width: 200px;"></td></tr>
+    <tr><td width="10%">Товары групы:</td><td style="border:1px solid #999;"><iframe align="top" src="lib/catalogue_sizes.php?w=show_list&model={model}" frameborder="0" width="100%" height="300" scrolling="Auto"></iframe></td></tr>
+    
+    
+	<tr><td width="10%">Фото:</td><td style="border:1px solid #999;"><iframe align="top" src="lib/catalogue_file_upload.php?w=show_form&model={model}" frameborder="0" width="100%" height="300" scrolling="Auto"></iframe></td></tr>
+    <tr><td width="10%">Несколько слов о таваре:</td><td><input type="text" id="few_words" name="few_words" value="{few_words}" style="width: 500px;"></td></tr>
+    <tr><td width="10%">Краткое описание:</td><td><textarea id="short_desc" name="short_desc">{short_desc}</textarea></td></tr>
+    <tr><td width="10%">Описание:</td><td><textarea id="desc" name="desc">{desc}</textarea></td></tr>
+    <tr><td width="10%">Характеристики:</td><td><textarea id="desc_more" name="desc_more">{desc_more}</textarea></td></tr>
+    <tr><td width="10%"><strong>Ключевые слова:</strong></td><td><input type="text" id="keywords" name="keywords" value="{keywords}" style="width: 500px;"></td></tr>
+	<tr><td width="10%"><strong>Позиция:</strong></td><td><input type="text" id="lenta" name="lenta" value="{lenta}" style="width: 100px;"></td></tr>
+	<tr><td colspan="2" align="right"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table>
+
+	<script type="text/javascript">
+				CKEDITOR.replace( 'desc',{
+       				filebrowserBrowseUrl : '../ckfinder/ckfinder.html',
+					filebrowserImageBrowseUrl : '../ckfinder/ckfinder.html?Type=Images',
+			        filebrowserFlashBrowseUrl : '../ckfinder/ckfinder.html?Type=Flash',
+			        filebrowserUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+			        filebrowserImageUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+			        filebrowserFlashUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+			    });
+				CKEDITOR.replace( 'short_desc' ,{
+       				filebrowserBrowseUrl : '../ckfinder/ckfinder.html',
+					filebrowserImageBrowseUrl : '../ckfinder/ckfinder.html?Type=Images',
+			        filebrowserFlashBrowseUrl : '../ckfinder/ckfinder.html?Type=Flash',
+			        filebrowserUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+			        filebrowserImageUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+			        filebrowserFlashUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+			    });
+				CKEDITOR.replace( 'desc_more',{
+       				filebrowserBrowseUrl : '../ckfinder/ckfinder.html',
+					filebrowserImageBrowseUrl : '../ckfinder/ckfinder.html?Type=Images',
+			        filebrowserFlashBrowseUrl : '../ckfinder/ckfinder.html?Type=Flash',
+			        filebrowserUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+			        filebrowserImageUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+			        filebrowserFlashUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+			    });
+	</script>
+    </td></tr>
+</table>
+</form> 

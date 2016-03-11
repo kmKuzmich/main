@@ -1,0 +1,17 @@
+<script src="js/subscribe/subscribe_form.js"></script>
+<form method="post" name="subscribe_form" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="dep_up" value="{dep_up}">
+<input type="hidden" name="dep_cur" value="{dep_cur}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="wn" value="{wn}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="subscribe_id" value="{subscribe_id}">
+
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td width="20%"><strong>Заголовок рассылка:</strong></td><td><input type="text" id="caption" name="caption" value="{caption}" style="width: 100%;"></td></tr>
+	<tr><td width="20%"><strong>Описание:</strong></td><td>{desc}</td></tr>
+    <tr><td width="20%"><strong>Прикрепить файлы:</strong></td><td><iframe align="top" src="lib/subscribe_file_upload.php?w=show_form&subscribe_id={subscribe_id}" frameborder="0" width="100%" height="300" scrolling="Auto"></iframe></td></tr>
+	<tr><td colspan="2" align="right"><input type="button" value="Сохранить" onclick="save_form();"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table></form>

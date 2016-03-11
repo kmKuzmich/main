@@ -1,0 +1,19 @@
+<script language="javascript">
+function load_kours_list(page) {
+	document.getElementById("page").value=page;
+	load_content("content.php?&w=show_kours_list&page="+page,"kours_list");
+}
+</script>
+<input type="hidden" name="page" id="page" />
+<table width="100%" border="0">
+	<tr>
+	    <td rowspan="2" valign="top" width="200"></td>
+		<td>
+        	<table width="100%" border="0" id="tbl">
+			   	<tr><td align="center"><h2>Курсы валют</h2></td></tr>
+			    <tr><td>{kours_search_form}</td></tr>
+			</table>
+		</td>
+	</tr>
+    <tr><td>{info}</td></tr>
+</table>

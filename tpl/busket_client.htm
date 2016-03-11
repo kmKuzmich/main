@@ -1,0 +1,27 @@
+<table border="0" width="750"  cellpadding="1" cellspacing="5"  class="content" id="content">
+    <tr>
+    	<td height="50"><h2>Активная заявка №{doc_num}</h2></td>
+        <td><h2>{data}</h2></td>
+    </tr>
+    <tr>
+    	<td colspan="2">{more_client}</td>
+    </tr>
+</table>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" align="center" class="content" id="content">
+	<tr id="range_head2">
+        <td width="50">&nbsp;</td>
+        <td align="left" width="130">Код</td>
+        <td align="left">Наименование</td>
+        <td align="center" width="110">Кол.</td>
+        <td align="center" width="80">Хм.</td>
+        <td align="center" width="80">Экспр.</td>
+        <td align="right" width="80">Цена <span style="font-size:12px;">(грн)</span></td>
+        <td align="right" width="120">Сумма</td>
+	</tr>
+	{order_str_list}
+    <tr height="25">
+	    <td colspan="2" align="center" class="t16"><a onclick="showOrderComment('{order_id}');" class="button_order {disabled}">Добавить примечание</a> </td>
+        <td colspan="5" align="right" class="t16"><a onclick="confimOrder('{order_id}')" class="button_order {disabled}">Оформить заявку</a> &nbsp; Общая стоимость: &nbsp; </td>
+        <td align="right" style="color:#ffffff;" bgcolor="#1372d0" colspan="2"><span style="font-size:16px;" id="SummBusket{order_id}">{summ}</span> <span class="t16" style="color:#ffffff">грн</span> &nbsp;</td>
+    </tr>
+</table><br />

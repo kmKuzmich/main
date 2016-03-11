@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title>Автолидер</title>
+   	<link rel="STYLESHEET" type="text/css" href="style/main.css">
+    <style>
+    	#orderStr td{border:1px solid #333;
+    </style>
+</head>
+<body>
+<span id="print_doc"></span>
+<script>
+document.getElementById("print_doc").innerHTML=window.opener.document.getElementById("print_doc").innerHTML;
+setTimeout("window.print()",2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+[16-Jan-2012 00:39:13] PHP Warning:  mysql_result() [<a href='function.mysql-result'>function.mysql-result</a>]: caption_en not found in MySQL result index 4 in /home/radiotoc/public_html/lib/mysql_class.php on line 33
+[24-Jan-2012 15:14:16] PHP Warning:  mysql_result() [<a href='function.mysql-result'>function.mysql-result</a>]: caption_en not found in MySQL result index 4 in /home/radiotoc/public_html/lib/mysql_class.php on line 33
+[24-Jan-2012 15:15:30] PHP Warning:  mysql_result() [<a href='function.mysql-result'>function.mysql-result</a>]: caption_en not found in MySQL result index 4 in /home/radiotoc/public_html/lib/mysql_class.php on line 33
+[24-Jan-2012 15:29:38] PHP Warning:  mysql_result() [<a href='function.mysql-result'>function.mysql-result</a>]: caption_en not found in MySQL result index 4 in /home/radiotoc/public_html/lib/mysql_class.php on line 33

@@ -1,0 +1,49 @@
+<div class="range_nav" style="width:56px; height:100px; margin-top:15px; float:left; margin-right:10px; text-transform:uppercase;"><div style="position:relative; width:50px; height:85px; left:30px; top:
+30px; text-align:center; -webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);">&nbsp;{bottom_slide_caption}</div></div>
+    	<div class="carbon_w" style="width:93%; height:110px; margin-top:10px;">
+		<script type="text/javascript" src="js/jquery/lib/jquery.jcarousel.pack.js"></script>
+		<link rel="stylesheet" type="text/css" href="js/jquery/lib/jquery.jcarousel.css" />
+		<link rel="stylesheet" type="text/css" href="js/jquery/skins/tango/skin.css" />
+		<style>
+			.jcarousel-skin-tangos .jcarousel-container-horizontal { width: 95%; height: 110px;}
+			.jcarousel-skin-tangos .jcarousel-clip-horizontal { width: 100%; height:110px; margin-left:-10px; }
+			.jcarousel-skin-tangos .jcarousel-item { width: 340px; height: 100px; padding: 0 0 0 0px; border-right:1px solid #7d7e80;}
+			.jcarousel-skin-tangos .jcarousel-item-horizontal { margin-bottom: 10px;}
+			.jcarousel-skin-tangos .jcarousel-prev-horizontal {position:absolute;top:25px;left:-25px;width:24px;height:53px;cursor:pointer;background:transparent url(theme/images/buttons_lr.png) no-repeat; background-position: -30px -54px;}
+			.jcarousel-skin-tangos .jcarousel-prev-horizontal:hover,
+			.jcarousel-skin-tangos .jcarousel-prev-horizontal:focus { background-position: -30 -54px; }
+			.jcarousel-skin-tangos .jcarousel-prev-horizontal:active {background-position: -90 -54px;}
+			.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal,
+			.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal:hover,
+			.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal:focus,
+			.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal:active {cursor: default; background-position: -60 -54px;}
+			.jcarousel-skin-tangos .jcarousel-next-horizontal {position:absolute;top:25px;left:100%; width:24px;height:53px;cursor:pointer;background:transparent url(theme/images/buttons_lr.png) no-repeat; background-position: 0px 0;}
+			.jcarousel-skin-tangos .jcarousel-next-horizontal:hover,
+			.jcarousel-skin-tangos .jcarousel-next-horizontal:focus { background-position: -30 0;}
+			.jcarousel-skin-tangos .jcarousel-next-horizontal:active {background-position: -90 0;}
+			.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal,
+			.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal:hover,
+			.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal:focus,
+			.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal:active {cursor: default;background-position: -60 0px;}
+		</style>
+		<script type="text/javascript">
+		function mycarousel_initCallback(carousel){
+		    carousel.buttonNext.bind('click', function() { carousel.startAuto(0); });
+		    carousel.buttonPrev.bind('click', function() { carousel.startAuto(0); });
+		    carousel.clip.hover(function() { carousel.stopAuto();}, function() { carousel.startAuto(); });
+		};
+		jQuery(document).ready(function() {
+		    jQuery('#newsl').jcarousel({
+		        auto: 20,
+				scroll: 1,
+		        wrap: 'last',
+		        initCallback: mycarousel_initCallback
+		   	});
+		});
+		</script>
+		<div id="wrap" align="center">
+			<ul id="newsl" class="jcarousel-skin-tangos">
+				{bottom_slide}
+			</ul>
+		</div>
+</div>

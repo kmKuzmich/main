@@ -1,0 +1,51 @@
+<table border="0" width="70%" cellpadding="1" cellspacing="5">
+	<tr>
+		<td colspan="2" class="cap">Заказ<br><br></td>
+	</tr>
+	<tr>
+		<td width="15%">Ф.И.О.:</td>
+		<td>{client_name}</td>
+		<td width="15%">Email:</td>
+		<td>{email}</td>
+	</tr>
+    <tr>
+		<td width="15%"></td>
+		<td></td>
+		<td width="15%">Телефон:</td>
+		<td>{phone} {mob}</td>
+	</tr>
+	<tr>
+		<td valign="top">Адрес доставки:</td>
+		<td>{address_sent}</td>
+		<td valign="top">Дата заказа:</td>
+		<td>{data_time}</td>
+	</tr>
+	<tr>
+		<td valign="top">Дополнительная информация или пожилания:</td>
+		<td colspan="3">{more}</td>
+	</tr>
+	<tr><td><br></td></tr>				
+	<tr>
+		<td>Вариант оплаты:</td>
+		<td>{payment}</td>
+		<td>IP-адресс:</td>
+		<td>{remip}</td>
+	</tr>
+	<tr><td><br></td></tr>
+</table>
+<div align="center">Структура заказа</div>
+<table width="100%" border="0" id="tbl">
+	<tr bgcolor="#2f7ab3" style="color:white;">
+		<th>№</th>
+		<th>Наименование</th>
+		<th>Кол-во</th>
+		<th>Цена</th>
+		<th>Сумма</th>
+	</tr>
+	{busket}
+	<tr bgcolor="#2f7ab3" style="color:white;">
+		<th colspan="4" align="right"><b>Итого:</b></th>
+		<th align="right">{summ}</th>
+	</tr>
+</table>
+

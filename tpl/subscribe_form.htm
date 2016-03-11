@@ -1,0 +1,9 @@
+<script language="javascript">
+	function subscribe(){
+		alert_content("content.php?w=subscribe&email="+document.getElementById("email").value);
+	}
+</script>
+<table width="270" height="68" border="0" background="theme/images/subscribe_bg.jpg">
+<tr><td height="10"></td></tr>
+<tr><td height="10" align="center"><input type="text" name="email" id="email" value="Укажите ваш Email" onClick="this.value='';" style="font:normal 10px Arial; width:160px;"> <input type="button" value="Подписаться" style="font:normal 10px Arial" onClick="subscribe();"></td></tr>
+</table>

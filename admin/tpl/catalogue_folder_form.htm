@@ -1,0 +1,45 @@
+<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+<form method="post" name="form" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="modue_page" value="{module_page}">
+<input type="hidden" name="file" value="{file}">
+
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="top_id" value="{top_id}">
+<input type="hidden" name="cat_id" value="{cat_id}">
+<table width="100%" border="0" cellspacing="5">
+	<tr><td>{navigation}</td></tr>
+    <tr><td colspan="2"><hr></td></tr>
+	<tr><td colspan="2">
+    
+    
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td colspan="2" align="center"><h2>{action} раздел</h2></td></tr>
+    <tr><td colspan="2" align="right"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table><br />  
+<table width="100%" border="0">
+    <tr><td width="10%"><strong>Позиция:</strong></td><td><input type="text" id="lenta" name="lenta" value="{lenta}" style="width: 100px;"></td></tr>
+    <tr><td width="10%"><strong>Краткое наименование:</strong></td><td><input type="text" id="short_caption" name="short_caption" value="{short_caption}" style="width: 500px;"></td></tr>
+    <tr><td width="10%"><strong>Наименование:</strong></td><td><input type="text" id="caption" name="caption" value="{caption}" style="width: 500px;"></td></tr>
+    <tr><td width="10%"><strong>Верхнее меню:</strong></td><td><b><input type="checkbox" id="top_menu" name="top_menu" value="1" {top_menu}></b></td></tr>
+    <tr><td width="10%"><strong>Иконка (320х43):</strong></td><td><input type="file" name="file"></td></tr>
+    <tr><td><br></td></tr>
+    <tr><td width="10%"><strong>Категория статей:</strong></td><td>{articles_form}</td></tr>
+    <tr><td width="10%"><strong>Ключевые слова:</strong></td><td><input type="text" id="keywords" name="keywords" value="{keywords}" style="width: 500px;"></td></tr>
+    <tr><td width="10%"><strong>SEO текст :</strong></td><td><textarea id="seo_info" name="seo_info">{seo_info}</textarea></td></tr>
+	<tr><td colspan="2" align="right"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table>
+<script type="text/javascript">
+				CKEDITOR.replace( 'seo_info',{
+       				filebrowserBrowseUrl : '../ckfinder/ckfinder.html',
+					filebrowserImageBrowseUrl : '../ckfinder/ckfinder.html?Type=Images',
+			        filebrowserFlashBrowseUrl : '../ckfinder/ckfinder.html?Type=Flash',
+			        filebrowserUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+			        filebrowserImageUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+			        filebrowserFlashUploadUrl : '../ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+			    });
+	</script>
+    </td></tr>
+</table>
+</form>

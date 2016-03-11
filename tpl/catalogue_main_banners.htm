@@ -1,0 +1,33 @@
+<table cellpadding="0" cellspacing="0" border="0" width="630" id="catalogue">
+	<tr>
+    	<td colspan="3" height="295" align="center" style="border-bottom:1px solid #CCC;border-left:1px solid #CCC;border-right:1px solid #CCC;">
+        <span id="main_banner"><img src="uploads/images/general/loading.gif" border=0/></span></td>
+    </tr>
+    <tr height="55">
+    	<td background="theme/images/action_bg.jpg" style="background-repeat:repeat-x;" width="9"><img src="theme/images/action_bg_l.jpg" border="0" /></td>
+    	<td background="theme/images/action_bg.jpg" style="background-repeat:repeat-x;" align='center'>{tabs}</td>
+        <td background="theme/images/action_bg.jpg" style="background-repeat:repeat-x;" width="9" align="right"><img src="theme/images/action_bg_r.jpg" border="0" /></td>
+    </tr>
+</table>
+<script>
+	var j=2;
+	var action_id;
+	function action_timer() {
+		j=j-1;
+		if (j>0){
+			setTimeout("action_timer()",1000);
+		}
+		if (j==0){ 
+			load_content1("content.php?&w=show_action&action_id="+action_id,"main_banner");
+			action_id=return_content("content.php?w=get_next_banner_id&cur_id="+action_id);
+			j=5; setTimeout("action_timer()",1000);
+		}
+	}
+	function load_action(id){
+		load_content1("content.php?&w=show_action&action_id="+id,"main_banner");
+		action_id=return_content("content.php?w=get_next_banner_id&cur_id="+id);
+		j=-1;
+	}
+	action_id=return_content("content.php?w=get_next_banner_id&cur_id="+{action_id});j=1;
+	action_timer();
+</script>

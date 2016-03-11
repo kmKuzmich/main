@@ -1,0 +1,17 @@
+<script language="javascript">
+	function VHover(kol){ 
+		for (i=1;i<=kol;i++){ document.getElementById('star'+i).src='theme/images/star'+i+'_a.png';  }
+	}
+	function VOut(kol){ 
+		for (i=kol;i<=5;i++){ document.getElementById('star'+i).src='theme/images/star'+i+'_d.png';  }
+	}
+</script>
+<br>
+<div id="model_vote" onmouseout="VOut('1');">
+	<div style="float:left;"><a href="javascript:model_vote('{model}','1');"><img src="theme/images/star1_{1}.png" border="0" alt="+1" title="+1" id="star1" onmouseover="VHover('1');" onmouseout="VOut('1');"></a></div>
+    <div style="float:left;"><a href="javascript:model_vote('{model}','2');"><img src="theme/images/star2_{2}.png" border="0" alt="+2" title="+2" id="star2" onmouseover="VHover('2');" onmouseout="VOut('2');"></a></div>
+    <div style="float:left;"><a href="javascript:model_vote('{model}','3');"><img src="theme/images/star3_{3}.png" border="0" alt="+3" title="+3" id="star3" onmouseover="VHover('3');" onmouseout="VOut('3');"></a></div>
+    <div style="float:left;"><a href="javascript:model_vote('{model}','4');"><img src="theme/images/star4_{4}.png" border="0" alt="+4" title="+4" id="star4" onmouseover="VHover('4');" onmouseout="VOut('4');"></a></div>
+    <div style="float:left; margin-right:15px;"><a href="javascript:model_vote('{model}','5');"><img src="theme/images/star5_{5}.png" border="0" alt="+5" title="+5" id="star5" onmouseover="VHover('5');" onmouseout="VOut('5');"></a></div>
+    <div style="font-size:12px;">{votes} человек{end} <br />проголосовало за этот товар!</div><br />
+</div>

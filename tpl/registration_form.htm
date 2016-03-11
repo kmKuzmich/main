@@ -1,0 +1,96 @@
+<script language="JavaScript">
+<!--
+	function check_form(){
+		er=0;
+		if (document.all.regform.login.value==""){er=1;}
+		if (document.all.regform.pass.value==""){er=1;}
+		if (document.all.regform.email.value==""){er=1;}
+		if (document.all.regform.fname.value==""){er=1;}
+		if (document.all.regform.lname.value==""){er=1;}
+		if (document.all.regform.address.value==""){er=1;}
+		if (document.all.regform.about.value==""){er=1;}
+		if (document.all.regform.code.value==""){er=1;}
+		if (er==1){alert("Не заполнены все обязательные поля!");}
+		if (er==0){ document.all.regform.submit(); }
+	}
+-->
+</script><br>
+
+<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+	<tr><td valign="top">
+			
+<form method="post" name="regform" onsubmit="check_form(); return false;">
+<input type="hidden" name="dep" value="{dep}">
+<input type="hidden" name="w" value="send">
+<input type="hidden" name="client" value="{client}">
+<table align="center" border=0>
+	<tr>
+		<td width="50" rowspan="20"></td>
+		<td><b>Логин</b>: </td>
+		<td><input type="text" {readonly} class="text" name="login" value="{login}" onchange="javascript:checklogin(this.value);" size="50"></td>
+		<td><div id="loginmes"></div></td>
+	</tr>
+	<tr>
+		<td><b>Пароль</b>: </td>
+		<td><input type="password" name="pass" value="{pass}" class="text" size="50"></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td><b>E-mail</b>: </td>
+		<td><input type="text" class="text" name="email" value="{email}" onchange="javascript:checkemail(this.value);" size="50"></td>
+		<td><div id="emailmes"></div></td>
+	</tr>
+	<tr><td><br><br></td></tr>
+	<tr>
+		<td><b>Имя</b>: </td>
+		<td><input type="text" class="text" name="name" value="{name}" size="50"></td>
+		<td rowspan="15"></td>
+	</tr>
+	<tr><td><br><br></td></tr>
+	<tr>
+		<td>Область: </td>
+		<td>{state}</td>
+		<td></td>
+	</tr>
+    <tr>
+		<td>Город: </td>
+		<td><input type="text" class="text" name="city" value="{city}" size="50"></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td><b>Адрес</b>: </td>
+		<td><input type="text" class="text" name="address" value="{address}" size="50"></td>
+	</tr>
+	<tr>
+		<td>Телефон (с кодом): </td>
+		<td><input type="text" class="text" name="phone" value="{phone}" size="50"></td>
+	</tr>
+	<tr>
+		<td>Мобильный телефон: </td>
+		<td><input type="text" class="text" name="mob" value="{mob}" size="50"></td>
+	</tr>
+	<tr><td><br><br></td></tr>
+	<tr>
+		<td valign="top"><b>Введите код</b></td>
+		<td valign="middle"><img src="codegen/codegen.php" border=0> <input class="text" name="code"></td>
+	</tr>
+	<tr>
+		<td></td><td><br><br><input type="submit" value="{submit_name}"><br></td>
+	</tr>
+</table>
+</form>
+
+			
+			</td>
+			<td width="30%" valign="top">
+			
+<b>Внимание!</b>
+<ul>
+<li>Если после входа в систему на протяжении 10 минут Вы не будете выполнять никаких действий, текущий сеанс будет завершен с целью защиты Вашей персональной информации. Чтобы продолжить работу, войдите в систему еще раз. Перемещение по странице с помощью функции прокрутки считается бездействием.</li>
+</ul>
+
+</td>
+			</tr>
+			<tr><td height="5">&nbsp;</td></tr>
+		</table>
+		

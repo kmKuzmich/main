@@ -1,0 +1,22 @@
+<style type="text/css">
+.slideshow { height: 284px; width: 300px; margin: auto }
+.slideshow img { padding: 10px; border: 1px solid #ccc; background-color: #eee; }
+</style>
+<!-- include jQuery library -->
+<script type="text/javascript" src="js/jquery/lib/jquery.min.js"></script>
+
+<!-- include Cycle plugin -->
+<script type="text/javascript" src="js/jquery/lib/jquery.cycle.all.js"></script>
+
+<!--  initialize the slideshow when the DOM is ready -->
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.slideshow').cycle({
+		fx: 'zoom' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+	});
+});
+</script>
+<div class="slideshow" align="center">
+	{list}
+</div>
+

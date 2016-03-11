@@ -1,0 +1,29 @@
+<input type="hidden" id="action_id" value="{action_id}">
+<input type="hidden" id="action_price" value="{action_price}">
+<table width="750" border="0" id="catalogue">
+	<tr>
+    	<td colspan="3" style="font:normal 24px Tahoma, Geneva, sans-serif; color:#268cc8;">Добавление в корзину</td>
+    </tr>
+    <tr>
+    	<td colspan="2" style="font:bold 16px Arial, Helvetica, sans-serif;">Акционное предложение</td>
+        <td width="150" align="center"></td>
+    </tr>
+    <tr><td colspan="3" height="1" bgcolor="#6e6e6e"></td></tr>
+    <tr>
+    	<td width="40" valign="top"><br /><br /><br /><a href="javascript:dropAction('{action_id}')"><img src="theme/images/drop_basket.gif" border="0" alt="Удалить" title="Удалить" style="cursor:pointer;" onclick="dropAction('{action_id}');" /></a></td>
+        <td width="360" colspan="2" style="border:2px dotted #F60;">{items_list}</td>
+    </tr>
+    <tr><td colspan="3" height="1" bgcolor="#6e6e6e"></td></tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td align="right"><strong>Количество комплектов &nbsp; </strong><img src="theme/images/minus.png" border="0" alt="-1" title="-1" style="cursor:pointer;" onclick="minusOneAction('{action_id}');" /><input type="text" id="action_kol" value="{action_kol}" class="inpt" style="width:60px; text-align:right"> шт. <img src="theme/images/plus.png" border="0" alt="+1" title="+1" style="cursor:pointer;" onclick="plusOneAction('{action_id}');" /></td>
+        <td align="center"><span id="action_summ">{summ}</span> {cash}</td>
+    </tr>
+    <tr><td colspan="3" height="1" bgcolor="#6e6e6e"></td></tr>
+    <tr>
+    	<td colspan="3">
+        <a onclick="location.href='?dep=busket';" class="button_buy save" style="font: bold 16px/28px Arial, Helvetica; color:#FFF;">Оформить заказ</a>
+        <a href="javascript:closeBusketForm();" class="pseudo">Продолжить покупки</a>
+        </td>
+    </tr>
+</table>

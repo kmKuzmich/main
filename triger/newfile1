@@ -1,0 +1,78 @@
+long q,h,
+  i,nC,n,p,
+  t;
+char km[1024],exp[1024],buf[5000],fnm[255],buf1[255],tm[41];
+
+t=GetTickCount();
+q=qrCreate();
+
+qrSetSQL(q,"
+select
+    cast(null as smallint) as lev,
+    cast(null as integer) as item_id1,
+    cast(null as integer) as item_id2 into #a
+where item_id1 is not null
+");
+qrOpen(q);
+
+
+qrSetSQL(q,"for cur as curs cursor for 
+   select number() as n,
+              id 
+  from Item
+  where prod_id= 721
+do
+  call ListAnalog(id);
+  insert into #a(lev,item_id1,item_id2)
+    select T1.lev,T.item_id, T1.item_id
+   from AnalogTemp T,
+        AnalogTemp T1
+  where T.lev=0
+   and T1.lev>0
+   and T1.dop=0;
+   if n>10000 then
+     return;
+  end if;   
+end for     ");
+qrOpenA(q,"");
+//qrClose(q);
+//return;
+
+qrSetSQL(q,"select *
+from #a
+" );
+res=qrOpenM(q,"");
+nC=qrGetColumnCount(q);
+
+sprintf(fnm,"upload_ftp\\aparts\\analog.csv");
+h=fopen(fnm,"wb");
+p=pbCreate();
+for(i=1;i<=nC;i++){
+     if(i>1)
+        fprintf(h,";");
+     fprintf(h,"%s",qrGetColumnName(q,i,buf1) );
+}
+fprintf(h,"\r\n");
+
+while(res){
+  if(!(n%200) ){
+    if(!pbSetPos(p,n/60%1000) )
+      break;
+   sprintf(buf,"%d",n);
+   SetText(p,buf); 
+  }
+  for(i=1;i<=nC;i++){
+     if(i>1)
+        fprintf(h,";");
+     fprintf(h,"%s",qrGetCValue(q,i,buf1) );
+  }
+  fprintf(h,"\r\n");
+  res=qrMoveNext(q);
+  n++;
+}
+fclose(h);
+qrClose(q);
+pbClose(p);
+
+sprintf(buf,"%.1f ñ",(GetTickCount()-t)/1000.);
+//Info("",buf);

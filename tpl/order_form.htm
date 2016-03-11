@@ -1,0 +1,60 @@
+<script language="JavaScript" src="js/shop/busket.js"></script>
+<form method="post" onsubmit="return false;" name="order_form">
+<input type="hidden" name="dep" value="{dep}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="serial" value="{serial}">
+<input type="hidden" name="order_id" value="{order_id}">
+<input type="hidden" id="errorEmail" name="errorEmail" value="0">
+<table border="0" width="98%" align="center" id="BusketClient">
+	<tr><td colspan="2" align="center"><h2>Оформление заявки</h2><br /></td></tr>
+    <tr><td colspan="2" align="center"><span id="OrderError" class="error"></span></td></tr>
+	<tr>
+		<td width="200"><strong>Код клиента:</strong></td><td>{code}</td>
+	</tr>
+    <tr>
+		<td width="200"><strong>Клиент:</strong></td><td>{client_name}</td>
+	</tr>
+    
+	<tr>
+		<td><strong>Email:</strong></td><td>{email}</td>
+	</tr>
+    <tr>
+		<td><strong>Телефон:</strong></td><td><input type="text" id="phone" name="phone" value="{phone}" style="width:250px;"></td>
+	</tr>
+    <tr>
+		<td width="200"><strong>Контактное лицо:</strong></td><td><input type="text" id="contactPerson" name="contactPerson" value="{contactPerson}" style="width:98%;"></td>
+	</tr>
+    <!--<tr>
+		<td width="200"><strong>Плательщик:</strong></td><td>{client_form}</td>
+	</tr>-->
+	<tr>
+		<td valign="top"><strong>Примечание к заявке для менеджера по обработке заявок:</strong></td><td><textarea name="more" id="more" style="width:98%; height:50px">{more}</textarea></td>
+	</tr>
+	<tr><td><br></td></tr>
+    <tr valign="top">
+		<td><strong>Вариант оплаты:</strong></td>
+		<td>{payment_form}</td>
+	</tr>
+   	<tr><td><br></td></tr>
+    <tr valign="top">
+		<td><strong>Перевозчик:</strong></td>
+		<td>{delivery_form}</td>
+	</tr>
+    <tr valign="top">
+		<td></td>
+		<td><span style="display:block; float:left;">Дата и время отправки: </span> <span id="time_delivery" style="display:block; width:100px; float:left; height:20px; color:#00F; text-align:center;">***</span> - ориентировочное</td>
+	</tr>
+   	<tr><td><br></td></tr>
+    <tr>
+		<td valign="top"><strong>Адрес доставки:</strong></td><td><textarea name="address_sent" id="address_sent" style="width:98%; height:50px">{address_sent}</textarea></td>
+	</tr>
+    <tr>
+		<td valign="top" colspan="2">{expressMessage}</td>
+	</tr>
+    <tr valign="top">
+		<td></td>
+        <td><span id="payment_comment" style="font-size:12px; font-style:italic"></span></td>
+	</tr>
+	<tr><td colspan="2" align="right"><a href="#" onclick="save_order();" class="button_order shop" style="font-size:22px;">Отправить заявку</a> &nbsp; &nbsp;</td></tr> 
+</table>
+</form>

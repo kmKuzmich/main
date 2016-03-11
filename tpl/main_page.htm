@@ -1,0 +1,128 @@
+<script type="text/javascript" src="js/jquery/lib/jquery.min.js"></script>
+<div id="bchrome" style="width:1139px; height:382;">
+        	<div class="promo_bg">
+            	<div class="promo_left">
+                 <div class="flash banner_rotator" id="rotatebanner" style="margin-left:30px; margin-top:18px;">
+			        
+					<!--[if IE 7 ]>    <html class="ie7" lang="en"> <![endif]-->
+					<!--[if IE 8 ]>    <html class="ie8" lang="en"> <![endif]-->
+					<!--[if IE 9 ]>    <html class="ie9" lang="en"> <![endif]--> 
+					<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+					<link rel="stylesheet" href="theme/css/960.css" />
+					<link rel="stylesheet" href="theme/css/skin.min.css" />
+					<script type="text/javascript" src="js/jquery/jquery-1.5.2.min.js"></script>
+					<script type="text/javascript" src="js/jquery/preview.js"></script>
+					<script type="text/javascript" src="js/jquery/jquery.pixelentity.kenburnsSlider.min.js"></script> 
+                    <style>		
+					.peKenBurns {
+			       		width: 485px;
+       					height: 385px;
+					}
+					img.banner { 
+						
+					}
+					</style>
+                    <script>
+					jQuery(function($){
+						$(".peKenBurns").peKenburnsSlider({externalFont:true})
+					})
+					// for google fonts, handle captions sizing only after fonts are loaded
+					jQuery(window).load(function() {
+						$(".peKenBurns").each(function() {
+							$(this).data("peKenburnsSlider").fontsLoaded()
+						})
+					})
+					</script>
+                    <div class="peKenBurns" data-autopause="image" data-mode="kb" data-controls="always" data-shadow="enabled">
+                        {big_banners}
+				 	</div>	
+				 </div>
+                </div>
+                <div class="promo_right">
+                <script type="text/javascript" src="js/flexcroll/flexcroll.js"></script>
+				<script type="text/javascript" src="js/jquery/lib/jquery.jcarousel.pack.js"></script>
+				<link rel="stylesheet" type="text/css" href="js/jquery/lib/jquery.jcarousel.css" />
+				<link rel="stylesheet" type="text/css" href="js/jquery/skins/tango/skin.css" />
+				<style>
+					.jcarousel-skin-tangos .jcarousel-container-horizontal { width: 595px; height: 340px; margin-top:20px;}
+					.jcarousel-skin-tangos .jcarousel-clip-horizontal { width: 595px; height:350px; margin-left:-10px; }
+					.jcarousel-skin-tangos .jcarousel-item { width: 590px; height: 349px; padding: 0 0 0 0px;}
+					.jcarousel-skin-tangos .jcarousel-item-horizontal { margin-bottom: 10px;}
+					.jcarousel-skin-tangos .jcarousel-prev-horizontal {position:absolute;top:150px;left:-13px;width:24px;height:53px;cursor:pointer;background:transparent url(theme/images/buttons_lr.png) no-repeat; background-position: 0px -54px;}
+					.jcarousel-skin-tangos .jcarousel-prev-horizontal:hover,
+					.jcarousel-skin-tangos .jcarousel-prev-horizontal:focus { background-position: -30 -54px; }
+					.jcarousel-skin-tangos .jcarousel-prev-horizontal:active {background-position: -90 -54px;}
+					.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal,
+					.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal:hover,
+					.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal:focus,
+					.jcarousel-skin-tangos .jcarousel-prev-disabled-horizontal:active {cursor: default; background-position: -60 -54px;}
+					.jcarousel-skin-tangos .jcarousel-next-horizontal {position:absolute;top:150px;right:-5px;width:24px;height:53px;cursor:pointer;background:transparent url(theme/images/buttons_lr.png) no-repeat; background-position: 0px 0;}
+					.jcarousel-skin-tangos .jcarousel-next-horizontal:hover,
+					.jcarousel-skin-tangos .jcarousel-next-horizontal:focus { background-position: -30 0;}
+					.jcarousel-skin-tangos .jcarousel-next-horizontal:active {background-position: -90 0;}
+					.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal,
+					.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal:hover,
+					.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal:focus,
+					.jcarousel-skin-tangos .jcarousel-next-disabled-horizontal:active {cursor: default;background-position: -60 0px;}
+				</style>
+				<script type="text/javascript">
+				function mycarousel_initCallback(carousel){
+				    carousel.buttonNext.bind('click', function() { carousel.startAuto(0); });
+				    carousel.buttonPrev.bind('click', function() { carousel.startAuto(0); });
+				    carousel.clip.hover(function() { carousel.stopAuto();}, function() { carousel.startAuto(); });
+				};
+				jQuery(document).ready(function() {
+				    jQuery('#special_offer').jcarousel({
+				        auto: 3,
+						scroll: 1,
+				        wrap: 'last',
+				        initCallback: mycarousel_initCallback
+				   	});
+				});
+				</script>
+				<div id="wrap" align="center">
+					<ul id="special_offer" class="jcarousel-skin-tangos">
+                        {news}
+			    	</ul>
+			    </div>
+                </div>
+            </div>
+        </div>
+        <div style="height:275px">
+	        <div id="bchrome" style="width:523px; height:260px; float:left; margin-right:10px;">
+        		<div class="promo_bg">
+                {STO_form}
+        	    </div>
+    	    </div>
+	        <div id="bchrome" style="width:605px; height:260px; float:left;">
+        		<div class="promo_bg">
+                <div style="clear:both; margin:0; padding:10;">
+                <div class="head" style="font-size:18px; color:#FFF;">Компания Автолидер:</div>
+                <p>"Главная наша задача – полностью избавить клиентов от проблем, связанных с приобретением запасных частей на любой автомобиль."</p>
+                <div style="text-align: left;"> 	<strong>Основные направления деятельности компании:</strong></div> <div style="text-align: left;"> 	- Оптовая продажа автозапчастей для легковых и коммерческих авто;</div> <div style="text-align: left;"> 	- Оптовая продажа автошин, масел, аккумуляторов, автокосметики, аксессуаров;</div> <div style="text-align: left;"> 	- Продажа диагностического и гаражного оборудования для СТО;</div> <div style="text-align: left;"> 	- Ремонт и диагностика автомобилей - авторизированная сервисная станция БОШ АВТО СЕРВИС;</div>
+                <h3 style="color:#FFF; font: bold italic 16px Tahoma, Geneva, sans-serif;">Давать людям самое лучшее - вот девиз и главная стратегия нашего предприятия, мы уверены, что только </h3>
+                </div>
+<!--                {tecdoc_form} !-->
+    	        </div>
+	        </div>
+        </div>
+        <style>
+		.vscrollerbase { visibility: visible !important; }
+		.scrollgeneric { line-height: 0px; font-size: 0px; position: absolute; top: 0; left: 0; }
+		.vscrollerbar { width: 24px; min-height:41px; height:41px; max-height:41px; background: url(js/flexcroll/scrollbar.png) no-repeat center center; }
+		.vscrollerbarbeg { height: 4px !important; width: 40px;  }
+		.vscrollerbarend {height: 4px;width: 40px;}
+	
+		.vscrollerbase {width: 24px;}
+		.vscrollerbasebeg {width: 24px; height: 4px !important;}
+		.vscrollerbaseend {height: 4px; width: 24px;}
+		.vscrollerbar, .hscrollerbar { padding: 2px; z-index: 2; }
+		.scrollerjogbox { width: 22px; height: 6px; top: auto; left: auto; bottom: 0px; right: 0px; background: #37917A; }
+		#BrandCroll { width:680px; height:380px;overflow: auto; position: relative; float:left; }
+		</style>
+        <div id="bchrome" style="width:99%; height:310px; margin-top:15px;">
+        	<div class="promo_bg">
+            <h3 style="font:normal 18px Tahoma, Geneva, sans-serif; margin:0; padding:10px; color:#FFF;">В нашем магазине официально представлены бренды:</h3>
+            {brand_list}
+            </div>
+        </div>

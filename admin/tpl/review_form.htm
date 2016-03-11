@@ -1,0 +1,21 @@
+<script src="js/review/review_form.js"></script>
+<form method="post" name="review_form" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="dep_up" value="{dep_up}">
+<input type="hidden" name="dep_cur" value="{dep_cur}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="wn" value="{wn}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="review_id" value="{review_id}">
+
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td width="20%"><strong>Заголовок обзора:</strong></td><td><input type="text" id="caption" name="caption" value="{caption}" style="width: 100%;"></td></tr>
+    <tr><td width="20%"><strong>Добавить в рассылку:</strong></td><td><input type="checkbox" name="subscribe" value="1"></td></tr>
+    <tr><td width="20%"><strong>Изображение:</strong></td><td><input type="file" id="pic" name="pic"  style="width: 300px;">{review_img}</td></tr>
+	<tr><td width="20%"><strong>Описание кор:</strong></td><td>{short_desc}</td></tr>
+	<tr><td width="20%"><strong>Описание:</strong></td><td>{desc}</td></tr>
+	<tr><td width="20%"><strong>Автор:</strong></td><td><input type="text" id="author" name="author" value="{author}" style="width: 300px;"></td></tr>
+	<tr><td width="20%"><strong>Дата:</strong></td><td><input type="text" id="data" name="data" value="{data}" style="width: 300px;">{calendar}</td></tr>
+	<tr><td colspan="2" align="right"><input type="button" value="Сохранить" onclick="save_form();"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table></form>

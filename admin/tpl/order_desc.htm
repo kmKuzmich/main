@@ -1,0 +1,73 @@
+<table border="0" cellpadding="1" cellspacing="5"><tr>
+	<td><a href="javascript:status_order('{order_id}')"><img src="images/status.jpg" border="0" alt="Изенить статус заказа" title="Изенить статус заказа"></a></td>
+    <td><a href="javascript:show_kurier_form('{order_id}')"><img src="images/kurier.gif" width="48" border="0" alt="Товарно-транспортная накладная" title="Товарно-транспортная накладная"></a></td>
+    <td><a href="javascript:print_order('{order_id}')"><img src="images/print.jpg" border="0" alt="Распечатать заказ" title="Распечатать заказ"></a></td>
+    <td><a href="javascript:delete_order('{order_id}');"><img src="images/delete.jpg" border="0" alt="Удалить заказ" title="Удалить заказ"></a></td>
+</tr></table><br /><br /><br />
+<span id="desc">
+<table border="0" width="100%" cellpadding="1" cellspacing="5">
+	<tr>
+		<td colspan="2"><h2>Заказ № {order_id}</h2></td>
+        <td>Статуc</td><td>{status}</td>
+	</tr>
+	<tr>
+		<td width="15%">Ф.И.О.:</td>
+		<td>{client_name}</td>
+		<td width="15%">Email:</td>
+		<td>{email}</td>
+	</tr>
+    <tr>
+		<td width="15%"></td>
+		<td></td>
+		<td width="15%">Телефон:</td>
+		<td>{phone} {mob}</td>
+	</tr>
+	<tr>
+		<td valign="top">Адрес доставки:</td>
+		<td>{address_sent}</td>
+		<td valign="top">Дата заказа:</td>
+		<td>{data_time}</td>
+	</tr>
+	<tr>
+		<td valign="top">Дополнительная информация или пожилания:</td>
+		<td colspan="3">{more}</td>
+	</tr>
+	<tr>
+		<td>Вариант оплаты:</td>
+		<td>{payment}</td>
+		<td>IP-адресс:</td>
+		<td>{remip}</td>
+	</tr>
+    <tr>
+		<td>Валюта оплаты:</td>
+		<td>ГРН</td>
+	</tr>
+	<tr><td><br></td></tr>
+</table>
+<div align="center">Структура заказа</div>
+<table width="100%" border="0" id="tbl">
+	<tr bgcolor="e0e0e0" height="30" style="font-size:14px;">
+		<th>№</th>
+		<th>Код</th>
+		<th>Наименование</th>
+		<th>Кол-во</th>
+		<th>Цена, {csh}</th>
+		<th>Сумма</th>
+	</tr>
+	{busket}
+	<tr bgcolor="e0e0e0" height="30" style="font-size:14px;">
+		<th colspan="5" align="right"><b>Итого, ГРН:</b></th>
+		<th align="right">{summ}</th>
+	</tr>
+</table>
+</span>
+<span id="wind2" style="visibility:hidden; position:absolute; top:100%; left:-120%; width:0px; height:0px; z-index:11000; border:1px solid #CCC;">
+<table width="100%" height="100%" border="0" bgcolor="#FFFFFF">
+	<tr>
+    	<td valign="top" height="5%" align="right"><a href="javascript:win2_close();"><img src="../theme/images/close.gif" border="0" /></a></td>
+    </tr>
+    <tr>
+    	<td align="center" valign="top"><div id="wind2_cont"></div></td>
+    </tr>
+</table>
+</span>

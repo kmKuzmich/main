@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>Слайдер</title>
+	<link rel="stylesheet" href="./stylesheets/jslider.css" type="text/css">
+	<link rel="stylesheet" href="./stylesheets/jslider.round.css" type="text/css">
+	<link rel="stylesheet" href="./stylesheets/jslider.round.plastic.css" type="text/css">
+
+	<script type="text/javascript" src="./javascripts/jquery-1.4.2.js"></script>
+	<script type="text/javascript" src="./javascripts/jquery.dependClass.js"></script>
+	<script type="text/javascript" src="./javascripts/jquery.slider-min.js"></script>
+	
+	<style type="text/css" media="screen">
+	  body { background: #EEF0F7; }
+	 .layout { padding: 50px; font-family: Georgia, serif; }
+	 .layout-slider { margin-bottom: 60px; width: 50%; }
+	 .layout-slider-settings { font-size: 12px; padding-bottom: 10px; }
+	 .layout-slider-settings pre { font-family: Courier; }
+	</style>
+
+</head>
+<body>
+  
+  <div class="layout">
+
+
+
+
+    <div class="layout-slider">
+      <input id="SliderPrice" type="slider" name="area" value="0;500" />
+    </div>
+    <script type="text/javascript" charset="utf-8">
+      jQuery("#SliderPrice").slider({ from: 0, to: 500, scale: [0, '|', 500], limits: true, step: 10, dimension: '', skin: "round_plastic",
+	  onstatechange: function(value) {
+		alert(value)
+	  }});
+    </script>
+
+    
+  </div>
+
+    
+</body>
+</html>

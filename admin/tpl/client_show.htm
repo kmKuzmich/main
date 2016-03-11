@@ -1,0 +1,37 @@
+<table border="0"><tr valign="top" id="catalogue">
+<td>
+<span id="desc">
+<table width="500" align="center" border=0>
+	<tr><td><b>E-mail</b>: </td><td>{email}</td></tr>
+	<tr><td><b>Пароль</b>: </td><td>{pass}</td></tr>
+	<tr><td><br><br></td></tr>
+	<tr><td><b>Имя</b>: </td><td>{name}</td></tr>
+    <tr><td><b>Скидка</b>: </td><td>{discount}</td></tr>
+	<tr><td><br><br></td></tr>
+	<tr><td>Город: </td><td>{city}</td></tr>
+	<tr><td><b>Адрес</b>: </td><td>{address}</td></tr>
+	<tr><td>Телефон (с кодом): </td><td>{phone}</td></tr>
+	<tr><td><br><br></td></tr>
+</table>
+</span>
+</td><td width="300">
+
+	<div style="position:relative;float:left;">
+    	<div align="center"><a href="?module=6&module_page=6&file=order&client={client}"><img src="images/order_client.jpg" border="0" alt="История заказов" title="История заказов"></a></div>
+		<div align="center"><a href="?module=6&module_page=6&file=order&client={client}"> История заказов</a></div>
+    </div>
+    <div style="position:relative;float:left; margin-left:10px;">
+    	<div align="center"><a href="javascript:client_discount('{client}');"><img src="images/discount.gif" alt="Назначить скидку" title="Назначить скидку" border="0"></a></div>
+		<div align="center"><a href="javascript:client_discount('{client}');">Назначить скидку</a></div>
+    </div>
+</td></tr></table>
+<span id="wind2" style="visibility:hidden; position:absolute; top:100%; left:-120%; width:0px; height:0px; z-index:11000; border:1px solid #CCC;">
+<table width="100%" height="100%" border="0" bgcolor="#FFFFFF">
+	<tr>
+    	<td valign="top" height="5%" align="right"><a href="javascript:win2_close();"><img src="../theme/images/close.gif" border="0" /></a></td>
+    </tr>
+    <tr>
+    	<td align="center" valign="top"><div id="wind2_cont"></div></td>
+    </tr>
+</table>
+</span>

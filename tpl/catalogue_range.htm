@@ -1,0 +1,157 @@
+<script type='text/javascript'>
+	var plusNode = 'images/dhtmlgoodies_plus.gif';
+	var minusNode = 'images/dhtmlgoodies_minus.gif';
+
+	var nameOfCookie = 'dhtmlgoodies_expanded';
+	var initExpandedNodes ="";
+	function Get_Cookie(name) {
+	   var start = document.cookie.indexOf(name+"=");
+		   var len = start+name.length+1;
+		   if ((!start) && (name != document.cookie.substring(0,name.length))) return null;
+		   if (start == -1) return null;
+		   var end = document.cookie.indexOf(";",len);
+		   if (end == -1) end = document.cookie.length;
+		   return unescape(document.cookie.substring(len,end));
+		}
+		// This function has been slightly modified
+		function Set_Cookie(name,value,expires,path,domain,secure) {
+			expires = expires * 60*60*24*1000;
+			var today = new Date();
+			var expires_date = new Date( today.getTime() + (expires) );
+		    var cookieString = name + "=" +escape(value) +
+		       ( (expires) ? ";expires=" + expires_date.toGMTString() : "") +
+		       ( (path) ? ";path=" + path : "") +
+		       ( (domain) ? ";domain=" + domain : "") +
+		       ( (secure) ? ";secure" : "");
+		    document.cookie = cookieString;
+		}
+		function expandAll(){
+			var treeObj = document.getElementById('dhtmlgoodies_tree');
+			var images = treeObj.getElementsByTagName('IMG');
+			for(var no=0;no<images.length;no++){
+				if(images[no].className=='tree_plusminus' && images[no].src.indexOf(plusNode)>=0)expandNode(false,images[no]);
+			}
+		}
+		function collapseAll(){
+			var treeObj = document.getElementById('dhtmlgoodies_tree');
+			var images = treeObj.getElementsByTagName('IMG');
+			for(var no=0;no<images.length;no++){
+				if(images[no].className=='tree_plusminus' && images[no].src.indexOf(minusNode)>=0)expandNode(false,images[no]);
+			}
+		}
+		function expandNode(e,inputNode){
+			if(initExpandedNodes.length==0)initExpandedNodes=",";
+			if(!inputNode)inputNode = this;
+			if(inputNode.tagName.toLowerCase()!='img')inputNode = inputNode.parentNode.getElementsByTagName('IMG')[0];
+
+			var inputId = inputNode.id.replace(/[^\d]/g,'');
+
+			var parentUl = inputNode.parentNode;
+			var subUl = parentUl.getElementsByTagName('UL');
+
+			if(subUl.length==0)return;
+			if(subUl[0].style.display=='' || subUl[0].style.display=='none'){
+				subUl[0].style.display = 'block';
+				inputNode.src = minusNode;
+				initExpandedNodes = initExpandedNodes.replace(',' + inputId+',',',');
+				initExpandedNodes = initExpandedNodes + inputId + ',';
+
+			}else{
+				subUl[0].style.display = '';
+				inputNode.src = plusNode;
+				initExpandedNodes = initExpandedNodes.replace(','+inputId+',',',');
+			}
+			Set_Cookie(nameOfCookie,initExpandedNodes,60);
+			fleXenv.updateScrollBars();fleXenv.fleXcrollMain('InfoCroll');
+		}
+		function initTree(){
+			// Assigning mouse events
+			var parentNode = document.getElementById('dhtmlgoodies_tree');
+			var lis = parentNode.getElementsByTagName('LI');
+			for(var no=0;no<lis.length;no++){
+				var subNodes = lis[no].getElementsByTagName('UL');
+				if(subNodes.length>0){
+					lis[no].childNodes[0].style.visibility='visible';
+				}else{
+					lis[no].childNodes[0].style.visibility='hidden';
+				}
+			}
+			var images = parentNode.getElementsByTagName('IMG');
+			for(var no=0;no<images.length;no++){
+				if(images[no].className=='tree_plusminus')images[no].onclick = expandNode;
+			}
+
+			var aTags = parentNode.getElementsByTagName('A');
+			var cursor = 'pointer';
+			if(document.all)cursor = 'hand';
+			for(var no=0;no<aTags.length;no++){
+				aTags[no].onclick = expandNode;
+				aTags[no].style.cursor = cursor;
+			}
+			var initExpandedArray = initExpandedNodes.split(',');
+
+			for(var no=0;no<initExpandedArray.length;no++){
+				if(document.getElementById('plusMinus' + initExpandedArray[no])){
+					var obj = document.getElementById('plusMinus' + initExpandedArray[no]);
+					expandNode(false,obj);
+				}
+			}
+		}
+		</script>
+
+	<style>
+		.vscrollerbase { visibility: visible !important; background: url(js/flexcroll/scroll_bg.png) repeat-y; }
+		.scrollgeneric { line-height: 0px; font-size: 0px; position: absolute; top: 0; left: 0; }
+		.vscrollerbar { width: 24px; min-height:41px; height:41px; max-height:41px; background: url(js/flexcroll/scrollbar.png) no-repeat center center; }
+		.vscrollerbarbeg { height: 4px !important; width: 40px;  }
+		.vscrollerbarend {height: 4px;width: 40px;}
+	
+		.vscrollerbase {width: 24px;}
+		.vscrollerbasebeg {width: 24px; height: 4px !important;}
+		.vscrollerbaseend {height: 4px; width: 24px;}
+		.vscrollerbar, .hscrollerbar { padding: 2px; z-index: 2; }
+		.scrollerjogbox { width: 22px; height: 6px; top: auto; left: auto; bottom: 0px; right: 0px; background: #37917A; }
+		#flexcroll { width: 800px; height: 480px; overflow: auto; position: relative; float:left; }
+		#AnalogCroll { width: 750px; height: 480px; overflow: auto; position: relative; float:left; }
+		#AplicabilityPlace { width: 750px; height: auto; max-height:500px; overflow: auto; position: relative; }
+		#InfoCroll { width: 300px; height: 410px; overflow: auto; position: relative; float:left; margin-right:2px; margin-bottom:150px; border-right:1px solid #d7d7d7; }
+		#PartsCroll { width: 440px; height: 410px;position: relative; float:left;border-left:1px solid #d7d7d7; }
+		#AplicabilityPlace table {background-color: #CCC; width: 100%;}
+		#AplicabilityPlace td {background-color: #fff; padding: 3px; height: 23px; line-height: 20px;}
+	</style>
+    
+    <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.js"></script>
+	<script type='text/javascript' src="/js/jquery/slimScroll.js"></script>
+
+<div id="bchrome" style="width:100%; height:600px;"><div class="promo_bg">
+	<div id="bchrome_range" style="width:315px; height:575px; margin-top:12px; float:left; margin-right:20px;"><div class="range_w_bg">
+    <div class="range_w_tl"></div>
+    <div style="position:relative">
+	    <div class="range_nav" style="width:56px; height:550px; margin-top:10px; float:left; margin-right:10px;">
+	       <div {fast1}><a href="?dep=24&dep_up=4&dep_cur=13"><img src="/theme/images/icons/tasks.png" border=0 alt="" title=""><br />Заявки</a></div>
+        	<div {fast2}><a href="?dep=32&dep_up=4&dep_cur=14"><img src="/theme/images/icons/docs.png" border=0 alt="" title=""><br />Оплаты</a></div>
+    	    <div {fast3}><a href="?dep=31&dep_up=4&dep_cur=16"><img src="/theme/images/icons/calendar.png" border=0 alt="" title=""><br />Задачи</a></div>
+	        <div {fast4}><a href="?dep=1&dep_up=4&dep_cur=19"><img src="/theme/images/icons/delivery.png" border=0 alt="" title=""><br />Доставка</a></div>
+        </div>
+    	<div style="float:left;width:{width2}; height:550px;">{range_search_form}</div>
+    </div>
+    <div class="range_w_bl"></div>
+    </div></div>
+    <div id="bchrome" style="width:{width3}; height:575px; margin-top:12px; float:left;"><div class="range_work"><div id="flexcroll1" class="flexcroll1">
+    	<div id="range" class="range"><div id="loading" class="loading"></div><div id="range_list" class="range_list">{range_list}</div></div></div>
+        <div class="recomend">
+        	<div class="recomend_caption">Рекомедуем</div>
+        	<div>{recomend_list}</div>
+        </div>
+    </div></div>
+    <script type='text/javascript'>
+	$(document).ready(function() {
+		$('#flexcroll1').slimscroll({
+	    width: '800px', height: '480px', size: '10px', color: '#3484e3', distance: '0px', railVisible: true, railColor: '#ccc', railOpacity: 0.5, wheelStep: 10, allowPageScroll: false, disableFadeOut: true });
+});
+	</script>
+</div></div>
+<div id="bconnect" style="width:100%; height:9px;"></div>
+<div id="bchrome" style="width:100%; height:130px; margin-top:-1px;"><div class="promo_bg">
+	{bottom_side}
+</div></div>

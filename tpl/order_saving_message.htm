@@ -1,0 +1,87 @@
+<style>
+.tbl_head {
+ font-family: Arial; font-size: 13px; color: #000000; font-weight: bold; font-style: normal;
+ background-color: #AAAAA9;
+ border-color:#D9D9DA; border-style: solid;
+ border-left-width: 0px;
+ border-right-width: 1;
+ border-top-width: 1;
+ border-bottom-width: 1;
+ text-align: center; vertical-align: top;
+}
+table, td {font-family::Arial; }
+h2 {margin:0px;}
+</style>
+<input type="hidden" id="order_id" value="{order_id}" />
+<table border="0" width="750"  cellpadding="1" cellspacing="5" id="busket">
+	<tr>
+    	<td width="350">&nbsp;</td>
+        <td><h2 style="margin:0px;">ООО "Автолидер"</h2>
+        <div>Украина, г.Хмельницкий,<br />Пр.Мира 107/1<br />
+(0382)78-50-10</div></td>
+    </tr>
+    <tr><td colspan="2" height="3" bgcolor="#999999"></td></tr>
+    <tr>
+    	<td height="50"><h2>Заявка №IА-{order_id}</h2></td>
+        <td><h2>{data_time}</h2></td>
+    </tr>
+</table>
+<table border="0" width="750"  cellpadding="1" cellspacing="5" id="busket">
+	<tr valign="top">
+		<td width="150"><strong>Наименование</strong>:</td>
+		<td>{client_name}</td>
+		<td rowspan="4" width="19"></td>
+		<td width="150"><strong>Email</strong>:</td>
+		<td>{email}</td>
+	</tr>
+   	<tr valign="top">
+		<td><strong>Плательщик</strong>:</td>
+        <td>{client_union}</td>
+		<td><strong>Телефон</strong>:</td>
+		<td>{phone}</td>
+	</tr>
+	<tr valign="top">
+		<td><strong>Контактное лицо</strong></td>
+		<td>{contactPerson}</td>
+		<td>IP-адресс:</td>
+		<td>{remip}</td>
+	</tr>
+</table>
+<table width="750" border="0"><tr><td><div align="center">
+  <h2>Заказ</h2></div></td></tr></table>
+<table width="750" border="0" id="catalogue">
+	<tr align="center" bgcolor="#1372d0" height="38" style="font-size:18px; color:#ffffff;">
+		<td>№</td>
+        <td>Код</td>
+		<td>Наименование</td>
+		<td>Кол-во</td>
+		<td>Цена</td>
+		<td>Сумма</td>
+	</tr>
+	<tr><td colspan=6 class="dotted">&nbsp;</td></tr>
+	{busket}
+    <tr>
+    	<td colspan="5" align="right" class="t18">Общая стоимость: &nbsp; </td>
+        <td align="right" class="t22" width="140" style="color:#000;" bgcolor="#1372d0"><span id="SummBusket" style="color:#ffffff">{summ}</span> <span class="t18" style="color:#ffffff"> грн.</span> &nbsp;</td>
+    </tr>
+</table>
+<table border="0" width="750"  cellpadding="1" cellspacing="5" id="busket">
+	<tr valign="top"><td><strong>Примечание</strong></td></tr>
+	<tr><td>{more}</td></tr>
+    <tr valign="top"><td>Заявка отправлена:<strong>{author_send}</strong></td></tr>
+</table>
+<table width="750" border="0"><tr><td><div align="center">
+  <h2>Доставка и оплата</h2></div></td></tr></table>
+<table width="750" border="0" id="catalogue">
+	<tr valign="top">
+		<td width="150"><strong>Перевозчик</strong></td>
+		<td>{delivery}</td>
+		<td width="19"></td>
+		<td width="150"><strong>Вариант оплаты</strong>:</td>
+		<td>{payment}</td>
+	</tr>
+    <tr valign="top">
+		<td width="150"><strong>Адрес доставки</strong></td>
+		<td colspan="4">{address_sent}</td>
+	</tr>
+</table>

@@ -1,0 +1,56 @@
+<script language="JavaScript">
+<!--
+	function check_form(){
+		er=0;
+		if (document.all.passform.login.value==""){er=1;}
+		if (document.all.passform.email.value==""){er=1;}
+		if (document.all.passform.code.value==""){er=1;}
+		if (er==1){alert("Не заполнены все обязательные поля!");}
+		if (er==0){ document.all.passform.submit(); }
+	}
+-->
+</script>
+<table align="center" width="100%" border="0" id="page" cellpadding="0" cellspacing="0">
+	<tr valign="top">
+		<td width="250px" valign="top"><br>
+		<table width="95%" height="98%" border="0" cellpadding="0" cellspacing="0" align="center">
+			<tr><td>&nbsp;</td></tr>
+		</table>
+		</td>
+        <td width="5px"></td>
+		<td valign="top">
+		<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr><td height="37"><h1>Напоминание пароля</h1></td></tr>
+			<tr><td height="2"></td></tr>
+			<tr><td valign="top"><form method="post" name="passform" onsubmit="check_form(); return false;">
+<input type="hidden" name="dep" value="pass_forgot">
+<input type="hidden" name="w" value="send">
+<table align="center" width="60%" border=0 id="catalogue">
+	<tr>
+		<td colspan=2><p>Восстановить пароль могут только зарегистрированные пользователи. Для восстановления пароля система должна Вас предварительно идентифицировать.
+		<p>Для идентификации введите, пожалуйста, Ваш логин и е-mail.<p><i>Введите, пожалуйста, данные который Вы указывали при регистрации:</i><p><p></td>
+	</tr>
+	<tr>
+		<td><b>Логин:</b></td>
+		<td><input name="login" class="text" size="40"></td>
+	</tr>
+	<tr>
+		<td><b>Email:</b></td>
+		<td><input name="email" class="text" size="40"></td>
+	</tr>
+	<tr><td><br><br></td></tr>
+	<tr>
+		<td><b>Введите код</b></td>
+		<td><img src="codegen/codegen.php" border=0><p><input class="text" name="code"></td>
+	</tr>
+	<tr><td colspan=2><br><br></td></tr>
+	<tr>
+		<td></td>
+		<td><input type="submit" class="text" value="Напомнить"></td>
+	</tr>
+</table></form></td></tr>
+			<tr><td height="5">&nbsp;</td></tr>
+		</table>
+		</td>
+	</tr>
+</table>

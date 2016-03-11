@@ -1,0 +1,17 @@
+<form method="post" name="subscribe_form" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="dep_up" value="{dep_up}">
+<input type="hidden" name="dep_cur" value="{dep_cur}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="wn" value="{wn}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="subscribe_id" value="{subscribe_id}">
+
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td width="20%"><strong>Рассылка прайса:</strong></td><td>{data}</td></tr>
+    <tr><td width="20%"><strong>Прикрепляемые файлы:</strong></td><td>{file_list}</td></tr>
+    <tr><td width="20%"><br><strong>Группы рассылки:</strong></td><td>-Только клиентам<br>
+    <tr><td width="20%"><br><strong>Текст рассылки:</strong></td><td>{desc_form}</td></tr>
+	<tr><td colspan="2" align="right"><input type="submit" value="Отправить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table></form>

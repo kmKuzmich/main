@@ -1,0 +1,12 @@
+<form onsubmit="return false;" name="order_form">
+<table border="0" width="98%" align="center" id="BusketClient">
+	<tr><td align="center" colspan=2><h2>Примечание к заявке: {doc_num}</h2><br /></td></tr>
+	<tr>
+		<td valign="top" colspan=2><textarea name="more" id="more" style="width:98%; height:50px">{more}</textarea></td>
+	</tr>
+	<tr>
+    	<td align="left"><em>Примечание для визуального поиска заявки клиентом. Сотрудники компании АВТОЛИДЕР не видят этого примечания</em>. </td>
+    	<td align="right"><a href="#" onclick="saveOrderComment('{order_id}');" class="button_order shop">Сохранить</a> &nbsp; &nbsp;</td>
+	</tr> 
+</table>
+</form>

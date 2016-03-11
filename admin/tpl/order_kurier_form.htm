@@ -1,0 +1,12 @@
+<form name="kurier_form">
+<input type="hidden" name="kurier_id" id="kurier_id" value="{kurier_id}">
+<table border=0  align="center">
+    <tr><td>Служба доставки:</td><td><input type="text" name="kurier_kurier" id="kurier_kurier" value="{kurier_kurier}" style="width:300px;" /></td></tr>
+    <tr><td>ТТН:</td><td><input type="text" name="kurier_ttn" id="kurier_ttn" value="{kurier_ttn}" style="width:300px;" /></td></tr>
+    <tr><td>Цена доставки:</td><td><input type="text" name="kurier_price" id="kurier_price" value="{kurier_price}" style="width:300px;" /></td></tr>
+    <tr><td>SMS сообщение:</td><td><textarea name="kurier_message" id="kurier_message" style="width:300px; height:150px;">{kurier_message}</textarea></td></tr>
+	<tr>
+		<td align="left"><input type="button" value="Создать СМС" onClick="create_order_sms();"><input type="button" value="Отправить СМС" onClick="send_order_kurier_sms('{order_id}');"></td>
+        <td align="right"><input type="button" value="Сохранить" onClick="save_order_kurier_form('{order_id}');"></td>
+	</tr>
+</table></form>

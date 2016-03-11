@@ -1,0 +1,13 @@
+.vscrollerbase { visibility: visible !important; }
+.scrollgeneric { line-height: 1px; font-size: 1px; position: absolute; top: 0; left: 0; }
+.vscrollerbar { width: 36px; background: #5EC0A7 url(js/flexcroll/scrollbar.png) -36px 0px repeat-y; }
+.vscrollerbarbeg { height: 24px !important; width: 36px; background: url(js/flexcroll/scrollbar.png) -108px -32px no-repeat; }
+.vscrollerbarend {height: 24px;width: 36px;background: url(js/flexcroll/scrollbar.png) -108px 0px no-repeat;}
+.vscrollerbase {width: 36px;background: #D4F6F2 url(js/flexcroll/scrollbar.png) 0px 0px repeat-y;}
+.vscrollerbasebeg {width: 36px; height: 28px !important; background: url(js/flexcroll/scrollbar.png) -72px -28px no-repeat;}
+.vscrollerbaseend {height: 28px; width: 36px; background: url(js/flexcroll/scrollbar.png)  -72px 0px no-repeat;}
+.hscrollerbase { height: 20px; background-color: white; }
+.hscrollerbar { height: 20px; background-color: black; }
+.vscrollerbar, .hscrollerbar { padding: 28px; z-index: 2; }
+.scrollerjogbox { width: 36px; height: 16px; top: auto; left: auto; bottom: 0px; right: 0px; background: #37917A; }
+

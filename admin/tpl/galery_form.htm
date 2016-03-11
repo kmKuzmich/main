@@ -1,0 +1,30 @@
+<form method="post" name="galery_form" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="modue_page" value="{module_page}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="dep_up" value="{dep_up}">
+<input type="hidden" name="cur_id" value="{cur_id}">
+
+<input type="hidden" name="wn" value="{wn}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="gdep" value="{gdep}">
+<input type="hidden" name="theme" value="{theme}">
+<input type="hidden" name="foto_id" value="{foto_id}">
+<table width="100%" border="0" cellspacing="5">
+	<tr><td>{navigation}</td></tr>
+    <tr><td colspan="2"><hr></td></tr>
+	<tr><td colspan="2">
+    
+    
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td colspan="2" align="center"><h2>{galery_caption}</h2></td></tr>
+	<tr><td width="20%"><b>Назва:</b></td><td><input type="text" id="caption" name="caption" value="{caption}" style="width: 100%;"></td></tr>
+	<tr><td width="20%"><b>Фото:</b></td><td><input type="file" id="pic" name="pic"  style="width: 300px;">{img}</td></tr>
+    <tr><td width="20%"><b>Дата:</b></td><td><input type="text" id="data" name="data" value="{data}" style="width: 100px;">{calendar}</td></tr>
+    <tr><td width="20%"><b>Позиція:</b></td><td><input type="text" id="lenta" name="lenta" value="{lenta}" style="width: 100px;"></td></tr>
+	<tr><td colspan="2" align="right"><input type="submit" value="Зберегти"> <input type="reset" value="Відмінити" onclick="history.back(-1);"></td></tr>
+</table></form>
+
+    </td></tr>
+</table>

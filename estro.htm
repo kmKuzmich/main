@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<!--[if IE 7 ]>    <html class="ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie9" lang="en"> <![endif]--> 
+<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+    <head>
+	<title>Estro</title>
+	<!-- main stylesheets -->
+	<link rel="stylesheet" href="theme/css/960.css" />
+	<link rel="stylesheet" href="theme/css/skin.min.css" />
+	
+	
+	<!-- import jQuery -->
+	<script type="text/javascript" src="js/jquery/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery/preview.js"></script>
+	<script type="text/javascript" src="js/jquery/jquery.pixelentity.kenburnsSlider.min.js"></script>
+		
+	<!--specify size of slider-->
+	<style>		
+		.peKenBurns {
+       		width: 450px;
+       		height: 375px;
+		}
+	</style>
+	
+	<script>
+
+		jQuery(function($){
+			$(".peKenBurns").peKenburnsSlider({externalFont:true})
+		})
+		// for google fonts, handle captions sizing only after fonts are loaded
+		jQuery(window).load(function() {
+			$(".peKenBurns").each(function() {
+				$(this).data("peKenburnsSlider").fontsLoaded()
+			})
+		})
+		
+	</script>
+    
+    </head>
+   
+    <body id="preview1" class="clearfix">
+       <div>
+		<div id="wrapper"> 
+			<div class="peKenBurns" data-autopause="image" data-mode="kb" data-controls="always" data-shadow="enabled">
+			   <div data-delay="5" data-thumb="http://www.avtolider-ua.com/bml-2415-.jpg">
+			   <img src="http://www.avtolider-ua.com/bml-2415-.jpg" alt="Banner Image 1" />
+			   </div>
+               <div data-delay="5" data-thumb="http://www.avtolider-ua.com/bml-2415-.jpg">
+			   <img src="http://www.avtolider-ua.com/bml-2415-.jpg" alt="Banner Image 1" />
+			   </div>
+               <div data-delay="5" data-thumb="http://www.avtolider-ua.com/bml-2415-.jpg">
+			   <a class="video hd autoplay loop skiptonext" href="http://www.youtube.com/watch?v=lZOnrN4x0Zk"><img src="img/blank.png" data-src="http://www.avtolider-ua.com/bml-2415-.jpg" alt="Banner Image 1" /></a>
+			   </div>
+				 
+			</div>	
+			<!--end peKenBurns slider -->
+		 </div>
+		</div>
+    </body>
+	
+</html>

@@ -1,0 +1,20 @@
+<form method="post">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="modue_page" value="{module_page}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="w" value="show_model_menu">
+<input type="hidden" name="pst" value="search">
+<table border=0  align="center">
+	<tr>
+		<td width="150">Наименование: </td><td width="400"><input type="text" name="caption" value="{caption}" style="width: 100%;"></td>
+		<td width="200">Лучшая цена: </td><td><input type="checkbox" id="rp" name="rp" value="1" {rp_checked}></td>
+    </tr>
+	<tr><td>&nbsp;</td><td>&nbsp;</td>
+		<td>Спец. предложение</td><td><input type="checkbox" id="sp" name="sp" value="1" {sp_checked}></td>
+    </tr>
+    <tr><td>&nbsp;</td><td>&nbsp;</td>
+        <td>Расспродажа:</td><td><input type="checkbox" id="sl" name="sl" value="1" {sl_checked}></td></tr>
+	<tr>
+		<td colspan="4" align="right"><input type="button" value="Сбросить поиск" onclick='location.href="?module=6&module_page=5&file=catalogue"' /> &nbsp; <input type="submit" value="Поиск"></td>
+	</tr>
+</table></form>

@@ -1,0 +1,165 @@
+    <script language="javascript">
+	function show_solution(id){
+		if (document.getElementById("solution_1")){ document.getElementById("solution_1").style.visibility='hidden';document.getElementById("solution_1").style.position='absolute'; }
+		if (document.getElementById("solution_2")){ document.getElementById("solution_2").style.visibility='hidden';document.getElementById("solution_2").style.position='absolute'; }
+		if (document.getElementById("solution_3")){ document.getElementById("solution_3").style.visibility='hidden';document.getElementById("solution_3").style.position='absolute'; }
+		if (document.getElementById("solution_4")){ document.getElementById("solution_4").style.visibility='hidden';document.getElementById("solution_4").style.position='absolute'; }
+		if (document.getElementById("solution_5")){ document.getElementById("solution_5").style.visibility='hidden';document.getElementById("solution_5").style.position='absolute'; }
+		if (document.getElementById("solution_"+id)){
+		document.getElementById("solution_"+id).style.position="absolute";document.getElementById("solution_"+id).style.visibility="visible";
+		 document.getElementById("solution_"+id).style.top="-258px";document.getElementById("solution_"+id).style.left="0px"; }
+	}
+</script>
+
+    <div id="solutions" style="position:relative;">
+    <div id="solution_1" style="position:relative; visibility:hidden; top:0px; left:0px;">
+    <table width="100%" height="514" cellpadding="0" cellspacing="0" border="0" id="sol">
+    	<tr>
+            <td width="243" height="514" rowspan="3" background="theme/images/tech_sel_bg.jpg" valign="top" style="color:#FFF;">
+            <table width="99%" border="0" height="510" align="center" style="color:#FFF;">
+            	<tr><td align="right" valign="top" height="30"><a href="?"><img src="theme/images/tech_logo.png" border="0" /></a><br /></td></tr>
+                <tr><td height="120"><div align="center">{solution_1_main}</div></td></tr>
+                <tr><td><div style="margin-left:15px;">{solution_1_link}</div></td></tr>
+                <tr><td height="20" valign="bottom" align="center"><a style="color:#FFF;" href="http://www.omega.km.ua">www.omega.km.ua</a></td></tr>
+            </table>
+            </td>
+            <td width="248" height="255" background="theme/images/solutions/tech_ban_sm_1.jpg">&nbsp;</td>
+            <td width="748" height="255" colspan="3" background="theme/images/solutions/tech_ban_wide_1.jpg">&nbsp;</td>
+        </tr>
+        <tr height="50">
+        	<td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('2');" align="center"><a href="javascript:show_solution('2');">{solution_2}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('3');" align="center"><a href="javascript:show_solution('3');">{solution_3}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('4');" align="center"><a href="javascript:show_solution('4');">{solution_4}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('5');" align="center"><a href="javascript:show_solution('5');">{solution_5}</a></td>
+        </tr>
+        <tr valign="top" style="color:#ffffff; font-size:12px;">
+        	<td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('2');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_2_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('3');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_3_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('4');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_4_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('5');"><div style="height:195px;margin-left:5px; margin-right:5px;">{solution_5_desc}</div></td>
+        </tr>
+    </table></div>
+    <div id="solution_2" style="position:absolute; visibility:hidden; top:0px; left:0px;">
+	<table width="100%" height="514" cellpadding="0" cellspacing="0" border="0" id="sol">
+    	<tr>
+            <td width="248" height="255" background="theme/images/solutions/tech_ban_sm_2.jpg"></td>
+            <td width="243" rowspan="3" background="theme/images/tech_sel_bg.jpg" valign="top">
+           	<table width="99%" border="0" height="510" align="center" style="color:#FFF;">
+            	<tr><td align="right" valign="top" height="30"><a href="?"><img src="theme/images/tech_logo.png" border="0" /></a><br /></td></tr>
+                <tr><td height="120"><div align="center">{solution_2_main}</div></td></tr>
+                <tr><td><div style="margin-left:15px;">{solution_2_link}</div></td></tr>
+                <tr><td height="20" valign="bottom" align="center"><a style="color:#FFF;" href="http://www.omega.km.ua">www.omega.km.ua</a></td></tr>
+            </table>
+            </td>
+            </td>
+            <td width="748" height="255" colspan="3" background="theme/images/solutions/tech_ban_wide_2.jpg"></td>
+        </tr>
+        <tr>
+        	<td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('1');" align="center"><a href="javascript:show_solution('1');">{solution_1}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('3');" align="center"><a href="javascript:show_solution('3');">{solution_3}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('4');" align="center"><a href="javascript:show_solution('4');">{solution_4}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('5');" align="center"><a href="javascript:show_solution('5');">{solution_5}</a></td>
+        </tr>
+        <tr valign="top" style="color:#ffffff; font-size:12px;">
+        	<td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('1');"><div style="height:195px; margin-left:5px; margin-right:5px;">{solution_1_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('3');"><div style="height:195px; margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_3_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('4');"><div style="height:195px; margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_4_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('5');"><div style="height:195px; margin-left:5px; margin-right:5px;">{solution_5_desc}</div></td>
+        </tr>
+    </table>
+    </div>
+    <div id="solution_3" style="position:absolute; visibility:hidden; top:0px; left:0px;">
+    <table width="100%" height="514" cellpadding="0" cellspacing="0" border="0" id="sol">
+    	<tr>
+            <td width="500" height="255" colspan="2" background="theme/images/solutions/tech_ban_wide_3.jpg" style="background-position:left;"></td>
+            <td width="243" rowspan="3" background="theme/images/tech_sel_bg.jpg" valign="top">
+           	<table width="99%" border="0" height="510" align="center" style="color:#FFF;">
+            	<tr><td align="right" valign="top" height="30"><a href="?"><img src="theme/images/tech_logo.png" border="0" /></a><br /></td></tr>
+                <tr><td height="120"><div align="center">{solution_3_main}</div></td></tr>
+                <tr><td><div style="margin-left:15px;">{solution_3_link}</div></td></tr>
+                <tr><td height="20" valign="bottom" align="center"><a style="color:#FFF;" href="http://www.omega.km.ua">www.omega.km.ua</a></td></tr>
+            </table>
+            </td>
+            <td width="248" height="255" background="theme/images/solutions/tech_ban_wide_3.jpg" style="background-position:right;"></td>
+            <td width="248" height="255" background="theme/images/solutions/tech_ban_sm_3.jpg"></td>
+        </tr>
+        <tr>
+        	<td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('1');" align="center"><a href="javascript:show_solution('1');">{solution_1}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('2');" align="center"><a href="javascript:show_solution('2');">{solution_2}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('4');" align="center"><a href="javascript:show_solution('4');">{solution_4}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('5');" align="center"><a href="javascript:show_solution('5');">{solution_5}</a></td>
+        </tr>
+        <tr valign="top" style="color:#FFFFFF; font-size:12px;">
+        	<td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('1');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_1_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('2');"><div style="height:195px;margin-left:5px; margin-right:5px;">{solution_2_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('4');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_4_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('5');"><div style="height:195px;margin-left:5px; margin-right:5px;">{solution_5_desc}</div></td>
+        </tr>
+    </table>
+    </div>
+    <div id="solution_4" style="position:absolute; visibility:hidden; top:0px; left:0px;">
+    <table width="100%" height="514" cellpadding="0" cellspacing="0" border="0" id="sol">
+    	<tr>
+            <td width="748" height="255" colspan="3" background="theme/images/solutions/tech_ban_wide_4.jpg"></td>
+            <td width="243" rowspan="3" background="theme/images/tech_sel_bg.jpg" valign="top">
+			<table width="99%" border="0" height="510" align="center" style="color:#FFF;">
+            	<tr><td align="right" valign="top" height="30"><a href="?"><img src="theme/images/tech_logo.png" border="0" /></a><br /></td></tr>
+                <tr><td height="120"><div align="center">{solution_4_main}</div></td></tr>
+                <tr><td><div style="margin-left:15px;">{solution_4_link}</div></td></tr>
+                <tr><td height="20" valign="bottom" align="center"><a style="color:#FFF;" href="http://www.omega.km.ua">www.omega.km.ua</a></td></tr>
+            </table>
+            </td>
+            <td width="248" height="255" background="theme/images/solutions/tech_ban_sm_4.jpg"></td>
+        </tr>
+        <tr>
+        	<td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('1');" align="center"><a href="javascript:show_solution('1');">{solution_1}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('2');" align="center"><a href="javascript:show_solution('2');">{solution_2}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('3');" align="center"><a href="javascript:show_solution('3');">{solution_3}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('5');" align="center"><a href="javascript:show_solution('5');">{solution_5}</a></td>
+        </tr>
+        <tr valign="top" style="color:#ffffff; font-size:12px;">
+        	<td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('1');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_1_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('2');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_2_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('3');"><div style="height:195px;margin-left:5px; margin-right:5px;">{solution_3_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('5');"><div style="height:195px;margin-left:5px; margin-right:5px;">{solution_5_desc}</div></td>
+        </tr>
+    </table>
+    </div>
+    <div id="solution_5" style="position:absolute; visibility:hidden; top:0px; left:0px;">
+    <table width="100%" height="514" cellpadding="0" cellspacing="0" border="0" id="sol">
+    	<tr>
+            <td width="748" height="255" colspan="3" background="theme/images/solutions/tech_ban_wide_5.jpg"></td>
+        	<td width="248" height="255" background="theme/images/solutions/tech_ban_sm_5.jpg"></td>
+            <td width="243" rowspan="3" background="theme/images/tech_sel_bg.jpg" valign="top">
+           	<table width="99%" border="0" height="510" align="center" style="color:#FFF;">
+            	<tr><td align="right" valign="top" height="30"><a href="?"><img src="theme/images/tech_logo.png" border="0" /></a><br /></td></tr>
+                <tr><td height="120"><div align="center">{solution_5_main}</div></td></tr>
+                <tr><td><div style="margin-left:15px;">{solution_5_link}</div></td></tr>
+                <tr><td height="20" valign="bottom" align="center"><a style="color:#FFF;" href="http://www.omega.km.ua">www.omega.km.ua</a></td></tr>
+            </table>
+            </td>
+        </tr>
+        <tr>
+        	<td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('1');" align="center"><a href="javascript:show_solution('1');">{solution_1}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('2');" align="center"><a href="javascript:show_solution('2');">{solution_2}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('3');" align="center"><a href="javascript:show_solution('3');">{solution_3}</a></td>
+            <td width="248" height="50" bgcolor="#fed325" onmouseover="show_solution('4');" align="center"><a href="javascript:show_solution('4');">{solution_4}</a></td>
+        </tr>
+        <tr valign="top" style="color:#ffffff; font-size:12px;">
+        	<td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('1');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_1_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('2');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_2_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('3');"><div style="height:195px;margin-left:5px; margin-right:5px; border-right:1px dotted #FFF;">{solution_3_desc}</div></td>
+            <td width="248" height="209" background="theme/images/tech_bot_bg.jpg" onmouseover="show_solution('4');"><div style="height:195px;margin-left:5px; margin-right:5px;">{solution_4_desc}</div></td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    <script>
+    function randomNumber (m,n){
+	  m = parseInt(m);
+	  n = parseInt(n);
+	  return Math.floor( Math.random() * (n - m + 1) ) + m;
+	}
+	var start=randomNumber (1,5);
+	setTimeout("show_solution(start)",100);
+    </script>

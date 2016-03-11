@@ -1,0 +1,100 @@
+<div id="ForgetForm" class="AlertWindow" style="position:absolute; left:-600px; top:200px; width:570px; z-index:92000; visibility:hidden;"><br /><br />
+<form method="post"><input type="hidden" name="forget_form" value="auth">
+<table width="100%" border="0" cellpadding="4" cellspacing="2" class="AlertTable">
+	<tr>
+    	<td align="right"></td>
+        <td class="t30_blu">Забыли пароль?<br /></td>
+    </tr>
+    <tr><td colspan="2" class="comment">Для восстановления пароля введите, пожалуйста, Ваш е-mail, который Вы указывали при регистрации.</td></tr>
+    <tr><td colspan="2"><span id="ForgetError" class="error"></span></td></tr>
+    <tr>
+		<td align="right" width="25%">Ваш E-mail:</td>
+		<td><input type="text" id="ForgetEmail" value="" class="inpt" style="width:400px;"></td>
+	</tr>
+    <tr>
+    	<td></td>
+        <td><a href="#" onclick="SendAcountInfo();" class="button_order shop" style="font-size:22px;">Напомнить</a></td>
+    </tr>
+    <tr><td></td><td><br /><a href="javascript:showRegistrationForm();">Регистрация</a> </td></tr>
+</table></form><br /><br />
+	<div style="position:absolute; right:15px; top:15px;"><a href="javascript:closeForgetForm();"><img src="theme/images/closeAuthForm.png" border="0" alt="Закрыть" title="Закрыть" /></a></div>
+</div>
+<div id="ForgetAnswerForm" class="AlertWindow" style="position:absolute; left:-600px; top:200px; z-index:92000; visibility:hidden;"><br /><br />
+<table width="100%" border="0" cellpadding="4" cellspacing="2" class="AlertTable">
+    <tr><td class="comment" align="center"><br><br>Пароль отправлен Вам на Электронную почту<br><br></td></tr>
+    
+</table>
+<br /><br />
+	<div style="position:absolute; right:15px; top:15px;"><a href="javascript:closeForgetAnswerForm();"><img src="theme/images/closeAuthForm.png" border="0" alt="Закрыть" title="Закрыть" /></a></div>
+</div>
+
+<div id="RegistrationForm" class="AlertWindow" style="position:absolute; left:-400px; top:200px; width:570px; z-index:92000; visibility:hidden;"><br /><br />
+<form method="post" onsubmit="AuthAcount();return false;">
+<input type="hidden" id="errorEmail" name="errorEmail" value="0">
+<table width="100%" border="0" cellpadding="4" cellspacing="2" class="AlertTable">
+	<tr>
+    	<td align="right"></td>
+        <td class="t30_blu">Регистрация<br /></td>
+    </tr>
+    <tr><td colspan="2" align="center"><span id="RegError" class="error"></span></td></tr>
+    <tr>
+		<td align="right" width="25%">Тип клиента:</td> 
+		<td><span id="RegActivity_place"></span></td>
+	</tr>
+    <tr><td></td><td class="comment" style="font-size:12px; font-style:italic;">Важно - правильно указать тип клиента для дальнейшей работы с менеджерами по заказам и присвоения ценовой категории!</td></tr>
+    <tr>
+		<td align="right" width="25%">Ваш E-mail:</td>
+		<td><input type="text" id="RegEmail" value="" onChange="checkClientEmail(this.value);" class="inpt" style="width:400px;"><br><span id="emailStatus"></span></td>
+	</tr>
+    <tr>
+		<td align="right" width="25%">Ваше имя (Организация):</td>
+		<td><input type="text" id="RegName" value="" class="inpt" style="width:400px;"></td>
+	</tr>
+    <tr>
+		<td align="right" width="25%">Область:</td>
+        <td><span id="RegState_place"></span></td>
+	</tr>
+    <tr>
+		<td align="right" width="25%">Город проживания:</td> 
+		<td><span id="RegCity_place"><select id='RegCity_form' name='RegCity_form' style="width:400px;"></select></span></td>
+	</tr>
+    <tr><td></td><td><input name="new_city" id="new_city" class="input-text" type="text" value="" style="width:400px;position:absolute;visibility:hidden;"></td></tr>
+    <tr>
+		<td align="right" width="25%">Адрес:</td>
+		<td><input type="text" id="RegAddress" value="" class="inpt" style="width:400px;"></td>
+	</tr>
+    <tr>
+		<td align="right" width="25%">Номер телефона:</td>
+		<td><input type="text" id="RegPhone" value="380" onkeyup="checkPhone(this)" onchange="checkPhone(this)" class="inpt" style="width:400px;"></td>
+	</tr>
+    <tr>
+    	<td></td><td>
+		<script>var RecaptchaOptions = {theme : 'clean',tabindex : 2};</script>
+		<script type="text/javascript" src="http://www.google.com/recaptcha/api/challenge?k=6LcepdkSAAAAAIOcL-HphDNHWLGJ0e7qY3HtkDPu"> </script>
+		<noscript>
+		<iframe src="http://www.google.com/recaptcha/api/noscript?k=6LcepdkSAAAAAIOcL-HphDNHWLGJ0e7qY3HtkDPu" height="300" width="300" frameborder="0"></iframe>
+
+    <textarea name="recaptcha_challenge_field" rows="3" cols="40">
+    </textarea>
+    <input type="hidden" name="recaptcha_response_field"
+        value="manual_challenge">
+  </noscript>
+       
+        </td>
+    </tr>
+    <tr>
+    	<td></td>
+        <td><a href="#" onclick="SaveRegistration();" class="button_order shop" style="font-size:22px;">Регистрация</a></td>
+    </tr>
+</table></form><br /><br />
+	<div style="position:absolute; right:15px; top:15px;"><a href="javascript:closeRegistrationForm();"><img src="theme/images/closeAuthForm.png" border="0" alt="Закрыть" title="Закрыть" /></a></div>
+</div>
+<div id="RegistrationAnswerForm" class="AlertWindow" style="position:absolute; left:-600px; top:200px; width:570px; z-index:92000; visibility:hidden;"><br /><br />
+<table width="100%" border="0" cellpadding="4" cellspacing="2" class="AlertTable">
+    <tr><td class="comment" align="center" id="RegistrationAnswer"></td></tr>
+    <tr>
+        <td align="center">Регистрационная информация, а также параметры доступа, отправлены Вам на электронную почту!</td>
+    </tr>
+</table><br /><br />
+	<div style="position:absolute; right:15px; top:15px;"><a href="javascript:closeRegistrationAnswerForm();"><img src="theme/images/closeAuthForm.png" border="0" alt="Закрыть" title="Закрыть" /></a></div>
+</div>

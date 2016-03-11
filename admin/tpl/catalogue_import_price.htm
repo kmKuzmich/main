@@ -1,0 +1,38 @@
+<form method="post" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="modue_page" value="{module_page}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="conf" value="true">
+<table width="100%" border="0" cellspacing="5">
+	<tr><td>{navigation}</td></tr>
+    <tr><td colspan="2"><hr></td></tr>
+	<tr><td colspan="2">
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td colspan="2" align="center"><h2>Загрузить прайс</h2></td></tr>
+    <tr><td colspan="2" align="right"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table><br />  
+<table width="100%" border="0">
+	<tr><td width="10%">Поставщик:</td><td>{provider_form}</td></tr>
+	<tr><td width="10%">Наименование (для шаблона):</td><td><input type="text" id="provider_caption" name="provider_caption" value="{provider_caption}"  style="width: 500px;"></td></tr>
+    <tr><td width="10%">Номер листа прайса:</td><td><input type="text" name="sheet" value="{sheet}"  style="width: 100px;"></td></tr>
+    <tr><td width="10%">Начинать считывать со строки №:</td><td><input type="text" id="start_from_line" name="start_from_line" value="{start_from_line}"  style="width: 100px;"></td></tr>
+    <tr><td><br></td></tr>
+    <tr><td width="10%">Валюта прайса:</td><td>ГРН</td></tr>
+    <tr><td width="10%">Название товара:</td><td><input type="text" name="caption" value="{caption}"  style="width: 500px;"></td></tr>
+    <tr><td width="10%">Код товара поставщика:</td><td><input type="text" name="code" value="{code}"  style="width: 100px;"></td></tr>
+    <tr><td><br></td></tr>
+    <tr><td width="10%">Цена1:</td><td><input type="text" name="price1" value="{price1}"  style="width: 100px;"></td></tr>
+    <tr><td width="10%">Цена2:</td><td><input type="text" name="price2" value="{price2}"  style="width: 100px;"></td></tr>
+    <tr><td width="10%">Цена3:</td><td><input type="text" name="price3" value="{price3}"  style="width: 100px;"></td></tr>
+    <tr><td width="10%">Цена4:</td><td><input type="text" name="price4" value="{price4}"  style="width: 100px;"></td></tr>
+    <tr><td width="10%">Цена5:</td><td><input type="text" name="price5" value="{price5}"  style="width: 100px;"></td></tr>
+	<tr><td><br></td></tr>
+	<tr><td><br></td></tr>
+    <tr><td width="10%">Файл с прайсом:</td><td><input type="file" name="file" value="{file}"  style="width: 500px;"></td></tr>
+   	<tr><td><br></td></tr>
+	<tr><td colspan="2" align="left"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table>
+    </td></tr>
+</table>
+</form> 

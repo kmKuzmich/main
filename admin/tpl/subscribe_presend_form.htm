@@ -1,0 +1,23 @@
+<form method="post" name="subscribe_form" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="dep_up" value="{dep_up}">
+<input type="hidden" name="dep_cur" value="{dep_cur}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="wn" value="{wn}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="subscribe_id" value="{subscribe_id}">
+
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td width="20%"><strong>Заголовок рассылка:</strong></td><td>{caption}</td></tr>
+    <tr><td width="20%"><strong>Статус рассылки:</strong></td><td>{status}</td></tr>
+    <tr><td width="20%"><strong>Дата создания:</strong></td><td>{data}</td></tr>
+	<tr><td width="20%"><strong>Описание:</strong></td><td>{desc}</td></tr>
+    <tr><td width="20%"><strong>Прикрепить файлы:</strong></td><td>{file_list}</td></tr>
+    <tr><td width="20%"><br><strong>Группы рассылки:</strong></td><td>
+    <input type="checkbox" name="all" value="1">-Всем<br>
+	<input type="checkbox" name="subscribers" value="1">-Только подписчикам<br>
+    <input type="checkbox" name="clients" value="1">-Только клиентам<br>
+    </td></tr>
+	<tr><td colspan="2" align="right"><input type="submit" value="Отправить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table></form>

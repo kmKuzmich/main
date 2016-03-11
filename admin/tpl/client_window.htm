@@ -1,0 +1,33 @@
+<table width="800" height="600" border="0">
+    <tr height="50">
+		<td colspan="30" align="center"><h3>Реестр клиентов</h3></td>
+	</tr>
+    <tr height="30">
+		<td colspan="30">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
+	        <td width="100">Быстрый посик</td>
+            <td><input type="text" name="asearch" style="width:100%" onkeyup="search_client_window(this.value)"></td>
+        </tr></table>
+        </td>
+	</tr>
+    <tr height="30">
+		<td colspan="30">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
+	        <td><a href="javascript:new_client();">Новый клиент</a></td>
+            <td align="right">{navigation}</td>
+        </tr></table>
+        </td>
+	</tr>
+    <tr><td colspan="30" valign="top">
+		<div id="list_client_result">{list_of_client}</div>
+    </td></tr>
+    <tr><td colspan="30"></td></tr>
+	<tr height="30">
+		<td colspan="30">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
+	        <td><a href="javascript:new_catalogue();">Новое клиент</a></td>
+            <td align="right">{navigation}</td>
+        </tr></table>
+        </td>
+	</tr>
+</table>

@@ -1,0 +1,69 @@
+<script language="javascript" src="js/feedback/feedback.js"></script>
+<style>
+div.feedback-form{ margin: 0 0 5px 0;width: 100%; }
+div.feedback-form tr{ height: 25px;} 
+div.feedback-form .input-text{ font-size: 14px; width: 450px;}
+div.feedback-form .textarea{ font-size: 14px;height: 190px; width: 450px;}
+div.feedback-form .comment{ color:#CCC; font-size: 11px; vertical-align:top;}
+div.feedback-form .submit{ font-size: 14px; height:25px; width:100px; }
+div.feedback-form sup.zs{ color:#F00; font-size: 8px; }
+</style>
+<div class="feedback-form">
+<h3>Уважаемы посетители!</h3><br />
+<p>Ваши вопросы, пожелания, замечания либо коментарии касательно работы компании, веб-сайта, пожалуйста, присылайте с допомощью приведенной ниже формы. Мы будем рады ответить Вам.</p>
+
+<p><strong>Внимание! Проверьте Ваш электронный адрес! От точности зависит возможность отправки Вам ответа.</strong></p>
+<blockquote>
+<p>Если Вы&nbsp;не&nbsp;имеете собственного электронного адреса, предлагаем:</p>
+<ul>
+	<li>создать для связи собственный почтовый адрес на&nbsp;любом почтовом сервере;</li>
+	<li>обратитесь с Вашим вопросом по телефону <strong><nobr class="phone">(0382) 78-50-10</nobr></strong>.</li>
+</ul>
+</blockquote>
+<font color="#ff0000"><strong>*</strong> - обязательные к заполненнию поля. </font>
+
+<form method="post" id="SubmitForm" name="SubmitForm" onsubmit="SubmitForm(); return false;">
+<input type="Hidden" name="conf" value="true">
+<table border="0" cellpadding="2" cellspacing="5" height="170" width="98%" align="center" style="border:1px dashed #CCC;">	
+	<tr>
+		<td width="20%" class="field">Ваше имя<sup class="zs" id="zs_name">*</sup>:</td>
+		<td width="80%"><input name="name" id="name" class="input-text" type="text" onkeyup="checkField(this);" onchange="checkField(this);"></td>
+	</tr>
+	<tr>
+		<td class="field">Электронный адрес<sup class="zs" id="zs_email">*</sup>:</td>
+		<td><input name="email" id="email" class="input-text" type="text" onkeyup="checkField(this);" onchange="checkField(this);"></td>
+	</tr>
+    <tr><td></td><td class="comment" valign="top">Ответ будет отправлен на указаный адрес</td></tr>
+    <tr>
+		<td class="field">Телефон:</td>
+		<td><input name="phone" id="phone" value="+38" class="input-text"></td>
+	</tr>
+    <tr><td></td><td class="comment" valign="top">Укажите, если Вы желаете получить ответ в телефонном режиме</td></tr>
+	<tr>
+		<td class="field">Тема обращения:</td>
+		<td><select size="1" name="theme" class="input-text">
+        <option value="Работа компании"> Работа компании </option>
+        <option value="Работа сайта"> Работа сайта </option>
+        <option value="Работа интернет магазина"> Работа интернет магазина </option>
+        <option value="Общие вопросы"> Общие вопросы </option>
+        <option value="Отзывы и предложения"> Отзывы и предложения </option>
+        <option value="Другое"> Другое </option>
+		</select></td>
+	</tr>
+	<tr>
+		<td class="field">Вопрос<sup class="zs" id="zs_desc">*</sup>:</td>
+		<td><textarea name="desc" id="desc" class="textarea" rows="10" onkeyup="checkField(this);" onchange="checkField(this);"></textarea></td>
+	</tr>
+    <tr>
+		<td class="field"></td>
+		<td><script>
+var RecaptchaOptions = {
+   theme : 'clean',
+   tabindex : 2
+};
+</script>
+    <div style="padding:0px; margin:0px;">{recapcha}</div></td>
+	</tr>
+    <tr><td></td><td align="left"><input value="Отправить" type="submit" class="submit" id="submit" disabled="disabled"></td></tr>
+</table></form>
+</div>

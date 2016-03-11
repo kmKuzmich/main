@@ -1,0 +1,36 @@
+<input type="hidden" id="model" value="{model}">
+<input type="hidden" id="model_price" value="{model_price}">
+<table width="900" border="0" style="color:#000">
+	<tr> 
+    	<td colspan="6" style="font:normal 24px Tahoma, Geneva, sans-serif; color:#268cc8;">Добавление к заявке <span id="orders_list_place">{orders_list}</span> <input type="button" class="button_buy" value="+1 заявка" {hidden} onclick="PlusOneOrder();"></td>
+    </tr>
+    <tr>
+    	<td width="190" style="font:bold 16px Arial, Helvetica, sans-serif;">Код</td>
+        <td width="500" style="font:bold 16px Arial, Helvetica, sans-serif;">Товар</td>
+        <td width="150" style="font:bold 18px Arial, Helvetica, sans-serif;"> &nbsp; &nbsp; Количество</td>
+        <td width="150" align="center" style="font:bold 18px Arial, Helvetica, sans-serif;">Сумма</td>
+   		<td width="50" align="center">&nbsp;</td>   
+    </tr>
+    <tr><td colspan="6" height="1" bgcolor="#6e6e6e"></td></tr>
+    <tr>
+        <td width="190">{code}</a></td>
+        <td width="360">{caption} - <span>{price}</span><span class="cash">{cash}</span></td>
+        <td> <img src="theme/images/minus.png" border="0" alt="-1" title="-1" style="cursor:pointer;" onclick="minusOne('{model}');" /><input type="text" id="model_kol" value="{model_kol}" class="inpt" style="width:40px; text-align:right" onchange="checkKol(this)" onkeyup="checkKol(this)"> шт. <img src="theme/images/plus.png" border="0" alt="+1" title="+1" style="cursor:pointer;" onclick="plusOne('{model}');" /></td>
+        <td align="center"><span id="model_summ" class="">{summ}</span> {cash}</td>
+        <td align="center"><input type="button" class="button_buy" value="В заявку" onclick="SaveModelBusket('{model}');"></td>
+    </tr>
+    <tr><td colspan="6" height="1" bgcolor="#6e6e6e"></td></tr>
+    <tr height="40" valign="top">
+    	<td colspan="6">
+        <a onclick="location.href='?dep=busket';" class="button_buy formalize" style="font: normal 14px/22px Arial, Helvetica; color:#FFF;">Просмотреть заявку</a> &nbsp; &nbsp;
+        <a href="javascript:closeBusketForm();" class="pseudo">Продолжить формирование</a>
+        </td>
+    </tr>
+    <tr valign="top" style="border-top:1px solid #CCC;">
+    	<td colspan="3">{sklad}</td>
+    	<td colspan="3" align="right">{image}</td>
+    </tr>
+    <tr height="40" valign="top">
+    	<td colspan="6">{action_info}</td>
+    </tr>
+</table>

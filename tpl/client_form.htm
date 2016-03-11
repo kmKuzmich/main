@@ -1,0 +1,20 @@
+        <div id="auth_pad">
+			<table width="100%" align="center" border="0" cellpadding="1" cellspacing="0" style="font-size:12px;">
+            	<tr><td colspan="2" style="font-size:15px; color:#f4f4f4; padding-left:15px;">Приветствуем Вас</td></tr>
+                <tr><td colspan="2"><span id="AuthError" style="color:#F00; font-size:11px;"></span></td></tr>
+                <tr><td colspan="2"><input type="submit" class="button_enter" value="Выход" onclick="LogOutAcount();" />
+                	<img src="theme/images/client_icon.png" border="0" hspace="3" align="left">Код: {code}<br />
+					<strong>{client_name}</strong></td></tr>
+                <tr><td colspan="2">
+                <div class="client_form">
+                	Долг: <span style="color:green;">{saldo} грн</span><br />
+                    {sDolg}
+                    Ближ.дата платежа: {nearData}<br />
+                    Сумма платежа: {nearSumm} грн<br />
+                    <!--Кредит: {kredit} грн<br />
+                    Срок кредита: {days} дней<br />-->
+                </div>
+                </td></tr>
+            </table>
+            <div id="messageBox"></div>
+		</div>

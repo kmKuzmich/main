@@ -1,0 +1,32 @@
+<script src="js/callback/callback.js"></script>
+<form method="post" name="feed_form" onsubmit="check_form();return false;">
+<input type="Hidden" name="dep" value="callback">
+<input type="Hidden" name="conf" value="true">
+
+<table border="0" cellpadding="0" cellspacing="0" height="170" width="80%" align="center">	
+	<tr>
+		<td colspan="2">
+			<p>У Вас есть вопрос, ответ на который Вы не нашли на сайте? Обратитесь напрямую к нашим консультантам, специализирующимся в той или иной области!</p>
+			<p>Для более быстрой обработки Вашего запроса опишите, пожалуйста, в поле «сообщение» его предмет и не забудьте указать Ваши координаты (фамилию, имя, отчество, контактный телефон), а также удобное для звонка время, чтобы наши специалисты могли связаться с Вами для ответа на Ваш вопрос.</p>
+			<br>
+		</td>
+	</tr>
+	<tr>
+		<td width="14%" class="field">Ваше имя:</td>
+		<td width="35%"><input name="name" id="name" size="21" type="text"></td>
+	</tr>
+	<tr>
+		<td class="field">Ваш телефон:</td>
+		<td><input name="phone" id="phone" size="21" type="text"></td>
+	</tr>
+    <tr>
+		<td class="field">Время звонка:</td>
+		<td><input name="time_call" id="time_call" size="21" type="text"></td>
+	</tr>
+	<tr>
+		<td class="field">Сообщение:</td>
+		<td align="right"><textarea name="desc" id="desc" style="width:100%" rows="7"></textarea></td>
+	</tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
+    <tr><td colspan="2" align="center"><input value="Отправить" type="submit"></td></tr>
+</table></form>

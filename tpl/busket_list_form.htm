@@ -1,0 +1,15 @@
+<script language="JavaScript" src="js/shop/busket.js"></script>
+<form onsubmit="save_list_busket_form(); return false;">
+<input type="hidden" name="model" id="model" value="{model}">
+<table width="100px" border="0">
+	<tr><td colspan="2" align="right" class="write"><div class="header2">Заказ товара:</div></td></tr>
+	<tr><td colspan="2" align="left" class="write"><div class="header2">{permit}</div></td></tr>
+	<tr valign="top">
+		<td>Кол-во: </td>
+		<td><input type="text" name="count" id="count" value="1" style="width:40px; text-align:right;"></td>
+	</tr>
+	<tr valign="top">		
+		<td align="right" colspan="2"><input type="submit" value="В корзину"></td>
+	</tr>
+</table>
+</form>

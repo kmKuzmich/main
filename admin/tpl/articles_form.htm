@@ -1,0 +1,25 @@
+<script src="js/articles/articles.js"></script>
+<form method="post" name="articles_form" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="dep_up" value="{dep_up}">
+<input type="hidden" name="dep_cur" value="{dep_cur}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="wn" value="{wn}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="theme_id" value="{theme_id}">
+<input type="hidden" name="articles_id" value="{articles_id}">
+
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td colspan="2" align="center"><h1>{wcap}</h1></td></tr>
+	<tr><td width="20%"><strong>Заголовие темы статей:</strong></td><td>{theme_caption}</td></tr>
+	<tr><td width="20%">Название:</td><td><input type="text" id="caption" name="caption" value="{caption}" style="width: 300px;"></td></tr>
+	<tr><td width="20%">Картинка:</td><td><input type="file" id="pic" name="pic"  style="width: 300px;"></td></tr>
+	<tr><td width="20%">Описание кор:</td><td><textarea name="short_desc" id="short_desc" style="width:500px; height:150px;">{short_desc}</textarea></td></tr>
+	<tr><td width="20%">Описание:</td><td>{desc_form}</td></tr>
+	<tr><td width="20%">Автор:</td><td><input type="text" id="author" name="author" value="{author}" style="width: 300px;"></td></tr>
+	<tr><td width="20%">Источник:</td><td><input type="text" id="source" name="source" value="{source}" style="width: 300px;"></td></tr>
+	<tr><td width="20%">Адрес:</td><td><input type="text" id="url" name="url" value="{url}" style="width: 300px;"></td></tr>
+	<tr><td width="20%">Дата:</td><td><input type="text" id="data" name="data" value="{data}" style="width: 300px;">{calendar}</td></tr>
+	<tr><td colspan="2" align="right"><input type="button" value="Сохранить" onclick="save_form();"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table></form>

@@ -1,0 +1,8 @@
+<form name="status_form">
+<input type="hidden" name="order_status_id" id="order_status_id" value="{order_status_id}">
+<table border=0  align="center">
+    <tr><td>Статус заказа:</td><td>{status_form}</td></tr>
+	<tr>
+		<td colspan="4" align="right"><input type="button" value="Сохранить" onClick="save_order_status_form(document.getElementById('order_status_id').value, document.all.status_form.status[document.all.status_form.status.selectedIndex].value);"></td>
+	</tr>
+</table></form>

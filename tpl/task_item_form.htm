@@ -1,0 +1,30 @@
+<input type="hidden" id="data" value="{data}">
+<table width="600" border="0" class="TaskForm" id="TaskForm">
+	<tr>
+    	<td colspan="2" align="left" style="font:normal 16px Tahoma, Geneva, sans-serif; color:#268cc8; border-bottom:1px solid #333;">Новая задача {data_word}</td>
+    </tr>
+    <tr><td colspan="2"><br></td></tr>
+    <tr>
+    	<td class="taskCap">Заголовок:</td>
+        <td><input type="text" id="taskCaption" value=""></td>
+    </tr>
+    <tr>
+    	<td class="taskCap">Дата:</td>
+	    <td><input type="text" id="dataendTask" name="dataendTask" class="tcal" style="width:200px;" onClick="if(self.gfPop)gfPop.fPopCalendar(document.getElementById('dataendTask'));return false;" value="{dataendTask}"></td>
+    </tr>
+    <tr>
+    	<td class="taskCap">Время:</td>
+	    <td><input type="text" id="timeendTask" name="timeendTask" style="width:100px;" onkeyup="checkTime()" value="{timeendTask}"></td>
+    </tr>
+    <tr>
+    	<td class="taskCap">Email:</td>
+        <td><input type="text" id="taskEmail" value=""><br><span style="font-size:11px; color:#CCC;">Уведомление прийдет на указанный адресс в 9:00</span></td>
+    </tr>
+    <tr>
+    	<td class="taskCap">Описание задачи:</td>
+        <td><textarea id="taskDesc"></textarea></td>
+    </tr>
+    <tr>
+    	<td colspan="2" align="right"><input type="button" class="button_enter" value="Создать" onClick="saveTaskForm();"> &nbsp; <input type="button" class="button_enter" value="Отмена" onClick="showTaskForm('{data}');"></td>
+    </tr>
+</table>

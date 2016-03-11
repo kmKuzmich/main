@@ -1,0 +1,19 @@
+<input type="hidden" id="month" value="{month}">
+<input type="hidden" id="year" value="{year}">
+<table cellpadding=2 cellspacing=0 border=0 width="100%">
+		<tr><td colspan=7>
+			<table cellpadding=0 cellspacing=0 border=0 width="100%" height="40" bgcolor="#e4f5ff">
+				<tr>
+                	<th width="20"><img src="/theme/images/prevTask.png" border=0 style="cursor:pointer" onClick="showTaskCalendar('{pm}','{py}');"></th>
+					<th><font size=2>{month_word} {year}</font></th>
+					<th width="20"><img src="/theme/images/nextTask.png" border=0 style="cursor:pointer" onClick="showTaskCalendar('{nm}','{ny}');"></th>
+			    </tr>
+            </table>
+		</td></tr>
+		<tr><th width=22>Ïí</th>
+			<th width=22>Âò </th><th width=22>Ñð</th>
+			<th width=22>×ò</th><th width=22>Ïò</th>
+			<th width=22>Ñá</th><th width=22>Âñ</th>
+        </tr>
+        {calendar}
+</table>    

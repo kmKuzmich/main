@@ -1,0 +1,8 @@
+<form name="discount_form">
+<input type="hidden" name="client_discount_id" id="client_discount_id" value="{client_discount_id}">
+<table border=0  align="center">
+    <tr><td>Скидка:</td><td>{discount_form}</td></tr>
+	<tr>
+		<td colspan="4" align="right"><input type="button" value="Сохранить" onClick="save_client_discount_form(document.getElementById('client_discount_id').value, document.all.discount_form.discount[document.all.discount_form.discount.selectedIndex].value);"></td>
+	</tr>
+</table></form>

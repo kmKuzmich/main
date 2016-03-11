@@ -1,0 +1,63 @@
+<table width="100%" border="0">
+	<tr><td>{navigation}</td><td width="50" align="right">{vote_menu}</td></tr>
+    <tr><td colspan="2"><hr></td></tr>
+	<tr><td colspan="2">
+<form method="post" name="vote_form">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="dep_up" value="{dep_up}">
+<input type="hidden" name="dep_cur" value="{dep_cur}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="wn" value="{wn}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="vote_id" value="{vote_id}">
+
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td width="20%"><strong>Питання:</strong></td><td><input type="text" name="caption" value="{caption}" style="width: 100%;"></td></tr>
+    <tr>
+    	<td colspan="2"><strong>Відповіді</strong></td><td>Голоси</td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>1:</strong></td><td><input type="text" name="ans1" value="{ans1}" style="width: 100%;"></td>
+        <td><input type="text" name="val1" value="{val1}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>2:</strong></td><td><input type="text" name="ans2" value="{ans2}" style="width: 100%;"></td>
+        <td><input type="text" name="val2" value="{val2}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>3:</strong></td><td><input type="text" name="ans3" value="{ans3}" style="width: 100%;"></td>
+        <td><input type="text" name="val3" value="{val3}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>4:</strong></td><td><input type="text" name="ans4" value="{ans4}" style="width: 100%;"></td>
+        <td><input type="text" name="val4" value="{val4}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>5:</strong></td><td><input type="text" name="ans5" value="{ans5}" style="width: 100%;"></td>
+        <td><input type="text" name="val5" value="{val5}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>6:</strong></td><td><input type="text" name="ans6" value="{ans6}" style="width: 100%;"></td>
+        <td><input type="text" name="val6" value="{val6}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>7:</strong></td><td><input type="text" name="ans7" value="{ans7}" style="width: 100%;"></td>
+        <td><input type="text" name="val7" value="{val7}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>8:</strong></td><td><input type="text" name="ans8" value="{ans8}" style="width: 100%;"></td>
+        <td><input type="text" name="val8" value="{val8}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>9:</strong></td><td><input type="text" name="ans9" value="{ans9}" style="width: 100%;"></td>
+        <td><input type="text" name="val9" value="{val9}" style="width: 50px;"></td>
+    </tr>
+    <tr>
+    	<td width="20%" align="right"><strong>10:</strong></td><td><input type="text" name="ans10" value="{ans10}" style="width: 100%;"></td>
+        <td><input type="text" name="val10" value="{val10}" style="width: 50px;"></td>
+    </tr>
+	<tr><td colspan="2" align="right"><input type="submit" value="Зберегти" onclick="save_form();"> <input type="reset" value="Відмінити" onclick="history.back(-1);"></td></tr>
+</table></form>
+ </td></tr>
+</table>

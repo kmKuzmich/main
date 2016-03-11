@@ -1,0 +1,84 @@
+<form method="post" enctype="multipart/form-data">
+<input type="hidden" name="modue" value="{module}">
+<input type="hidden" name="modue_page" value="{module_page}">
+<input type="hidden" name="file" value="{file}">
+<input type="hidden" name="w" value="{w}">
+<input type="hidden" name="conf" value="true">
+<input type="hidden" name="action_id" value="{action_id}">
+<table width="100%" border="0" cellspacing="5">
+	<tr><td>{navigation}</td></tr>
+    <tr><td colspan="2"><hr></td></tr>
+	<tr><td colspan="2">
+    
+    
+<table width="100%" border="0" bgcolor="#e5e5e5" style="border:1px solid #999;">
+	<tr><td colspan="2" align="center"><h2>{action} акционное предложение</h2></td></tr>
+    <tr><td colspan="2" align="right"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table><br />  
+<table width="100%" border="0">
+    <tr><td width="10%"><strong>Код акции:</strong></td><td><input type="text" id="code" name="code" value="{code}" style="width: 200px;"></td></tr>
+	<tr><td width="10%"><strong>Название предложения:</strong></td><td><input type="text" id="caption" name="caption" value="{caption}"  style="width: 500px;"></td></tr>
+    <tr><td><br></td></tr>
+    <tr><td width="10%"><strong>Количество товаров в акции:</strong></td><td>{kol_items}</td></tr>
+    <tr><td width="10%"><strong>Цена предложения, $:</strong></td><td>{action_price}</td></tr>
+    <tr><td><br></td></tr>
+    <tr><td width="10%"><strong>Статус акции:</strong></td><td>{status_form}</td></tr>
+   	<tr><td width="20%"><strong>Дата начала:</strong></td><td><input type="text" id="data_from" name="data_from" value="{data_from}" style="width: 300px;">{calendar_from}</td></tr>
+   	<tr><td width="20%"><strong>Дата окончания:</strong></td><td><input type="text" id="data_to" name="data_to" value="{data_to}" style="width: 300px;">{calendar_to}</td></tr>
+    <tr><td><br></td></tr>
+    
+    
+	<tr><td width="10%">Акионное предложение для модели:</td><td><input type="hidden" name="model" id="model" value="{model}"><span id="action_model">{action_model}</span> &nbsp; <a href="javascript:show_catalogue_form('0');">Выберете модель</a></td></tr>
+    <tr><td><br></td></tr> 
+   	<tr><td width="10%">Товары предложения:</td><td style="border:1px solid #999;">
+    	<table width="100%" border="0" cellspacing="0" height="30">
+        	<tr bgcolor="#CCCCCC">
+            	<th width="3%">№</th>
+                <th>Модель товара</th>
+                <th width="10%">Цена, $</th>
+                <th width="10%"></th>
+                <th width="10%"></th>
+            </tr>
+            <tr>
+            	<td align="center">1</td>
+                <td><input type="hidden" name="item1" id="item1" value="{item1}"><span id="item1_model">{item1_model}</span> </td>
+                <td><input type="text" name="price1" id="price1" value="{price1}" style="width:100px;"></td>
+                <td><a href="javascript:show_items_form('1','0');">Выберете модель</a></td>
+                <td><a href="javascript:delete_item('1','{item1}');">Изьять модель</a></td>
+            </tr><tr><td colspan="5"><hr></td></tr>
+            <tr>
+            	<td align="center">2</td>
+                <td><input type="hidden" name="item2" id="item2" value="{item2}"><span id="item2_model">{item2_model}</span> </td>
+                <td><input type="text" name="price2" id="price2" value="{price2}" style="width:100px;"></td>
+                <td><a href="javascript:show_items_form('2','0');">Выберете модель</a></td>
+                <td><a href="javascript:delete_item('2','{item2}');">Изьять модель</a></td>
+            </tr><tr><td colspan="5"><hr></td></tr>
+            <tr>
+            	<td align="center">3</td>
+                <td><input type="hidden" name="item3" id="item3" value="{item3}"><span id="item3_model">{item3_model}</span> </td>
+                <td><input type="text" name="price3" id="price3" value="{price3}" style="width:100px;"></td>
+                <td><a href="javascript:show_items_form('3','0');">Выберете модель</a></td>
+                <td><a href="javascript:delete_item('3','{item3}');">Изьять модель</a></td>
+            </tr><tr><td colspan="5"><hr></td></tr>
+            <tr>
+            	<td align="center">4</td>
+                <td><input type="hidden" name="item4" id="item4" value="{item4}"><span id="item4_model">{item4_model}</span> </td>
+                <td><input type="text" name="price4" id="price4" value="{price4}" style="width:100px;"></td>
+                <td><a href="javascript:show_items_form('4','0');">Выберете модель</a></td>
+                <td><a href="javascript:delete_item('4','{item4}');">Изьять модель</a></td>
+            </tr><tr><td colspan="5"><hr></td></tr>
+            <tr>
+            	<td align="center">5</td>
+                <td><input type="hidden" name="item5" id="item5" value="{item5}"><span id="item5_model">{item5_model}</span> </td>
+                <td><input type="text" name="price5" id="price5" value="{price5}" style="width:100px;"></td>
+                <td><a href="javascript:show_items_form('5','0');">Выберете модель</a></td>
+                <td><a href="javascript:delete_item('5','{item5}');">Изьять модель</a></td>
+            </tr>
+        </table>
+    </td></tr>
+	<tr><td colspan="2" align="right"><input type="submit" value="Сохранить"> <input type="reset" value="Отменить" onclick="history.back(-1);"></td></tr>
+</table>
+
+    </td></tr>
+</table>
+</form> 

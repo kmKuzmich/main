@@ -1,0 +1,18 @@
+        <div id="auth_pad">
+			<form method="post" onsubmit="return false;">
+            <table width="98%" align="center" border="0">
+            	<tr><td colspan="2" style="font-size:15px; color:#f4f4f4; padding-left:15px;">Вход для клиентов</td></tr>
+                <tr><td colspan="2"><span id="AuthError" style="color:#F00; font-size:11px;"></span></td></tr>
+                <tr><td colspan="2"><input name="email" type="text" id="AuthEmail" class="login" value="" /></td></tr>
+                <tr><td colspan="2">
+                	<input type="password" id="AuthPass" class="pass" value="" onKeyUp="if (event.keyCode == 13){AuthAcount();}" />
+                    <input type="submit" class="button_enter" value="Вход" onclick="AuthAcount();" />
+                </td></tr>
+                <tr>
+                	<td align="left"><a href="javascript:showRegistrationForm();">Регистрация</a></td> <!--2015-04-15 отключил регистрацию новых клиентов Кузя -->
+                    <td align="right"><a href="javascript:showForgetForm();" style="color:#d1f1ff;">Забыл пароль?</a></td>
+                </tr>
+            </table>
+            </form>
+		</div>
+        

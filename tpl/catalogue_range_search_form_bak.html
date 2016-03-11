@@ -1,0 +1,25 @@
+<div id="search_art">
+<h3 align="center" style="color:#000; margin:5;">ПОИСК ЗАПЧАСТЕЙ</h3>
+<input type="text" name="art" id="art" value="Поиск запчастей" onClick="if (this.value=='Поиск запчастей'){this.value='';}"  onKeyPress="{if (event.keyCode==13){search_biart(this.value);}}" class="art"><input type="image" src="/theme/images/history_search.png" class="history_search" onclick="history_search()"><input type="button" id="search" name="search" class="bsearch" value="Поиск" onClick="clearProd();search_art();">
+<input type="hidden" id="by_producent" value="" />
+<div style="margin-top:15px; position:relative;">например: <a href="javascript:search_biart('{search_example}');" class="pseudo">{search_example}</a></div>
+<ul style="list-style:none; margin:2px; padding:2px;">
+<li><input type="checkbox" id="by_code" name="by_code" value="1"> - строгий поиск
+<li><input type="checkbox" id="by_sklad" name="by_sklad" value="1"> - поиск по наличию
+<li><input type="checkbox" id="by_name" name="by_name" value="1"> - поиск по названию
+</ul>
+</div>
+<div id="search_art">
+<h3 align="center" style="color:#000; margin:5;">ПОДБОР ЗАПЧАСТЕЙ<br /> ПО АВТОМОБИЛЮ</h3>
+<div style="height:18px; margin-top:5px;">Производитель:</div>
+<span id="manufacture_place">{manufacture}</span>
+<div style="height:18px; margin-top:5px;">Модель:</div>
+<span id="model_place">{model}</span>
+<div style="height:18px; margin-top:5px;">Модификация:</div>
+<span id="modification_place">{modification}</span><br />
+<input type="button" id="tecsearch" name="search" class="bsearch" value="Начать подбор" onclick="loadTecGroupsList()" style="width:120px; margin-top:10px;">
+</div>
+<br /><br /><br /><div id="search_art">
+{actionBonus}
+</div>
+
