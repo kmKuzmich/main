@@ -1,0 +1,28 @@
+#git ignor list of file & folders
+
+#ignoring images
+uploads/images/lider
+
+#ignoring all images
+*.img
+*.jpg
+*.png
+*Thumbs*
+
+#ignoring DG special
+leonov25/
+
+#ignoring logs
+lib/odbc_errors/
+
+#ignoring lonely logs
+/php_errors.log
+triger/log.txt
+triger/analog_log.txt
+triger/php_errors.log 
+
+#ignoring back copies
+*.bak
+
+#some unknown files
+v9.7fp7_linuxx64_odbc_cli.tar.gz
