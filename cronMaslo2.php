@@ -1,4 +1,13 @@
 <?php
+
+/*This is script to update Oil Catalog tables in MySQL DB news.
+You must set files to path /uploads/file/
+t1.xls Motor oil - Моторное масло
+t2.xls Liquids and Grease - Жидкости и смазки
+t3.xls Transmission Oil - Трансмиссионное масло
+t4.xls Chemistry and Auto-Cosmetics - Химия и косметика
+*/
+
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', true);
 define('RD', dirname (__FILE__));
