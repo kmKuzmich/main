@@ -3,6 +3,8 @@
 <head>
 	<title></title>
 	<link rel="STYLESHEET" type="text/css" href="theme/main.css">
+	<meta charset="windows-1251">
+
 </head>
 <body>
 <table width="800" border=0 align="center"><tr>

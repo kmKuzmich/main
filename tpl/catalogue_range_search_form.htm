@@ -1,30 +1,33 @@
 <div id="search_art">
-<h3 align="center" style="color:#000; margin:5;">ПОИСК ЗАПЧАСТЕЙ</h3>
-<input type="text" name="art" id="art" value="" onClick="" placeholder="Поиск запчастей" aria-hidden="true" aria-label="Поиск запчастей" 
-onKeyPress="{if (event.keyCode==13) {clearProd();search_art();}}"  class="art">
-<!--onKeyPress="{search_art();}" class="art">--> 
-<!--onKeyPress="{if (event.keyCode==13) {clearProd();search_art();}}"  class="art">--> 
-<!--onKeyPress="{if (event.keyCode==13){search_biart(this.value);}}" class="art"> это ДАЁТ ОШИБКУ в FireFox-->
+    <h3 align="center" style="color:#000; margin:5;">ПОИСК ЗАПЧАСТЕЙ</h3>
+    <input type="text" name="art" id="art" value="" onClick="" placeholder="Поиск запчастей" aria-hidden="true"
+           aria-label="Поиск запчастей"
+           onKeyPress="{if (event.keyCode==13) {clearProd();search_art();}}" class="art">
+    <!--onKeyPress="{search_art();}" class="art">-->
+    <!--onKeyPress="{if (event.keyCode==13) {clearProd();search_art();}}"  class="art">-->
+    <!--onKeyPress="{if (event.keyCode==13){search_biart(this.value);}}" class="art"> это ДАЁТ ОШИБКУ в FireFox-->
 
-<input type="image" src="/theme/images/history_search.png" class="history_search" onclick="history_search()">
-<input type="button" id="search" name="search" class="bsearch" value="Поиск" onClick="clearProd();search_art();">
-<input type="hidden" id="by_producent" value="" />
-<!-- Єтот раздел выводит статический код примера ввод поиска - поскольку это асболютно не информативно - я убираю эту строку, 
-коментирую вывод этого параметра в lib/catalogue_class.php
-<div style="margin-top:15px; position:relative;">например: <a href="javascript:search_biart('{search_example}');" class="pseudo">{search_example}</a></div>
--->
-<div id="HistorySearchFrom" style="position:absolute; height:0px; z-index:18000; visibility:hidden;"></div>
-<ul style="list-style:none; margin:2px; padding:2px;">
-<!-- <li><input type="checkbox" id="by_code" name="by_code" value="1"> - строгий поиск !-->
-<input type="hidden" id="by_code" name="by_code" value="1">
-<!-- <li><input type="checkbox" id="by_sklad" name="by_sklad" value="1">  - поиск по наличию !-->
-<input type="hidden" id="by_sklad" name="by_sklad" value="1">
-<li style="margin-top:2px;"><input type="checkbox" id="by_name" name="by_name" hidden="" value="1"> <label for="by_name">поиск по наименованию</label>
-</ul>
-</div>
-<div id="search_art">
-	<a href="?dep=23&dep_up=0&dep_cur=3&w=maslo"> <img src="/images/lineykamasel.png"></a>
-	<input type="button" class="bsearch" value="Подбор масел и автохимии" onclick="location.href='?dep=23&dep_up=0&dep_cur=3&w=maslo'" style="width:98%; margin-top:15px;">
+    <input type="image" src="/theme/images/history_search.png" class="history_search" onclick="history_search()">
+    <input type="button" id="search" name="search" class="bsearch" value="Поиск" onClick="clearProd();search_art();">
+    <input type="hidden" id="by_producent" value="">
+    <!-- Єтот раздел выводит статический код примера ввод поиска - поскольку это асболютно не информативно - я убираю эту строку,
+    коментирую вывод этого параметра в lib/catalogue_class.php
+    <div style="margin-top:15px; position:relative;">например: <a href="javascript:search_biart('{search_example}');" class="pseudo">{search_example}</a></div>
+    -->
+    <div id="HistorySearchFrom" style="position:absolute; height:0px; z-index:18000; visibility:hidden;"></div>
+    <ul style="list-style:none; margin:2px; padding:2px;">
+        <!-- <li><input type="checkbox" id="by_code" name="by_code" value="1"> - строгий поиск !-->
+        <input type="hidden" id="by_code" name="by_code" value="1">
+        <!-- <li><input type="checkbox" id="by_sklad" name="by_sklad" value="1">  - поиск по наличию !-->
+        <input type="hidden" id="by_sklad" name="by_sklad" value="1">
+        <li style="margin-top:2px;">
+            <input type="checkbox" id="by_name" name="by_name" hidden="" value="1"> <label for="by_name">поиск по
+            наименованию</label>
+    </ul>
+
+    <a href="?dep=23&dep_up=0&dep_cur=3&w=maslo"> <img src="/images/lineykamasel.png"></a>
+    <input type="button" class="bsearch" value="Подбор масел и автохимии"
+           onclick="location.href='?dep=23&dep_up=0&dep_cur=3&w=maslo'" style="width:98%; margin-top:15px;">
 </div>
 <!--
 <div id="search_art">
@@ -38,7 +41,8 @@ onKeyPress="{if (event.keyCode==13) {clearProd();search_art();}}"  class="art">
 <input type="button" id="tecsearch" name="search" class="bsearch" value="Начать подбор" onclick="loadTecGroupsList()" style="width:120px; margin-top:10px;">
 </div>
 !-->
-<br /><br /><br /><div id="search_art">
+<br/><br/><br/>
+<div id="search_art">
 {actionBonus}
 </div>
 
