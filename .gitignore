@@ -3,6 +3,10 @@
 #ignoring images
 uploads/images/lider
 
+#ignoring files to upload
+uploads/file/
+
+
 #ignoring all images
 *.img
 *.jpg
@@ -14,6 +18,7 @@ leonov25/
 
 #ignoring logs
 lib/odbc_errors/
+
 
 #ignoring lonely logs
 /php_errors.log
