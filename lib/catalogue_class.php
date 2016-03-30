@@ -980,7 +980,7 @@ class catalogue {
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
                 $byTD = 1; //основной Признак что поиск проведён по TecDoc
-                echo '<script> alert "TecDoc Find ' . $byTD . '"</script>';
+//                echo '<script> alert "TecDoc Find ' . $byTD . '"</script>';
             }
 
 

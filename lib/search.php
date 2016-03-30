@@ -5,6 +5,8 @@
  * Date: 27.03.2016
  * Time: 9:09
  */
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+@ini_set('display_errors', false);
 
 require_once('odbc_class.php');
 require_once('slave_class.php');
@@ -13,6 +15,10 @@ require_once('slave_class.php');
 //function get_art(){ if ($_POST["art"]==""){return $_GET["art"];} if ($_POST["art"]!=""){return $_POST["art"];} }
 $by_producent = "38";
 $art = "28491";
+$art = '1k0407365e';
+$art = '1906.C4';
+//$art = "03C 127 026 P";
+print "Артикул <span style='font-size:2em'>$art </span><br/>";
 $n = 16;
 session_start();
 $odb = new odb;  //класс по раоте с БД
@@ -24,14 +30,11 @@ $client_id = $_SESSION["client"];
 
 function getItemPrice2($item_id)
 {
-    session_start();
-    $odb = new odb;
-    $slave = new slave;
-    session_start();
     $client_id = $_SESSION["client"];
+    $odb = new odb;
     $r = $odb->query_td("select getprice(id,'$client_id') from item where id='$item_id';");
     odbc_fetch_row($r);
-    $price = $slave->tomoney(odbc_result($r, 1));
+    $price = odbc_result($r, 1);
     return $price;
 }
 
@@ -54,16 +57,25 @@ function getSkladIDS()
 
 function getItemQuant($item_id)
 {
-    session_start();
     $odb = new odb;
     $quant = 0;
     $quant1 = 0;
     list($listPlaceExpr, $listPlaceKm) = getSkladIDS();
-    $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+    $r = $odb->query_td("SELECT sum( S.quant ) AS kol 
+                        FROM store S INNER JOIN subconto SC ON (SC.id=S.SubConto_id) 
+                          inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) 
+                        WHERE SCT.SubContoType_id='3' AND S.item_id = '$item_id' AND S.kind = '1' AND SC.code IN($listPlaceKm) 
+                        GROUP BY S.SubConto_id;
+                        ");
     while (odbc_fetch_row($r)) {
         $quant += odbc_result($r, "kol");
     }
-    $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '2' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+    $r = $odb->query_td("SELECT sum( S.quant ) AS kol 
+                        FROM store S inner join subconto SC on (SC.id=S.SubConto_id)
+                          inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) 
+                        WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '2' and SC.code in($listPlaceKm)
+                        GROUP BY S.SubConto_id;
+                        ");
     while (odbc_fetch_row($r)) {
         $quant_r += odbc_result($r, "kol");
         $quant -= $quant_r;
@@ -97,6 +109,122 @@ function getItemQuant($item_id)
     return array($quant_res, $quant1_res, $quant_r, $quant_p);
 }
 
+
+function createAnalogList($item_id, $kolItems, $step)
+{
+    $odb = new odb;
+    $i = 0;
+    $itemsArr = array();
+    $dopsArr = array();
+    $odb->query_td("Call listanalog($item_id);");
+    $r = $odb->query_td("select * from analogtemp order by lev,item_id asc;");
+    while (odbc_fetch_row($r)) {
+        $i += 1;
+        $lev = odbc_result($r, "lev");
+        $itemId = odbc_result($r, "item_id");
+        $dop = odbc_result($r, "dop");
+        $itemsArr[$i] = $itemId;
+        $dopsArr[$itemId] = $dop;
+    }
+    return array($itemsArr, $i, $dopsArr);
+}
+
+
+function showItemAnalogLider($itemCode, $itemsArr)
+{
+    session_start();
+    $odb = new odb;
+    $slave = new slave;
+    $dep = "23";
+    $exclude = " and prod_id not in (1134) ";
+    $where = "";
+    foreach ($itemsArr as $item) {
+        $where .= " id='$item' or";
+    }
+    if ($where != "") {
+        $where = " where (" . substr($where, 0, -3) . ") $exclude";
+    }
+    $r = $odb->query_td("select * from item $where limit 0,30;");
+    $kol = $n;
+    $list = "";
+    $i = 0;
+    $kt = -1;
+    while (odbc_fetch_row($r)) {
+        $prm = 0;
+        $price1 = "";
+        $i++;
+        $icon_flag = "";
+        $id = odbc_result($r, "id");
+        $code = odbc_result($r, "code");
+        $scode = odbc_result($r, "scode");
+        $flag = odbc_result($r, "flag");
+        $help = odbc_result($r, "help");
+        $name = odbc_result($r, "name");
+        $name = wordwrap($name, 45, '&shy;', true);
+        $valuta_id = odbc_result($r, "val_id");
+        $discount_id = odbc_result($r, "discount_id");
+        $price = $slave->tomoney(odbc_result($r, "pricePro"));
+        //$price_client=$this->getItemPrice($id,$valuta_id,$price,$discount_id);
+        $price_client = $this->getItemPrice2($id, $client_id);
+        $isImage = odbc_result($r, "isImage");
+        $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
+        list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
+        $quant_r_img = "";
+        if ($quant_r > 0) {
+            $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерв' title='Товар в резерв' align='middle' hspace='2'></a>";
+        }
+        $quant_p_img = "";
+        if ($quant_p > 0) {
+            $quant_p_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_prihod_icon.png' border='0' alt='Товар в приходе' title='Товар в приходе' align='middle' hspace='2'></a>";
+        }
+        $add_busket = "<a href='javascript:show_busket_form(\"$id\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";
+        if ($flag == 7) {
+            $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='Акция' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
+        }
+        if ($flag == 6) {
+            $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
+        }
+        $list .= "
+				<tr><td colspan=10 style='border-bottom:1px solid #8c8c8c; font-size:2px;' height=2>&nbsp;</td></tr>
+				<tr align='center' id='ri$id' height='25' style='background-color:#dcdcdc;color:#000;'>
+					<td width='5'>$icon_flag</td>
+					<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
+					<td align='left'>$name</td>
+					<td align='right'>$price</td>
+					<td align='right'>$price_client</td>
+					<td>$quant_p_img $quant_r_img <a href='javascript:showItemSklad(\"$id\")'>$quant</a></td>
+					<td><a href='javascript:showItemSklad(\"$id\")'>$quant1</a></td>
+					<td>$img</td>
+					<td>$add_busket</td>
+				</tr>";
+    }
+    if ($list != "") {
+        $list = "
+				<tr><td colspan=10 style='border-bottom:1px solid #8c8c8c; font-size:2px;' height=2>&nbsp;</td></tr>
+				<tr><td colspan=10>
+				<table width='97%' border=0 cellpadding=0 cellspacing=0>
+				<tr><td colspan=10 style='font-size:2px;' height=2>&nbsp;</td></tr>
+				<tr height='20'>
+					<td class='leftAnalog'></td>
+					<td class='Analog' width='100' align='center'><img src='/theme/images/analoArrow.png' border=0></td>
+					<td class='Analog' width='400'>Аналоги TECDOC по запросу: $itemCode</td>
+					<td class='Analog' width='60' align='right'>Цена</td>
+					<td class='Analog' width='60' align='right'>Цена2</td>
+					<td class='Analog' width='80' align='right'>Склад</td>
+					<td class='Analog' width='80' align='right'>Экспр.</td>
+					<td class='Analog'>&nbsp;</td>
+					<td class='rightAnalog'></td>
+				</tr>
+				<tr><td colspan=10 style='border-bottom:1px solid #58585a; font-size:2px;' height=2>&nbsp;</td></tr>" . $list . "
+				
+				</table></td></tr><tr><td colspan=10 style='font-size:15px;' height=15>&nbsp;</td></tr>";
+    }
+    return $list;
+}
+
+
+
+
 function showProducentList($proda)
 {
     $odb = new odb;
@@ -128,23 +256,45 @@ $art = trim($art);
 $art = mb_convert_case($art, MB_CASE_LOWER, "CP1251"); //kuzya  22.05.2015
 //удаляем кавычки и аппостроф и ещё раз избавляемся от пробелов
 $art = str_replace(array('"', "'"), "", trim($art));
-print "Артикул $art <br/>";
+$exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
 
-$query = "
-        select * 
-        from (select unique StripSpaces(P.code) as code,
-            P.brand_id as prod_id1
-            from carProductLookup L
-            join carProduct P on P.id=L.product_id
-            where scode=upper( StripSpaces( '$art' )) ) T
+$query = "select 
+              I.id as item_id, 
+              I.code, 
+              I.scode, 
+              I.name, 
+              I.flag, 
+              I.help, 
+              I.prod_id, 
+              I.isImage
+        from (select 
+                    unique StripSpaces(P.code) as code,
+                    P.brand_id as prod_id1
+              from carProductLookup L
+                join carProduct P on P.id=L.product_id
+              where scode=upper( StripSpaces( '$art' )) ) T
         left outer join tdBrand B on B.brand_id=T.prod_id1
         left outer join Producent P on P.id=B.prod_id
         left outer join Item I on I.scode=T.code and I.prod_id=P.id
-        where I.id is not null;
-        ";
+        where 
+          I.id is not null"
+    . $exclude;
+
+
+/*$id = odbc_result($r, "item_id");
+$code = odbc_result($r, "code");
+$scode = odbc_result($r, "scode"); //зачем?
+$name = odbc_result($r, "name");
+$name = wordwrap($name, 45, '&shy;', true);//перенос строки по указанному кол-ву символов
+$flag = odbc_result($r, "flag"); //для иконки
+$help = odbc_result($r, "help"); //зачем?
+$prod_id = odbc_result($r, "prod_id");
+$proda[$i] = $prod_id; //массив Производителей*/
+
 $r = $odb->query_td($query);
 //кол-во строк в результате поиска - определяет как будет выводится список
 $n = $odb->num_rows($r);
+//$r = $odb->query_td($query);
 
 $list = "";
 
@@ -169,7 +319,7 @@ while (odbc_fetch_row($r)) {
 // сейчас формируем строку табов для выбора артикула
 // странно, потому что здесь надо выводить уже список товаров, но видимо если найденных артикулов багацько, то будем выводить список табов...
 // в общем эту хрень наверняка надо убрать...
-    $list .= "<div class='ItemsTab' onclick='location.href=\"#search=$code\"'><a href='#search=$code' $style>$code</a></div>";
+//    $list .= "<div class='ItemsTab' onclick='location.href=\"#search=$code\"'><a href='#search=$code' $style>$code</a></div>";
 
 // если найдено >=23 артикула то ничего не выводим
     if ($i == 24) {
@@ -187,17 +337,20 @@ $form = str_replace("{list}", $list, $form);
 if ($n > 16 and $by_producent != "") {
     $n = 16;
 }
+
+$r = $odb->query_td($query);
 //Результат есть и не больше 16 строк - выводим список
 if (($n > 0 and $n <= 16)) {
+
     $kt = -1;  //непонятно
-    $k = 0; //непонятно
+    $k = 0; //щётчик строк для вывода результатов запроса
     $i = 1; //для массива производителей $proda[$i]
     while (odbc_fetch_row($r)) {
         $prm = 0; //?
         $price1 = "";
         $i++; //i=2?  почему то начинается с 2-го элемента, видимо в 0 и 1 какие то константы???
         $icon_flag = ""; //?
-        $id = odbc_result($r, "id");
+        $item_id = odbc_result($r, "item_id");
         $code = odbc_result($r, "code");
         $scode = odbc_result($r, "scode"); //зачем?
         $name = odbc_result($r, "name");
@@ -206,54 +359,55 @@ if (($n > 0 and $n <= 16)) {
         $help = odbc_result($r, "help"); //зачем?
         $prod_id = odbc_result($r, "prod_id");
         $proda[$i] = $prod_id; //массив Производителей
-//                если производитель пусто, то то сохранить в переменную $producent текущего пр-ля ??? не пойму зачем
-        if ($by_producent == "") {
-            $producent = $prod_id;
-        }
 
 //@todo в этом месте второй раз в этой функции происходила запись в историю поисков $this->saveArtSearch($art, $by_name, $producent);
 
-        $price_client = getItemPrice2($id);
+//        @todo потом убери это для теста
+        print $i . ' Кол-во строк ' . $n . ' <br/>';
+//        echo "<script> alert ('шиш тебе а не цена $price $item_id для клиента $client_id') </script>";
+        $price_client = getItemPrice2($item_id);
+        echo $price_client . '<br/>';
 
         $isImage = odbc_result($r, "isImage"); //Признак - есть фото
 //                ссылка на фото
-        $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
+        $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($item_id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
         //наличие
-        list($quant, $quant1, $quant_r, $quant_p) = getItemQuant($id);
+        list($quant, $quant1, $quant_r, $quant_p) = getItemQuant($item_id);
         $quant_r_img = ""; //это непонятно зачем...
 //                если есть наличие в резерве - делаем ссылку на то чтоб просмотреть наличие по складам
         if ($quant_r > 0) {
-            $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерв' title='Товар в резерв' align='middle' hspace='2'></a>";
+            $quant_r_img = "<a href='javascript:showItemSklad(\"$item_id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерв' title='Товар в резерв' align='middle' hspace='2'></a>";
         }
         $quant_p_img = "";
 //                если есть - приход рисуем ссылку
         if ($quant_p > 0) {
-            $quant_p_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_prihod_icon.png' border='0' alt='Товар в приходе' title='Товар в приходе' align='middle' hspace='2'></a>";
+            $quant_p_img = "<a href='javascript:showItemSklad(\"$item_id\")'><img src='theme/images/sklad_prihod_icon.png' border='0' alt='Товар в приходе' title='Товар в приходе' align='middle' hspace='2'></a>";
         }
         $add_busket = "";
-        $add_busket = "<a href='javascript:show_busket_form(\"$id\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";
+        $add_busket = "<a href='javascript:show_busket_form(\"$item_id\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";
 //					if (($flag==1)|($flag==2)|($flag==5)){	$icon_flag="<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id"."_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id"."_tip'>$help</div></div>";	}
         if ($flag == 7) {
-            $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='Акция' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
+            $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='Акция' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$item_id" . "_tip')\" onclick='showItemActionRemark(\"$item_id\");'><div style='display:none;'><div id='a$item_id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$item_id\");'>";
         }
         if (($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) {
-            $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
+            $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$item_id" . "_tip')\" onclick='showItemActionRemark(\"$item_id\");'><div style='display:none;'><div id='d$item_id" . "_tip'>$help</div></div>";
         }
-
-        if ($producent == $prod_id or $by_producent == $prod_id) {
+//Если выбран производитель или производитель = найденный произвоитель - вывести список
+//        if ($producent == $prod_id or $by_producent == $prod_id) {
             $k++;
+//            Показать только 15 результатов
             if ($k <= 15) {
                 $list .= "<tr><td colspan=10 style='border-bottom:1px solid #8c8c8c; font-size:2px;' height=2>&nbsp;</td></tr>
-						<tr align='center' id='ri$id' height='25'>
+						<tr align='center' id='ri$item_id' height='25'>
 							<td>$icon_flag</td>
 							<td>$code</td>
-							<td align='left'><a href='javascript:showItemInfo(\"$id\");'>$name</a></td>
+							<td align='left'><a href='javascript:showItemInfo(\"$item_id\");'>$name</a></td>
 							<td align='right'>$price</td>
 							<td align='right'>$price_client</td>
-							<td>$quant_p_img $quant_r_img <a href='javascript:showItemSklad(\"$id\")'>$quant</a></td>
-							<td><a href='javascript:showItemSklad(\"$id\")'>$quant1</a></td>
+							<td>$quant_p_img $quant_r_img <a href='javascript:showItemSklad(\"$item_id\")'>$quant</a></td>
+							<td><a href='javascript:showItemSklad(\"$item_id\")'>$quant1</a></td>
 							<td>$img</td>
-							<td><a href='javascript:showItemAnalog(\"$id\")'><img src='theme/images/analog_icon.jpg' border='0' alt='Аналоги' title='Аналоги'></a></td>
+							<td><a href='javascript:showItemAnalog(\"$item_id\")'><img src='theme/images/analog_icon.jpg' border='0' alt='Аналоги' title='Аналоги'></a></td>
 							<td>$add_busket</td>
 						</tr>
 						";
@@ -261,7 +415,7 @@ if (($n > 0 and $n <= 16)) {
 //                        if ($by_name == "" or $by_name == 0) {
 //                            $list .= $this->showItemAnalogSklad($id);
 //                        }
-            }
+//            }
         }
         if ($k == 15) {
             $i = $n + 1;
