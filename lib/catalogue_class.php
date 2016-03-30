@@ -693,8 +693,8 @@ class catalogue {
         $slave = new slave;
         session_start();
         $client_id = $_SESSION["client"];
-//		$r=$odb->query_td("select getprice(id,'$client_id') from item where id='$item_id';");
-        $r = $odb->query_lider("select getprice(id,'$client_id') from item where id='$item_id';");
+		$r=$odb->query_td("select getprice(id,'$client_id') from item where id='$item_id';");
+//        $r = $odb->query_lider("select getprice(id,'$client_id') from item where id='$item_id';");
         odbc_fetch_row($r);
         $price = $slave->tomoney(odbc_result($r, 1));
         return $price;
