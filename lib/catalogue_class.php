@@ -908,7 +908,7 @@ class catalogue {
                 $where2 = " and prod_id='$by_producent' ";
                 //Записываем в список "История поисков" и в WebSearch
                 //print "$by_producent";
-                $this->saveArtSearch($art, $by_name, $by_producent);
+                $this->saveArtSearch($art, $by_name, $by_producent,$byTD);
             }
 
             $odb = new odb;
@@ -1072,7 +1072,7 @@ class catalogue {
                     //Если Результат поиска =1 ипроизводитель не выбирался Записываем в список "История поисков" и в WebSearch
                     //print "$by_producent";
                     if (($n = 1) and $by_producent == "") {
-                        $this->saveArtSearch($art, $by_name, $producent);
+                        $this->saveArtSearch($art, $by_name, $producent,$byTD);
                     }
                     $valuta_id = odbc_result($r, "val_id");
                     $discount_id = odbc_result($r, "discount_id");
@@ -1178,7 +1178,7 @@ class catalogue {
         }
     }
 
-    function saveArtSearch($art, $by_name, $by_producent)
+    function saveArtSearch($art, $by_name, $by_producent,$byTD)
     {
         session_start();
         $odb = new odb;
@@ -1250,6 +1250,9 @@ class catalogue {
 //				 print "FINDING!!!! $art_ses' и '$art' </n>'";
                 }
 		}
+        $query_td = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id) values ($client,'$remip','$art','$by_code','9999')";
+        if ($byTD==1) {
+            $odb->query_td($query_td);}
     }
 
     function showProducentTabs($proda)
