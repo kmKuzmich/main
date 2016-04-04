@@ -1252,7 +1252,6 @@ class catalogue {
 		}
         $query_td = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id) values ($client,'$remip','$art','$by_code','9999')";
         if ($byTD==1) {
-            echo 'TecDoc webs';
             $odb->query_td($query_td);}
     }
 
