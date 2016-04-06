@@ -978,7 +978,7 @@ class catalogue {
                         where I.id is not null;
                         ";
                 $r = $odb->query_td($query);
-                $n = $odb->num_rows($r);
+//                $n = $odb->num_rows($r);
                 $byTD = 1; //основной Признак что поиск проведён по TecDoc
 //                echo '<script> alert "TecDoc Find ' . $byTD . '"</script>';
             }
@@ -1072,7 +1072,8 @@ class catalogue {
                     //Если Результат поиска =1 ипроизводитель не выбирался Записываем в список "История поисков" и в WebSearch
                     //print "$by_producent";
                     if (($n = 1) and $by_producent == "") {
-                        $this->saveArtSearch($art, $by_name, $producent,$byTD);
+//                    if ($n = 1)  {
+                        $this->saveArtSearch($art, $by_name, $prod_id,$byTD);
                     }
                     $valuta_id = odbc_result($r, "val_id");
                     $discount_id = odbc_result($r, "discount_id");
@@ -1227,7 +1228,7 @@ class catalogue {
 
         //если клиент НЕ пусто то выполнить какую то другую ерунду, которая по идее делает так шоб в историю и в вебы не дублировалась информация.
         if ($client != 0) {
-            $er = 0;
+                $er = 0;
 
             //Проверяем есть ли запись в History_Search по клиенту
             // $query="select art from history_search where client='$client' order by id desc limit 0,1";
