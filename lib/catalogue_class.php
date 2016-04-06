@@ -959,7 +959,7 @@ class catalogue {
 
 
 //               если результат =0 или поиск в техдоке и не по наименованию
-            if ((($n == 0) or ($byTD == 1)) and ($by_name!=0)) {
+            if ((($n == 0) or ($byTD == 1)) and ($by_name==0)) {
                 $query = "select 
                                   I.id as id, 
                                   I.code, 
@@ -4162,3 +4162,4 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         return $form;
     }
 }
+?>
