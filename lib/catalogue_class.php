@@ -915,7 +915,8 @@ class catalogue {
 
             //≈сли был выбран поиск по коду и не по наименованию, то нам сюда. обычно поиск по коду по умолчанию, эта опци€ отключена уже в прайсе, раньше там был крыжик
 
-            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
+//            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
+            if ($by_name == 0 or $by_name == "") {
                 //»щем по пол€м Code и sCode  по точному совпадению art% art1% art2%
                 $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
                 $query = "select * from item where ($where) $where2 $exclude order by id asc;";
@@ -937,26 +938,28 @@ class catalogue {
                     $r = $odb->query_td($query);
                     $n = $odb->num_rows($r);
                 }
+            }
 
-                if ($n == 0) {
-                    //≈сли ничего не нашли по коду пробуем по наименованию
-                    //					$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
-                    //–азбираем $art в массив по пробелам - излишне потому что делали trim
-                    //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
-                    $where = "";
-                    $artn = explode(" ", $artName);
-                    foreach ($artn as $artan) {
-                        $where .= " and locate('$artan',sname)>0";
-                    }
-                    $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
-                    $r = $odb->query_td($query);
-                    $n = $odb->num_rows($r);
+            //≈сли ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
+            if (($n == 0) or ($by_name == 1)) {
+                //Ёто поиск только по наименованию, поиск ведЄтс€ по sName - это поле только в DB2, надо уточнить чем оно отличаетс€ от обычного
+                //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
+                //–азбираем $art в массив по пробелам - излишне потому что делали trim
+                //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
+                $where = "";
+                $artn = explode(" ", $artName);
+                foreach ($artn as $artan) {
+                    $where .= " and locate('$artan',sname)>0";
                 }
+                $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
+                $r = $odb->query_td($query);
+                $n = $odb->num_rows($r);
             }
 
 
-//                поиск в техдоке
-            if (($n == 0) or ($byTD == 1)) {
+
+//               если результат =0 или поиск в техдоке и не по наименованию
+            if ((($n == 0) or ($byTD == 1)) and ($by_name!=0)) {
                 $query = "select 
                                   I.id as id, 
                                   I.code, 
@@ -985,12 +988,7 @@ class catalogue {
 
 
             //Ёто поиск только по наименованию, поиск ведЄтс€ по sName - это поле только в DB2, надо уточнить чем оно отличаетс€ от обычного
-            if ($by_code == 0 and $by_name == 1) {
-//				$where="(name LIKE '%$art%') or (name LIKE '%$art1%') or (name LIKE '%$art2%') or (NameUA LIKE '%$art%') or (NameUA LIKE '%$art1%') or (NameUA LIKE '%$art2%') or (sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
-//”бираю перебор по NameUA и sname
-//				$where="(name LIKE '%$art%') or (name LIKE '%$art1%') or (name LIKE '%$art2%')";
-//без trim эта строка бесполезна//				$where="";$artn=explode(" ",strtolower($art)); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
-//				$where="";$artn=explode(" ",strtolower($art)); foreach($artn as $artan){ $where.=" and trim(sname) LIKE ('%$artan%')"; }
+/*            if ($by_code == 0 and $by_name == 1) {
                 $where = "";
                 $artn = explode(" ", strtolower($artName));
                 foreach ($artn as $artan) {
@@ -1000,7 +998,9 @@ class catalogue {
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
                 $kol = $n;
-            }
+            }*/
+
+
 
             $r = $odb->query_td($query);
             $list = "";
