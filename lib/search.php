@@ -16,7 +16,9 @@ require_once('slave_class.php');
 $by_producent = "38";
 $art = "28491";
 $art = '1k0407365e';
-$art = '1906.C4';
+$art = 'MN102247';
+$art = '8e0407694q';
+//$art = 'ADC446175';
 //$art = "03C 127 026 P";
 print "Артикул <span style='font-size:2em'>$art </span><br/>";
 $n = 16;
@@ -251,7 +253,7 @@ function showProducentList($proda)
 
 echo '<h1> ID клиента ' . $client_id . ' </h1><br />';
 //избавляемся от лишних пробелов в искомой строке
-$art = trim($art);
+//$art = trim($art);
 //приводим в нижний регистр в кодировке win-1251
 $art = mb_convert_case($art, MB_CASE_LOWER, "CP1251"); //kuzya  22.05.2015
 //удаляем кавычки и аппостроф и ещё раз избавляемся от пробелов
@@ -278,7 +280,8 @@ $query = "select
         left outer join Item I on I.scode=T.code and I.prod_id=P.id
         where 
           I.id is not null"
-    . $exclude;
+    . $exclude
+;
 
 
 /*$id = odbc_result($r, "item_id");

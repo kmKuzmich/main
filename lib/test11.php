@@ -18,8 +18,9 @@ $set = array(
 echo getSetValues($set);
 
 echo '<br/>' . implode(', ', $set);
-echo '<br/>' . getSetValues1($set);
-
+echo '<br/>' . getSetValues1($set) . '<br/>';
+$a1=''+0;
+echo '$a1 + 10 =',$a1+0,' select evr';
 
 function getSetValues($params)
 {
