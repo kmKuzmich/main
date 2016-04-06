@@ -916,7 +916,7 @@ class catalogue {
             //Если был выбран поиск по коду и не по наименованию, то нам сюда. обычно поиск по коду по умолчанию, эта опция отключена уже в прайсе, раньше там был крыжик
 
 //            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
-            if ($by_name == 0 or $by_name == "") {
+            if ($by_name == 0) {
                 //Ищем по полям Code и sCode  по точному совпадению art% art1% art2%
                 $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
                 $query = "select * from item where ($where) $where2 $exclude order by id asc;";
