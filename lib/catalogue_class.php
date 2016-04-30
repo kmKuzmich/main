@@ -940,24 +940,6 @@ class catalogue {
                 }
             }
 
-            //Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
-            if (($n == 0) or ($by_name == 1)) {
-                //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
-                //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
-                //Разбираем $art в массив по пробелам - излишне потому что делали trim
-                //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
-                $where = "";
-                $artn = explode(" ", $artName);
-                foreach ($artn as $artan) {
-                    $where .= " and locate('$artan',sname)>0";
-                }
-                $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
-                $r = $odb->query_td($query);
-                $n = $odb->num_rows($r);
-            }
-
-
-
 //               если результат =0 или поиск в техдоке и не по наименованию
             if ((($n == 0) or ($byTD == 1)) and ($by_name==0)) {
                 $query = "select 
@@ -985,6 +967,24 @@ class catalogue {
                 $byTD = 1; //основной Признак что поиск проведён по TecDoc
 //                echo '<script> alert "TecDoc Find ' . $byTD . '"</script>';
             }
+
+            //Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
+            if (($n == 0) or ($by_name == 1)) {
+                //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
+                //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
+                //Разбираем $art в массив по пробелам - излишне потому что делали trim
+                //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
+                $where = "";
+                $artn = explode(" ", $artName);
+                foreach ($artn as $artan) {
+                    $where .= " and locate('$artan',sname)>0";
+                }
+                $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
+                $r = $odb->query_td($query);
+                $n = $odb->num_rows($r);
+            }
+
+
 
 
             //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
