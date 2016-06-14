@@ -140,6 +140,16 @@ class client {
 		}
 		return $form;
 	}
+
+//By Kuzichkin 11/06/2016 
+	function showMessageExp($client_id)
+	{
+		if ($client_id == 7562) {
+//			echo "<script type=\"text/javascript\">alert(\"Чего то там с задолженостью у клиента $client_id\");</script>";
+			echo "Чего то там с задолженостью у клиента $client_id\n";
+		}
+	}
+
 	function setMessageStatus($mess_id,$status_id){$odb=new odb;session_start(); $client_id=$_SESSION["client"];
 		$odb->query_lider("create variable @last_id integer ");
 		$odb->query_lider("insert into Local(user_id) values(-1);");
@@ -552,11 +562,13 @@ class client {
 		}
 		if ($n==0) {return array("","","","","");}
 	}
+
 	function get_table_caption($tname,$id){ $odb=new odb; if ($file==0){$file=1;}$name="";
 		$r=$odb->query_td("select NAME from $tname where id='$id' limit 0,1;");
 		while(odbc_fetch_row($r)){$name=odbc_result($r,"NAME");}
 		return $name;
 	}
+
 	function getSubcontoNearDataSum($client){$odb=new odb;$slave=new slave;
 		$r=$odb->query_td("
 		select *

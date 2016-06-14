@@ -1,5 +1,5 @@
 function showBrandInfo(id){
-	JsHttpRequest.query('content.php',{ 'w': 'showBrandInfo', 'id': id}, 
+	JsHttpRequest.query('content.php', {'w': 'showBrandInfo', 'id': id},
 		function (result, errors){ if (errors) {alert(errors);} if (result){ 
 			document.getElementById("InfoFormInfo").innerHTML=result["content"];
 			showInfoForm();
@@ -11,7 +11,11 @@ function search_art(){
 	closeHistorySearchFrom();
 	startLoading();
 	var art=document.getElementById("art").value;
-	if (art.length<=2){ showAlertForm("¬ведите больше символов дл€ поиска");stopLoading(); }	
+	if (art.length <= 2) {
+		showAlertForm("¬ведите больше символов дл€ поиска");
+		stopLoading();
+	}
+	// showAlertForm("чЄ то там с задолженностью!");
 	if (art.length>2){
 		var by_code=0; if (document.getElementById("by_code").checked){by_code=1;}
 		var by_sklad=0; if (document.getElementById("by_sklad").checked){by_sklad=1;}

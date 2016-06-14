@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="windows-1251">
+    <title>Основной шаблон HTML-страницы</title>
+</head>
+<body>
+<?php if ($result): ?>
+<span style="color:blue; font-weight:bold">Результат: <?=$result?></span>
+<?php else: ?>
+<span style="color:red; font-weight:bold">Результат равен нулю</span>
+<?php endif; ?>
+</body>
+</html>

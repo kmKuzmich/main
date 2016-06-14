@@ -443,56 +443,88 @@ class shop {
 		while(odbc_fetch_row($r)){ $desc="<br /><hr>".odbc_result($r,"desc")."<hr><br />"; }
 		return $desc;
 	}
-	function save_order_form(){	session_start(); $remip=$_SERVER['REMOTE_ADDR'];$slave=new slave; $kours=new kours; 
-		if ($_SESSION["serial"]!=$_POST["serial"]){
-			$order_message_htm=RD."/tpl/message_error.htm";	if (file_exists("$order_message_htm")){ $order_message = file_get_contents($order_message_htm);}
-			$message="<table align='center'><tr><td style='color:red;' align='center'>Попытка повторного сохранения заказа, или время сессии истекло!!!</td></tr></table>
-			<script language='JavaScript'>setTimeout(\"location.href='?';\",20000);</script>";
-			$order_message=str_replace("{message}", $message, $order_message);
-			$order_message=str_replace("{caption}", "Ошибка", $order_message);
-		}
-		if ($_SESSION["serial"]==$_POST["serial"]){ $_SESSION["serial"]="";
-			include_once RD.'/lib/num2str_class.php'; include_once RD.'/lib/client_class.php'; include_once RD.'/lib/catalogue_class.php';
-			$odb=new odb;$slave=new slave;$cl=new client;$cat=new catalogue;
-			$order_message_htm=RD."/tpl/order_saving_message.htm";if (file_exists("$order_message_htm")){ $order_message = file_get_contents($order_message_htm);}
-			$order_id=$slave->qq($_POST["order_id"]);
-			$klientunion=$_POST["klientunion"];
-			$contactPerson=$slave->qq($_POST["contactPerson"]);
-			$phonePerson=$slave->qq($_POST["phone"]);
-			$client=$_SESSION["client"];
-			$payment=$slave->qq($_POST["payment"]);
-			$delivery=$slave->qq($_POST["delivery"]);$more=$slave->qq($_POST["more"]);$address_sent=$slave->qq($_POST["address_sent"]);
-			list($code,$name,$email,$phone,$address)=$cl->get_order_form_data($client);	$deliver=explode(";;",$delivery);$delivery=$deliver[0];
-			if ($phonePerson==""){$phonePerson=$phone;}
-			
-			$date=date("Y-m-d");$time=date("H:i:s"); if ($more==""){$more=" ";}
-			$r=$odb->query_td("update orders set author_send='$client', union_client='$client', address='$address_sent', more='$more', data_send='$date', time_send='$time', remip='$remip', payment='$payment', delivery='$delivery', status='16', phoneperson='$phonePerson', contactperson='$contactPerson' where id='$order_id';");
-			$odb->query_td("insert into orders_check (order_id,data) values ('$order_id','$date');");
-			
-			$r=$odb->query_td("select * from orders where id='$order_id';");
-			while(odbc_fetch_row($r)){
-				$doc_id=odbc_result($r,"doc_id");
-				$doc_num=odbc_result($r,"doc_num");
+
+	function save_order_form()
+	{
+		session_start();
+		$remip = $_SERVER['REMOTE_ADDR'];
+		$slave = new slave;
+		$kours = new kours;
+		if ($_SESSION["serial"] != $_POST["serial"]) {
+			$order_message_htm = RD . "/tpl/message_error.htm";
+			if (file_exists("$order_message_htm")) {
+				$order_message = file_get_contents($order_message_htm);
 			}
-			
+			$message = "<table align='center'><tr><td style='color:red;' align='center'>Попытка повторного сохранения заказа, или время сессии истекло!!!</td></tr></table>
+			<script language='JavaScript'>setTimeout(\"location.href='?';\",20000);</script>";
+			$order_message = str_replace("{message}", $message, $order_message);
+			$order_message = str_replace("{caption}", "Ошибка", $order_message);
+		}
+		if ($_SESSION["serial"] == $_POST["serial"]) {
+			$_SESSION["serial"] = "";
+			include_once RD . '/lib/num2str_class.php';
+			include_once RD . '/lib/client_class.php';
+			include_once RD . '/lib/catalogue_class.php';
+			$odb = new odb;
+			$slave = new slave;
+			$cl = new client;
+			$cat = new catalogue;
+			$order_message_htm = RD . "/tpl/order_saving_message.htm";
+			if (file_exists("$order_message_htm")) {
+				$order_message = file_get_contents($order_message_htm);
+			}
+			$order_id = $slave->qq($_POST["order_id"]);
+			$klientunion = $_POST["klientunion"];
+			$contactPerson = $slave->qq($_POST["contactPerson"]);
+			$phonePerson = $slave->qq($_POST["phone"]);
+			$client = $_SESSION["client"];
+			$payment = $slave->qq($_POST["payment"]);
+			$delivery = $slave->qq($_POST["delivery"]);
+			$more = $slave->qq($_POST["more"]);
+			$address_sent = $slave->qq($_POST["address_sent"]);
+			list($code, $name, $email, $phone, $address) = $cl->get_order_form_data($client);
+			$deliver = explode(";;", $delivery);
+			$delivery = $deliver[0];
+			if ($phonePerson == "") {
+				$phonePerson = $phone;
+			}
+
+			$date = date("Y-m-d");
+			$time = date("H:i:s");
+			if ($more == "") {
+				$more = " ";
+			}
+			$r = $odb->query_td("update orders set author_send='$client', union_client='$client', address='$address_sent', more='$more', data_send='$date', time_send='$time', remip='$remip', payment='$payment', delivery='$delivery', status='16', phoneperson='$phonePerson', contactperson='$contactPerson' where id='$order_id';");
+			$odb->query_td("insert into orders_check (order_id,data) values ('$order_id','$date');");
+
+			$r = $odb->query_td("select * from orders where id='$order_id';");
+			while (odbc_fetch_row($r)) {
+				$doc_id = odbc_result($r, "doc_id");
+				$doc_num = odbc_result($r, "doc_num");
+			}
+
 			$odb->query_lider("create variable @last_id integer ");
 			$odb->query_lider("insert into Local(user_id) values(-1);");
 			$odb->query_lider("SET OPTION DATE_ORDER = 'DMY';");
 			$odb->query_lider("SET OPTION DATE_FORMAT = 'DD-MM-YYYY';");
 			$odb->query_lider("SET OPTION Timestamp_format = 'DD-MM-YYYY HH:NN:SS.SSS';");
-			
-			$r1=$odb->query_td("select * from orders_str where order_id='$order_id';");$olist="";$orSumm=0;$j=0;
-			while(odbc_fetch_row($r1)){$j++;
-				if (odbc_result($r1,"quant")>0){
-					$or_id=odbc_result($r1,"id");
-					$or_model=odbc_result($r1,"item_id");
-					$or_code=odbc_result($r1,"code");
-					$or_caption=odbc_result($r1,"name");
-					$or_count=$slave->int_to_money(odbc_result($r1,"quant"));
-					$or_price=$slave->int_to_money(odbc_result($r1,"price"));
-					$or_summ=$slave->int_to_money(odbc_result($r1,"summ"));
-					$orSumm+=$or_summ;
-					$olist.="
+
+			$r1 = $odb->query_td("select * from orders_str where order_id='$order_id';");
+			$olist = "";
+			$orSumm = 0;
+			$j = 0;
+			while (odbc_fetch_row($r1)) {
+				$j++;
+				if (odbc_result($r1, "quant") > 0) {
+					$or_id = odbc_result($r1, "id");
+					$or_model = odbc_result($r1, "item_id");
+					$or_code = odbc_result($r1, "code");
+					$or_caption = odbc_result($r1, "name");
+					$or_count = $slave->int_to_money(odbc_result($r1, "quant"));
+					$or_price = $slave->int_to_money(odbc_result($r1, "price"));
+					$or_summ = $slave->int_to_money(odbc_result($r1, "summ"));
+					$orSumm += $or_summ;
+					$olist .= "
 					<tr align='center' height='35' class='t14'>
 						<td align='left'>&nbsp;&nbsp;$j</td>
 						<td align='left'>&nbsp;&nbsp;$or_code</td>
@@ -505,60 +537,72 @@ class shop {
 					$odb->query_lider("insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_model');");
 				}
 			}
-			$orSumm=$slave->int_to_money($orSumm);
-			$r=$odb->query_td("select place_id from subconto where id='$client';");
-			while(odbc_fetch_row($r)){
-				$place_id=odbc_result($r,"place_id");
+			$orSumm = $slave->int_to_money($orSumm);
+			$r = $odb->query_td("select place_id from subconto where id='$client';");
+			while (odbc_fetch_row($r)) {
+				$place_id = odbc_result($r, "place_id");
 			}
-			if ($place_id=="" or $place_id==0){$place_id=23;}
-			
+			if ($place_id == "" or $place_id == 0) {
+				$place_id = 23;
+			}
+
 			$odb->query_lider("update doc set opl=0, subconto_id=$client, place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';");
 			$odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id' and n=0;");
 			$odb->query_lider("insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');");
 //			$odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address_sent','$more','".$this->get_table_caption("carrier",$delivery)."','$phonePerson','$contactPerson','".$this->get_table_caption("typepay",$payment)."');");
 
-			$odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,carrier_id,phone,contperson,typePay) values ('$doc_id',now(),'$address_sent','$more','".$this->get_table_caption("carrier",$delivery)."','$delivery','$phonePerson','$contactPerson','".$this->get_table_caption("typepay",$payment)."');");
-			
-			$order_message=str_replace("{busket}", $olist, $order_message);
-			$order_message=str_replace("{summ}", $slave->int_to_money($orSumm), $order_message);
-			$order_message=str_replace("{order_id}", $doc_num, $order_message);
-			$order_message=str_replace("{code}", $code, $order_message);
-			$order_message=str_replace("{client_name}", $name, $order_message);
-			$order_message=str_replace("{contactPerson}", $contactPerson, $order_message);
-			$order_message=str_replace("{email}", $email, $order_message);
-			$order_message=str_replace("{delivery}", $this->get_table_caption("carrier",$delivery), $order_message);
-			$order_message=str_replace("{payment}", $this->get_table_caption("typepay",$payment), $order_message);
-			$order_message=str_replace("{phone}", $phonePerson, $order_message);
-			$order_message=str_replace("{address_sent}", $address_sent, $order_message);
-			$order_message=str_replace("{data_time}", $slave->data_word(date("Y-m-d"))." ".date("H:i:s"), $order_message);
-			$order_message=str_replace("{remip}", $remip, $order_message);
-			$order_message=str_replace("{status}", $this->get_status_caption(1), $order_message);
-			$order_message=str_replace("{more}", $more, $order_message);
-			$order_message=str_replace("{client_union}", $cl->get_client_name($klientunion), $order_message);
-			if ($_SESSION["client_user"]==0){$author_send=$name;}if ($_SESSION["client_user"]!=0){$author_send=$cl->get_client_user_name($_SESSION["client_user"]);}
-			$order_message=str_replace("{author_send}", $author_send, $order_message);
-			
-			include_once RD."/mail/sendmail.class.php";$Mail = new sendmail();
+			$odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,carrier_id,phone,contperson,typePay) values ('$doc_id',now(),'$address_sent','$more','" . $this->get_table_caption("carrier", $delivery) . "','$delivery','$phonePerson','$contactPerson','" . $this->get_table_caption("typepay", $payment) . "');");
+
+			$order_message = str_replace("{busket}", $olist, $order_message);
+			$order_message = str_replace("{summ}", $slave->int_to_money($orSumm), $order_message);
+			$order_message = str_replace("{order_id}", $doc_num, $order_message);
+			$order_message = str_replace("{code}", $code, $order_message);
+			$order_message = str_replace("{client_name}", $name, $order_message);
+			$order_message = str_replace("{contactPerson}", $contactPerson, $order_message);
+			$order_message = str_replace("{email}", $email, $order_message);
+			$order_message = str_replace("{delivery}", $this->get_table_caption("carrier", $delivery), $order_message);
+			$order_message = str_replace("{payment}", $this->get_table_caption("typepay", $payment), $order_message);
+			$order_message = str_replace("{phone}", $phonePerson, $order_message);
+			$order_message = str_replace("{address_sent}", $address_sent, $order_message);
+			$order_message = str_replace("{data_time}", $slave->data_word(date("Y-m-d")) . " " . date("H:i:s"), $order_message);
+			$order_message = str_replace("{remip}", $remip, $order_message);
+			$order_message = str_replace("{status}", $this->get_status_caption(1), $order_message);
+			$order_message = str_replace("{more}", $more, $order_message);
+			$order_message = str_replace("{client_union}", $cl->get_client_name($klientunion), $order_message);
+			if ($_SESSION["client_user"] == 0) {
+				$author_send = $name;
+			}
+			if ($_SESSION["client_user"] != 0) {
+				$author_send = $cl->get_client_user_name($_SESSION["client_user"]);
+			}
+			$order_message = str_replace("{author_send}", $author_send, $order_message);
+
+			include_once RD . "/mail/sendmail.class.php";
+			$Mail = new sendmail();
 			$Mail->mail_to = "$name <$email>";
 			$Mail->subject = "New order: $doc_num (zakaz.avtolider-ua.com)";
 			$Mail->message = $order_message;
 			$Mail->from_name = "Avtolider";
 			$Mail->SendFromMail = "no-reply@avtolider-ua.com";
 			$Mail->Send();
-			
-			$order_message_htm=RD."/tpl/order_message.htm";if (file_exists("$order_message_htm")){ $order_message = file_get_contents($order_message_htm);}
-			$order_message=str_replace("{order_id}", $doc_num, $order_message);
-	
-			include_once RD.'/lib/sms_class.php';$sms=new sms;
+
+			$order_message_htm = RD . "/tpl/order_message.htm";
+			if (file_exists("$order_message_htm")) {
+				$order_message = file_get_contents($order_message_htm);
+			}
+			$order_message = str_replace("{order_id}", $doc_num, $order_message);
+
+			include_once RD . '/lib/sms_class.php';
+			$sms = new sms;
 //			$answer=$sms->send_sms("Avtolider","+380637717337","WEB-заявка №$doc_num на сайте avtolider.km.ua");
-			
-			list($c,$c,$c,$c,$c,$SContPerson,$SPhonePerson,$SAddressPerson,$STypePay,$SCarrier,$SRemark)=$cl->get_order_form_data($client);
+
+			list($c, $c, $c, $c, $c, $SContPerson, $SPhonePerson, $SAddressPerson, $STypePay, $SCarrier, $SRemark) = $cl->get_order_form_data($client);
 //эта часть сохраняет инфо о доставке   - отключаю, всё равно не работает, да и не понадобилось - 
-			if ($SAddressPerson=="" or $SAddressPerson!=$address_sent){
-				$r=$odb->query_lider("select isnull( (select max(n) from adresdeliv where subconto_id='$client'),0);");
-				$nA=odbc_result($r,1)+1;
+			if ($SAddressPerson == "" or $SAddressPerson != $address_sent) {
+				$r = $odb->query_lider("select isnull( (select max(n) from adresdeliv where subconto_id='$client'),0);");
+				$nA = odbc_result($r, 1) + 1;
 				$odb->query_lider("update adresdeliv set n=$nA where subconto_id='$client' and n=1");
-				$odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client',1,'$address_sent','$phonePerson','$contactPerson','$more','$delivery','$payment');");				
+				$odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client',1,'$address_sent','$phonePerson','$contactPerson','$more','$delivery','$payment');");
 			}
 		}
 		return $order_message;

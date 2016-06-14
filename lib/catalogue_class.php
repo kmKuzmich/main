@@ -871,6 +871,7 @@ class catalogue {
         session_start();
         $odb = new odb;
         $slave = new slave;
+        $clnt = new client;
         $dep = "23";
         $client_id = $_SESSION["client"];
         if ($art == "") {
@@ -1069,10 +1070,11 @@ class catalogue {
                         $producent = $prod_id;
                     }
                     //Добавлено Кузичкин 10/11/2015
-                    //Если Результат поиска =1 ипроизводитель не выбирался Записываем в список "История поисков" и в WebSearch
+                    //Если Результат поиска =1 и производитель не выбирался Записываем в список "История поисков" и в WebSearch
                     //print "$by_producent";
                     if (($n = 1) and $by_producent == "") {
                         $this->saveArtSearch($art, $by_name, $producent,$byTD);
+
                     }
                     $valuta_id = odbc_result($r, "val_id");
                     $discount_id = odbc_result($r, "discount_id");
@@ -1125,6 +1127,9 @@ class catalogue {
                             }
                         }
                     }
+// Пробуем вывести сообщение клиенту о задолженности
+                    $clnt->showMessageExp($client_id);
+
                     if ($k == 15) {
                         $i = $n + 1;
                         $list .= "<tr><td colspan=10 style='color:red; font-size:16px;' height='20' align='center'>Результат поиска больше выведенного списка - конкретизируйте поиск</td></tr>";
