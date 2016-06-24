@@ -24,3 +24,6 @@
 [23-Dec-2015 00:09:30 Europe/Kiev] PHP Warning:  POST Content-Length of 18939944 bytes exceeds the limit of 5242880 bytes in Unknown on line 0
 [23-Dec-2015 00:09:46 Europe/Kiev] PHP Warning:  POST Content-Length of 18939865 bytes exceeds the limit of 5242880 bytes in Unknown on line 0
 [23-Dec-2015 00:27:05 Europe/Kiev] PHP Warning:  POST Content-Length of 18939865 bytes exceeds the limit of 5242880 bytes in Unknown on line 0
+[13-Jun-2016 13:14:22 Europe/Kiev] PHP Fatal error:  Out of memory (allocated 187432960) (tried to allocate 23037077 bytes) in C:\Avtolider-Shop\LiderAdmin\libraries\Error_Handler.class.php on line 305
+[13-Jun-2016 13:16:59 Europe/Kiev] PHP Fatal error:  Out of memory (allocated 128188416) (tried to allocate 19398661 bytes) in C:\Avtolider-Shop\LiderAdmin\libraries\Response.class.php on line 369
+[13-Jun-2016 13:20:45 Europe/Kiev] PHP Fatal error:  Out of memory (allocated 127926272) (tried to allocate 14680092 bytes) in C:\Avtolider-Shop\LiderAdmin\libraries\Response.class.php on line 369

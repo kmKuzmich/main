@@ -178,8 +178,8 @@ $i=$row['IP'];
 	}else 
 	{echo '		<td bgcolor="#ff0000">Долг</td>';}
 	echo '		<td>'.$row['DEL'].'</td>';
-	if ($row['IDDEL'] == 1 and empty($row['TTN'])){
-	echo '		<td bgcolor="#ff0000">>'.$row['TTN'].'</td>';
+	if (($row['IDDEL'] == 1 or $row['IDDEL'] == 8) and empty($row['TTN'])){
+	echo '		<td bgcolor="#ff0000">'.$row['TTN'].'</td>';
 	}else
 	{echo '		<td>'.$row['TTN'].'</td>';}
 	echo '		<td>'.$row['PHONE'].'</td>';
