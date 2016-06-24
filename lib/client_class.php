@@ -17,7 +17,7 @@ class client {
 			$r=$odb->query_td("select * from SUBCONTO where ID='$client_id' limit 0,1;");$sDolg="";
 			while(odbc_fetch_row($r)){
 				$code=odbc_result($r,"CODE");
-				$name=odbc_result($r,"NAME");
+                $name = substr(odbc_result($r, "NAME"), 0, 40);
 				list($saldo,$sDolg,$kredit,$days)=$this->getClientKredit($client_id);
 				if ($saldo==""){$saldo=0;}
 				list($nearData,$nearSumm,$sDolgN)=$this->getSubcontoNearDataSum($client_id);
