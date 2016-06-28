@@ -30,7 +30,7 @@ class client
         $odb = new odb;
         session_start();
         $nearSumm = 0;
-        $тnearData = "";
+        $nearData = "";
         $client_id = $_SESSION["client"];
         $discount = $_SESSION["discount"];
         $is_logout = $this->checkClientLogout($client_id);
@@ -47,23 +47,25 @@ class client
             while (odbc_fetch_row($r)) {
                 $code = odbc_result($r, "CODE");
                 $name = substr(odbc_result($r, "NAME"), 0, 40);
-                list($sDolgN, $nearSumm, $kredit, $days) = $this->getClientKredit($client_id);
-                if ($sDolgN == "") {
-                    $sDolgN = 0;
+                list($saldo, $nearSumm, $kredit, $days) = $this->getClientKredit($client_id);
+                if ($saldo == "") {
+                    $saldo = 0;
                 }
-//                list($nearData,$nearSumm,$sDolgN)=$this->getSubcontoNearDataSum($client_id);
+                list($nearData1, $sDolgN, $nearSumm) = $this->getSubcontoNearDataSum($client_id); //$nearData1 потому что рассчитывается непраивльно
 //для обновления убери коментарий с ст.56 поставь на ст.54
-                list($nearData, $nearSumm, $sDolgN) = $this->getSubcontoNearDataSumNew($client_id);
+//                list($nearData, $nearSumm, $saldo) = $this->getSubcontoNearDataSumNew($client_id);
             }
 //			Если есть просрочка $nearDara < today, вывести красным цветом сумму просрочки $sDolgW
             $sDolgW = "";
 //            для обновления сними комент с стр 61-64, установи на 65-66
-            if ((($nearData != "")) & ($nearData < date('Y-m-d'))) {
+//            if ((($nearData != "")) & ($nearData < date('Y-m-d'))) {
+//                $sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
+//	               Просрочено " . $nearSumm . "грн.</span><br />";
+//            }
+            if ($sDolgN > 0 and $sDolgN != "") {
                 $sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
 	               Просрочено " . $nearSumm . "грн.</span><br />";
-            }
-//            if ($sDolgN>0 and $sDolgN!=""){$sDolgW="<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
-//	               Просрочено ".$sDolgN."грн.</span><br />";}
+            } //$sDolgN
 //			if ($nearSumm > 0 and $nearSumm != "") {
 //				$sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
 //	               Просрочено " . $nearSumm . "грн.</span><br />";
@@ -74,7 +76,7 @@ class client
 //			$form = str_replace("{kredit}", $kredit, $form);
 //			$form = str_replace("{days}", $days, $form);
 //			$form = str_replace("{saldo}", $saldo, $form);
-            $form = str_replace("{saldo}", $sDolgN, $form);
+            $form = str_replace("{saldo}", $saldo, $form);
             $form = str_replace("{nearSumm}", $nearSumm, $form);
             $form = str_replace("{nearData}", $nearData, $form);
 //			$form=str_replace("{nearData}", "", $form);
@@ -252,6 +254,8 @@ class client
         if ($expireDays <= 0) {
             $mess = "<span style='font-size: 18;color: red;font-weight: bold;'>Пора платить! $nearData сумма " . $nearDolg . "</span><br /> повторное напоминание будет через $p секунд";
         };
+//        для включения обновлений закоментируй $show=0
+        $show = 0;
         setcookie("show", $show, $data_to);
         setcookie("expireDays", $expireDays, $data_to);
         setcookie("Message", $mess, $data_to);
@@ -391,7 +395,8 @@ class client
                     $answer = "ok";
                 }
                 if ($sDolg > 0) {
-                    $answer = "dolg";
+//                    $answer = "dolg";
+                    $answer = "ok"; //так я Отключил переход в список документов - долгов уж очень он тормозит.
                 }
             }
             if ($answer == "") {
@@ -409,7 +414,8 @@ class client
                         $answer = "ok";
                     }
                     if ($sDolg > 0) {
-                        $answer = "dolg";
+//                        $answer = "dolg";
+                        $answer = "ok"; //так я Отключил переход в список документов - долгов уж очень он тормозит.
                     }
                     $data_to = time() + 259200;
                     $key = $this->generateRandomString(64);
@@ -1042,6 +1048,85 @@ class client
 
 
     function getSubcontoNearDataSum($client)
+    {
+        $odb = new odb;
+        $slave = new slave;
+        $r = $odb->query_td("
+		select *
+	     from (select KD.Name \"docName\",
+	    	D.Num \"num\",
+    		to_char(D.Day,'dd-mm-yyyy') \"day\",
+			case when D.sDay < current date then 'style=\"color:red\"' else '' end as \"clr\",
+			case when D.kinddoc_id not in (3,27,20,28) then 
+				nvl(to_char(D.sDay,'dd-mm-yyyy'),'') 
+				else nvl(to_char(D.sDay,'dd-mm-yyyy'),'') end as \"sday\",
+		   cast(case
+        	when nvl(D.val_id,0)!=978 then
+	           case when D.KindDoc_id in (3,27,20,28) then D.sum
+    	           else -D.sum end
+        	end as numeric(12,2)) as \"s\",
+		   cast(case
+        	  when nvl(D.val_id,0)!=978 then
+            case when D.KindDoc_id in (3,27,20,28) then D.sum-nvl(D.osum,0)
+            else -D.osum end
+        end as numeric(12,2)) as \"os\",
+		  cast(case when nvl(D.val_id,0)=978 then
+           case when D.KindDoc_id in (3,27,20,28) then D.vsum
+           else -D.vsum
+           end
+        end as numeric(12,2)) as \"vs\",
+		   cast(case
+         when nvl(D.val_id,0)=978 then
+          case when D.KindDoc_id in (3,27,20,28) then D.vsum-nvl(D.vosum,0)
+          else -D.vosum
+          end
+         end as numeric(12,2)) as \"vos\",
+	    D.id \"doc_id\",
+		D.kinddoc_id \"kinddoc_id\",
+		D.SubConto_id
+	 from DocOpen O
+        left outer join Doc D on D.id=O.doc_id
+        join KindDoc KD on KD.id=D.KindDoc_id
+		  where O.SubConto_id='$client')
+		  where \"os\"!=0 or \"vos\"!=0
+		 order by \"sday\",\"num\";");
+        $nearData = "";
+        $nearSumm = 0;
+        $k = 0;
+        $i = 0;
+        $sDolgN = 0;
+        while (odbc_fetch_row($r)) {
+            $k += 1;
+            $i += 1;
+            $day = odbc_result($r, "day");
+            $kinddoc_id = odbc_result($r, "kinddoc_id");
+            $sday = odbc_result($r, "sday");
+            $os = $slave->tomoney(odbc_result($r, "os"));
+            if ((date("Ymd", strtotime($sday)) <= date("Ymd", mktime(0, 0, 0, date("m"), date("d") + 3, date("Y"))))
+//			and (($kinddoc_id==27)||($kinddoc_id==3))
+//			and ($os>0)
+            ) {
+                $nearSumm += $os;
+                $nearData = date("d-m-Y");
+            }
+            if ((date("Ymd", strtotime($sday)) <= date("Ymd", mktime(0, 0, 0, date("m"), date("d"), date("Y"))))
+//			and ($os>0)
+            ) {
+                $sDolgN += $os;
+            }
+
+        }
+        $sDolgN = round($sDolgN, 2);
+        if ($sDolgN < 0) {
+            $sDolgN = 0;
+        }
+        $nearSumm = $slave->int_to_money($nearSumm);
+        return array($nearData, $nearSumm, $sDolgN);
+    }
+
+
+    //это я тут поковырялся и по ходу шо то сламал, лучше потом удалить вовсе
+    function getSubcontoNearDataSum1($client)
     {
         $odb = new odb;
         $slave = new slave;
