@@ -29,6 +29,8 @@ class client
     {
         $odb = new odb;
         session_start();
+        $nearSumm = 0;
+        $тnearData = "";
         $client_id = $_SESSION["client"];
         $discount = $_SESSION["discount"];
         $is_logout = $this->checkClientLogout($client_id);
@@ -45,18 +47,23 @@ class client
             while (odbc_fetch_row($r)) {
                 $code = odbc_result($r, "CODE");
                 $name = substr(odbc_result($r, "NAME"), 0, 40);
-//				list($saldo, $sDolg, $kredit, $days) = $this->getClientKredit($client_id);
-//				if ($saldo == "") {
-//					$saldo = 0;
-//				}
+                list($sDolgN, $nearSumm, $kredit, $days) = $this->getClientKredit($client_id);
+                if ($sDolgN == "") {
+                    $sDolgN = 0;
+                }
+//                list($nearData,$nearSumm,$sDolgN)=$this->getSubcontoNearDataSum($client_id);
+//для обновления убери коментарий с ст.56 поставь на ст.54
                 list($nearData, $nearSumm, $sDolgN) = $this->getSubcontoNearDataSumNew($client_id);
             }
 //			Если есть просрочка $nearDara < today, вывести красным цветом сумму просрочки $sDolgW
             $sDolgW = "";
+//            для обновления сними комент с стр 61-64, установи на 65-66
             if ((($nearData != "")) & ($nearData < date('Y-m-d'))) {
                 $sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
 	               Просрочено " . $nearSumm . "грн.</span><br />";
             }
+//            if ($sDolgN>0 and $sDolgN!=""){$sDolgW="<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
+//	               Просрочено ".$sDolgN."грн.</span><br />";}
 //			if ($nearSumm > 0 and $nearSumm != "") {
 //				$sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
 //	               Просрочено " . $nearSumm . "грн.</span><br />";
@@ -238,7 +245,7 @@ class client
         {
             $show = 1;
             setcookie("ShowTime", time(), $data_to);
-            echo $show;
+//            echo $show;
         };
         $expireDays = ((strtotime($nearData) - strtotime(date('Y-m-d'))) / 3600 / 24) - 1;
 //        echo(date('Y-m-d') . " просрочено " . $expireDays . " дней с " . ($nearData));
@@ -257,7 +264,7 @@ class client
         session_start();
         $client_id = $_SESSION["client"];
         $odb->query_lider("create variable @last_id integer ");
-        db->query_lider("insert into Local(user_id) values(-1);");
+        $odb->query_lider("insert into Local(user_id) values(-1);");
         $odb->query_lider("SET OPTION DATE_ORDER = 'DMY';");
         $odb->query_lider("SET OPTION DATE_FORMAT = 'DD-MM-YYYY';");
         $odb->query_lider("SET OPTION Timestamp_format = 'DD-MM-YYYY HH:NN:SS.SSS';");
