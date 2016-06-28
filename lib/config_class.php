@@ -18,10 +18,22 @@ class config {
 		}
 		return array($title,$key_words,$description,$seo_info);
 	}
-
+//Метод get_module_file($file,$var)  на входе получает код ID-файла, на выходе, если второй атрибут==1 - получает название файла-события который вызывается на выполнение из папки /event иначе если ==2 то просто первый атрибут
+//
 	function get_module_file($file,$var){$odb=new odb;
 		if ($var==1){ 
 			$r=$odb->query_td("select file from module_files where id='$file';");$file="";
+//Выбор файла модуля по его ID в таблице предоставлены следующие значения:
+//ID	CAPTION				FILE
+// 1	Текстовый раздел	dep 
+// 2	Новости				news
+// 9	Обратная связь		feedback
+//23	Каталог товаров		catalogue
+//24	История заказов		history
+//25	Профиль				profile
+//31	Задачи				task
+//32	Оплаты				docs
+
 			while(odbc_fetch_row($r)){$file=odbc_result($r,"file");}
 			return $file;
 		}

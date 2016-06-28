@@ -2,7 +2,7 @@
 define("RD", dirname(__FILE__));
 include_once 'client_class.php';
 $clnt = new client;
-echo $clnt->showMessage("1");
+echo $clnt->showMessageExp("7562");
 //echo showMessageBox(1);
 
 function showMessageBox($mess_id)

@@ -1,9 +1,15 @@
 <?php
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', true);
-define("RD", dirname (__FILE__));
+define("RD", dirname(__FILE__));
+require_once(RD . "/../lib/slave_class.php");
+require_once(RD . "/../lib/odbc_class.php");
+require_once(RD . "/../lib/dep_class.php");
+require_once(RD . "/../lib/menu_class.php");
+$odb = new odb;
+$dep = new dep;
+$menu = new menu;
 
-require_once (RD."/../lib/odbc_class.php");$odb=new odb;
 /*$odb->query_lider("create variable @val_id integer");
 $odb->query_lider("create variable @base_id integer ");
 $odb->query_lider("create variable @place_id integer ");
@@ -30,11 +36,21 @@ insert into Local(user_id) values(-1);" +
 " SET OPTION Timestamp_format = 'DD-MM-YYYY HH:NN:SS.SSS'; " );
 */
 
-$mid=odbc_result($r,"id");print "id=".$mid;
-$num=odbc_result($r,"num");print "num=".$num;
-print odbc_errormsg()."<br />";
+//$mid = odbc_result($r, "id");
+$mnu = $menu->show_top_menu(1);
+print "$mnu<br>";
+$mnu = $menu->show_dep_menu();
+print "$mnu<br>";
+
+//print "id=" . $mid;
+//$num = odbc_result($r, "num");
+//print "num=" . $num;
+//print odbc_errormsg() . "<br />";
 
 //$r=$odb->query_lider("SELECT @last_id;");odbc_fetch_row($r);$mid=odbc_result($r,"@last_id");print "last2=".$mid;
-$r=$odb->query_lider("SELECT ErrorMessage;");odbc_fetch_row($r);$error=odbc_result($r,"ErrorMessage");print "error=".$error;
+//$r = $odb->query_lider("SELECT ErrorMessage;");
+//odbc_fetch_row($r);
+//$error = odbc_result($r, "ErrorMessage");
+//print "error=" . $error;
 //$r=$odb->query_lider("update doc set subconto_id='11913' where id='3333000';");
 odbc_close_all();

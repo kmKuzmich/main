@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.4/jquery.min.js" type="text/javascript"></script>-->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+    <script src="/js/alert/AlertForm.js" type="text/javascript"></script>
+
+    <meta charset='windows-1251'>
+    <title>О лосях</title>
+</head>
+<body>
+Правда о лосях
+<ol>
+    <li>Лось — животное хитрое</li>
+    <!-- комментарий -->
+    <li>...и коварное!</li>
+</ol>
+</body>
+</html>
+
+<script>
+    $(function () {
+        $('body ol li:last-child').on('Blur', function () {
+//            showAlertForm('Hi');
+            alert('Hello Alex');
+        })
+    })
+</script>

@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', true);
-define("RD", dirname (__FILE__));
+define("RD", dirname(__FILE__));
 /*
 define("PROVIDER_ID", "20122");
 define("TecdocToCat", "http://webservice-cs.tecdoc.net/pegasus-2-0/wsdl/TecdocToCat");
@@ -62,17 +62,23 @@ function showAplicability($code,$articleId){
 			return;
 	}*/
 
-$handle = @fopen("data_taras1.txt", "r");$codeAr=array();$carAr=array();$k=0;
+$handle = @fopen("data_taras1.txt", "r");
+$codeAr = array();
+$carAr = array();
+$k = 0;
 if ($handle) {
-	$fp = fopen('data_taras2.txt', 'a+');
-	while (($str = fgets($handle, 4096)) !== false) {$str=trim($str);
-		$ar=explode(";",$str);
-		if (!in_array($ar[0], $codeAr)){$k+=1;
-			$codeAr[$k]=$ar[0];$carAr[$k]=$ar[1];
-			fwrite($fp, $ar[0].";".$ar[1]."\n");
-		}
-	}
-	fclose($fp);
+    $fp = fopen('data_taras2.txt', 'a+');
+    while (($str = fgets($handle, 4096)) !== false) {
+        $str = trim($str);
+        $ar = explode(";", $str);
+        if (!in_array($ar[0], $codeAr)) {
+            $k += 1;
+            $codeAr[$k] = $ar[0];
+            $carAr[$k] = $ar[1];
+            fwrite($fp, $ar[0] . ";" . $ar[1] . "\n");
+        }
+    }
+    fclose($fp);
 }
 print_r($codeAr);
 
