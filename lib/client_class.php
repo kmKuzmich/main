@@ -249,30 +249,32 @@ class client
             setcookie("ShowTime", time(), $data_to);
 //            echo $show;
         };
-        $expireDays = ((strtotime($nearData) - strtotime(date('Y-m-d'))) / 3600 / 24) - 1;
+        $expireDays = ((strtotime($nearData) - strtotime(date('Y-m-d'))) / 3600 / 24);
 //        echo(date('Y-m-d') . " просрочено " . $expireDays . " дней с " . ($nearData));
         if ($expireDays <= 0) {
 //            $mess = "<span style='font-size: 18;color: red;font-weight: bold;'>Пора платить! $nearData сумма " . $nearSumm . "</span><br /> повторное напоминание будет через $p секунд";
             $mess = "<span class='messExp'> Пора платить! $nearData сумма " . $nearSumm . "</span><br /> повторное напоминание будет через $p секунд";
         };
         switch ($expireDays) {
-            case -2 :
-                $mess = "<span class='messExp'>Завтра настає дата оплати. <br /> Ми чекаємо від Вас платіж на суму $nearSumm грн</span>";
+            case (1) :
+                $mess = "<span class='messExp1'>Нагадуємо, завтра настає дата оплати. <br /> Будемо дуже вдячні за вчасний платіж на суму $nearSumm грн</span> <br />якщо ви вже здійснили оплату, то незабаорм ця інформація підтвердиться";
 //        це другий можливий варіант повідомлення
 //        $mess = "<span class='messExp'>Завтра закінчується відтермінування за товарним кредитом. <br /> Ми чекаємо від Вас платіж на суму $nearSumm грн </span>>";
                 break;
-            case -1 :
-                $mess = "<span class='messExp'>Сьогодні настала дата оплати за товарний кредит.<br /> Ми чекаємо від Вас платіж на суму $nearSumm грн </span>";
+            case (0) :
+                $mess = "<span class='messExp0'>Нагадуємо, сьогодні настала дата оплати за товарний кредит.<br /> Ми чекаємо від Вас платіж на суму $nearSumm грн</span> <br />якщо ви вже здійснили оплату, то незабаорм ця інформація підтвердиться, у іншому випадку Вам краще зв'язатись з нашим менеджером для перевірки інформації";
                 break;
             default :
-                $mess = " < span class='messExp' > У Вас борг на суму $nearSumm < br /> Прохання погасити його, інакше ми будемо вимушені призупинити Вам відправку товару .<br /> Дякуємо за співпрацю! </span > ";
+                if ($expireDays < 0)
+                    $mess = " <span class='messExp'> У Вас борг на суму $nearSumm <br /> Прохання погасити його, інакше ми будемо вимушені призупинити Вам відправку товару.<br /> Дякуємо за співпрацю! </span> ";
+                else $mess = "";
 //        це другий можливий варіант повідомлення
 //                $mess = "<span class='messExp' > У вас є прострочена заборгованність на суму $nearSumm грн .<br /> Прохання погасити її, інакше ми будемо вимушені призупинити Вам відправку товару . <br /> Дякуємо за співпрацю! </span > ";
         }
 
 
 //        для включения обновлений закоментируй $show=0
-//        $show = 0;
+//        $show = 1;
         setcookie("show", $show, $data_to);
         setcookie("expireDays", $expireDays, $data_to);
         setcookie("Message", $mess, $data_to);
