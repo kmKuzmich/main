@@ -31,6 +31,7 @@ class client
         session_start();
         $nearSumm = 0;
         $nearData = "";
+//        if empty($_SESSION["client"])
         $client_id = $_SESSION["client"];
         $discount = $_SESSION["discount"];
         $is_logout = $this->checkClientLogout($client_id);
@@ -51,21 +52,21 @@ class client
                 if ($saldo == "") {
                     $saldo = 0;
                 }
-                list($nearData1, $sDolgN, $nearSumm) = $this->getSubcontoNearDataSum($client_id); //$nearData1 потому что рассчитывается непраивльно
+//                list($nearData1, $sDolgN, $nearSumm) = $this->getSubcontoNearDataSum($client_id); //$nearData1 потому что рассчитывается непраивльно
 //для обновления убери коментарий с ст.56 поставь на ст.54
-//                list($nearData, $nearSumm, $saldo) = $this->getSubcontoNearDataSumNew($client_id);
+                list($nearData, $nearSumm, $saldo) = $this->getSubcontoNearDataSumNew($client_id);
             }
 //			Если есть просрочка $nearDara < today, вывести красным цветом сумму просрочки $sDolgW
             $sDolgW = "";
 //            для обновления сними комент с стр 61-64, установи на 65-66
-//            if ((($nearData != "")) & ($nearData < date('Y-m-d'))) {
-//                $sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
-//	               Просрочено " . $nearSumm . "грн.</span><br />";
-//            }
-            if ($sDolgN > 0 and $sDolgN != "") {
+            if ((($nearData != "")) & ($nearData < date('Y-m-d'))) {
                 $sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
 	               Просрочено " . $nearSumm . "грн.</span><br />";
-            } //$sDolgN
+            }
+//            if ($sDolgN > 0 and $sDolgN != "") {
+//                $sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
+//	               Просрочено " . $nearSumm . "грн.</span><br />";
+//            } //$sDolgN
 //			if ($nearSumm > 0 and $nearSumm != "") {
 //				$sDolgW = "<span style='color:red; cursor:pointer;font-weight:bold;' onclick='location.href=\"?dep=32&dep_up=4&dep_cur=14\";'>
 //	               Просрочено " . $nearSumm . "грн.</span><br />";
@@ -237,14 +238,13 @@ class client
         $client = $_SESSION["client"];
         $expireDays = 0;
         $show = 0;
-        $p = 5 * 60; //в секундах
+        $p = 180 * 60; //в секундах
         $data_to = time() + $p;
         setcookie("Period", $p, $data_to);
-        list($nearData, $nearDolg, $Dolg) = $this->getSubcontoNearDataSumNew($client);//5551//12515//14882
-//        echo "дата $nearData сумм б $nearDolg сумма $Dolg";
+        list($nearData, $nearSumm, $Dolg) = $this->getSubcontoNearDataSumNew($client);//5551//12515//14882
+//        echo "дата $nearData сумм б $nearSumm сумма $Dolg";
 //если куки уже не существует и есть долг - разрешить показывать сообщение и установить время когда был показ
-        if ((empty($_COOKIE["ShowTime"]))) //& ($nearDolg > 0))
-        {
+        if (((empty($_COOKIE["ShowTime"])) || (time() > $_COOKIE["ShowTime"] + $p)) & ($nearSumm > 0)) {
             $show = 1;
             setcookie("ShowTime", time(), $data_to);
 //            echo $show;
@@ -252,10 +252,27 @@ class client
         $expireDays = ((strtotime($nearData) - strtotime(date('Y-m-d'))) / 3600 / 24) - 1;
 //        echo(date('Y-m-d') . " просрочено " . $expireDays . " дней с " . ($nearData));
         if ($expireDays <= 0) {
-            $mess = "<span style='font-size: 18;color: red;font-weight: bold;'>Пора платить! $nearData сумма " . $nearDolg . "</span><br /> повторное напоминание будет через $p секунд";
+//            $mess = "<span style='font-size: 18;color: red;font-weight: bold;'>Пора платить! $nearData сумма " . $nearSumm . "</span><br /> повторное напоминание будет через $p секунд";
+            $mess = "<span class='messExp'> Пора платить! $nearData сумма " . $nearSumm . "</span><br /> повторное напоминание будет через $p секунд";
         };
+        switch ($expireDays) {
+            case -2 :
+                $mess = "<span class='messExp'>Завтра настає дата оплати. <br /> Ми чекаємо від Вас платіж на суму $nearSumm грн</span>";
+//        це другий можливий варіант повідомлення
+//        $mess = "<span class='messExp'>Завтра закінчується відтермінування за товарним кредитом. <br /> Ми чекаємо від Вас платіж на суму $nearSumm грн </span>>";
+                break;
+            case -1 :
+                $mess = "<span class='messExp'>Сьогодні настала дата оплати за товарний кредит.<br /> Ми чекаємо від Вас платіж на суму $nearSumm грн </span>";
+                break;
+            default :
+                $mess = " < span class='messExp' > У Вас борг на суму $nearSumm < br /> Прохання погасити його, інакше ми будемо вимушені призупинити Вам відправку товару .<br /> Дякуємо за співпрацю! </span > ";
+//        це другий можливий варіант повідомлення
+//                $mess = "<span class='messExp' > У вас є прострочена заборгованність на суму $nearSumm грн .<br /> Прохання погасити її, інакше ми будемо вимушені призупинити Вам відправку товару . <br /> Дякуємо за співпрацю! </span > ";
+        }
+
+
 //        для включения обновлений закоментируй $show=0
-        $show = 0;
+//        $show = 0;
         setcookie("show", $show, $data_to);
         setcookie("expireDays", $expireDays, $data_to);
         setcookie("Message", $mess, $data_to);
@@ -272,15 +289,20 @@ class client
         $odb->query_lider("SET OPTION DATE_ORDER = 'DMY';");
         $odb->query_lider("SET OPTION DATE_FORMAT = 'DD-MM-YYYY';");
         $odb->query_lider("SET OPTION Timestamp_format = 'DD-MM-YYYY HH:NN:SS.SSS';");
-        $odb->query_lider("call setDocState($mess_id,$status_id,$client_id);");
-        /*		$r = $odb->query_lider("call setDocState($mess_id,$status_id,$client_id);"); //Если сообщение было группе то будет newId иначе Null;
+        $odb->query_lider("call setDocState($mess_id, $status_id, $client_id);");
+        /*		$r = $odb->query_lider("call setDocState($mess_id, $status_id, $client_id);"); //Если сообщение было группе то будет newId иначе Null;
                 odbc_fetch_row($r);$mess_id1=odbc_result($r,1);
                 print 'NEW id='.$mess_id1;
-                if (!$mess_id1) {$mess_id=$mess_id;} else {$mess_id=$mess_id1;}  //если сообщение не для группы то NewId будет нуль тогда mess_id не менять
+                if (!$mess_id1) {$mess_id=$mess_id;
+        }
+         else {
+        $mess_id = $mess_id1;
+    }  //если сообщение не для группы то NewId будет нуль тогда mess_id не менять
         //		оказалось что это всё равно не работает, потому что NewId ещё не существует в DB2 и сообщение продолжает отображаться, чтоб побороть эту проблему в таблицу mess_status загружаю MESS_ID главного сообщения
         */
-//		print 'NEW id='.$mess_id.' KLIENT ='.$client_id;
-        $odb->query_td("insert into mess_status (mess_id,client_id) values ('$mess_id',$client_id);");
+//		print 'NEW id='.
+        $mess_id . ' KLIENT =' . $client_id;
+        $odb->query_td("insert into mess_status(mess_id, client_id) values('$mess_id', $client_id);");
         return 1;
     }
 
@@ -291,8 +313,8 @@ class client
         session_start();
         $client_id = $_SESSION["client"];
 
-        $odb->query_lider("call setDocState($mess_id,29,$client_id);");
-        $odb->query_td("insert into mess_status (mess_id,client_id) values ('$mess_id',$client_id);");
+        $odb->query_lider("call setDocState($mess_id, 29, $client_id);");
+        $odb->query_td("insert into mess_status(mess_id, client_id) values('$mess_id', $client_id);");
 
         $odbA->query_lider("create variable @last_id integer ");
         $odbA->query_lider("insert into Local(user_id) values(-1);");
@@ -301,12 +323,12 @@ class client
         $odbA->query_lider("SET OPTION Timestamp_format = 'DD-MM-YYYY HH:NN:SS.SSS';");
         $data_lider = date('d-m-Y');
 
-        $r = $odbA->query_lider("call addMessage('$data_lider','$data_lider','$answer','$answer','$client_id',null,null,'$mess_id');"); //select newId;
+        $r = $odbA->query_lider("call addMessage('$data_lider', '$data_lider', '$answer', '$answer', '$client_id', null, null, '$mess_id');"); //select newId;
         odbc_fetch_row($r);
         $mess_id1 = odbc_result($r, 1);
         //print 'newid ='.$mess_id1;
-        $odbA->query_lider("call setDocState($mess_id1,29,$client_id);");
-        $odb->query_td("insert into mess_status (mess_id,client_id) values ('$mess_id1',$client_id);");
+        $odbA->query_lider("call setDocState($mess_id1, 29, $client_id);");
+        $odb->query_td("insert into mess_status(mess_id, client_id) values('$mess_id1', $client_id);");
         return 1;
     }
 
@@ -315,7 +337,7 @@ class client
         $odb = new odb;
         $slave = new slave;
         $saldo = 0;
-        $r = $odb->query_td("select SUM,OSUM from DOC where SUBCONTO_ID='$id' and KINDDOC_ID='27' and OPL='0' order by SDAY;");
+        $r = $odb->query_td("select SUM,OSUM from DOC where SUBCONTO_ID = '$id' and KINDDOC_ID = '27' and OPL = '0' order by SDAY;");
         while (odbc_fetch_row($r)) {
             $sum = odbc_result($r, "SUM");
             $osum = odbc_result($r, "OSUM");
@@ -334,7 +356,7 @@ class client
     {
         $odb = new odb;
         $type = 1;
-        $r = $odb->query_td("select * from SUBCONTOTYPES where SUBCONTO_ID='$id';");
+        $r = $odb->query_td("select * from SUBCONTOTYPES where SUBCONTO_ID = '$id';");
         while (odbc_fetch_row($r)) {
             $type = odbc_result($r, "subcontotype_id");
         }
@@ -346,22 +368,22 @@ class client
         $odb = new odb;
         $logout = 0;
 //Проверка Блокирования по таблице SUBCONTO_INOUT 
-//		$r=$odb->query_td("select id from SUBCONTO_INOUT where SUBCONTO_ID='$id' and ISON='1' and SET_LOGOUT='1';");
+//		$r=$odb->query_td("select id from SUBCONTO_INOUT where SUBCONTO_ID = '$id' and ISON = '1' and SET_LOGOUT = '1';");
 //Проверка Блокирования в lider по полю subconto.flag=16
-        $r = $odb->query_lider("select id,(flag&16) as flag from SubConto where id='$id' and (flag&16)=16;");
+        $r = $odb->query_lider("select id,(flag & 16) as flag from SubConto where id = '$id' and (flag & 16) = 16;");
         while (odbc_fetch_row($r)) {
             $lid = odbc_result($r, "id");
             $logout = 1;
 //Снятие Блокирования по таблице SUBCONTO_INOUT 
-//			$odb->query_td("delete from SUBCONTO_INOUT where ID='$lid';"); 
+//			$odb->query_td("delete from SUBCONTO_INOUT where ID = '$lid';"); 
 //Снятие Блокирования в lider по полю subconto.flag=16
-            $odb->query_lider("update SubConto set flag=flag&~16 where id='$lid';");
+            $odb->query_lider("update SubConto set flag = flag & ~16 where id = '$lid';");
             session_start();
             session_unset($_SESSION["client"]);
             session_unset($_SESSION["email"]);
             setcookie("AvtoliderUser", "", time() - 3600);
             setcookie("AvtoliderUserSecure", "", time() - 3600);
-//if ($_SERVER['REMOTE_ADDR']=="192.168.0.39") {print "select id from SUBCONTO_INOUT where SUBCONTO_ID='$id' and ISON='1' and SET_LOGOUT='1'; $lid; update SUBCONTO_INOUT set ISON='0', SET_LOGOUT='0' where ID='$lid';";}
+//if ($_SERVER['REMOTE_ADDR']=="192.168.0.39") {print "select id from SUBCONTO_INOUT where SUBCONTO_ID = '$id' and ISON = '1' and SET_LOGOUT = '1'; $lid; update SUBCONTO_INOUT set ISON = '0', SET_LOGOUT = '0' where ID = '$lid';";}
         }
         return $logout;
     }
@@ -376,7 +398,7 @@ class client
         if ($pass != "" and $email != "") {
             setcookie("AvtoliderUser", "", time() - 3600);
             setcookie("AvtoliderUserSecure", "", time() - 3600);
-            $r = $odb->query_td("select * from SUBCONTO where lcase(EMAIL)=lcase('$email') and PWD='$pass' limit 0,1;");
+            $r = $odb->query_td("select * from SUBCONTO where lcase(EMAIL) = lcase('$email') and PWD = '$pass' limit 0,1;");
             while (odbc_fetch_row($r)) {
                 session_start();
                 $_SESSION["client_user"] = 0;
@@ -388,7 +410,7 @@ class client
                 $key = $this->generateRandomString(64);
                 setcookie("AvtoliderUser", $_SESSION["client"], $data_to);
                 setcookie("AvtoliderUserSecure", $key, $data_to);
-                $odb->query_td("insert into SUBCONTO_COOKIES (subconto_id,cookie,data_to) values('" . $_SESSION["client"] . "','$key','$data_to');");
+                $odb->query_td("insert into SUBCONTO_COOKIES(subconto_id, cookie, data_to) values('" . $_SESSION["client"] . "', '$key', '$data_to');");
 //                list($saldo, $sDolg, $kredit, $days) = $this->getClientKredit($_SESSION["client"]);
                 list ($nearData, $sDolg, $Dolg) = $this->getSubcontoNearDataSumNew($_SESSION["client"]);
                 if ($sDolg == 0 or $sDolg == "") {
@@ -400,7 +422,7 @@ class client
                 }
             }
             if ($answer == "") {
-                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where lcase(EMAIL)=lcase('$email') and PWD='$pass' and ISON='1' limit 0,1;");
+                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where lcase(EMAIL) = lcase('$email') and PWD = '$pass' and ISON = '1' limit 0,1;");
                 while (odbc_fetch_row($r1)) {
                     session_start();
                     $_SESSION["email"] = $email;
@@ -430,11 +452,11 @@ class client
                 session_unset($_SESSION["email"]);
                 setcookie("AvtoliderUser", "", time() - 3600);
                 setcookie("AvtoliderUserSecure", "", time() - 3600);
-                $answer = "Неверные E-mail или пароль!";
+                $answer = "Неверные E - mail или пароль!";
             }
         }
         if ($pass == "" or $email == "") {
-            $answer = "Не заполнены поля E-mail или пароль!";
+            $answer = "Не заполнены поля E - mail или пароль!";
         }
         return $answer;
     }
@@ -444,7 +466,7 @@ class client
         $slave = new slave;
         $odb = new odb;
         if ($id != "") {
-            $r = $odb->query_td("select * from SUBCONTO where id='$id' limit 0,1;");
+            $r = $odb->query_td("select * from SUBCONTO where id = '$id' limit 0,1;");
             while (odbc_fetch_row($r)) {
                 session_start();
                 $_SESSION["client_user"] = 0;
@@ -455,7 +477,7 @@ class client
 //                list ($nearData,$sDolg,$Dolg) = $this->getSubcontoNearDataSumNew($_SESSION["client"]);
             }
             if ($answer == "") {
-                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where SUBCONTO_ID='$id' and ISON='1' limit 0,1;");
+                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where SUBCONTO_ID = '$id' and ISON = '1' limit 0,1;");
                 while (odbc_fetch_row($r1)) {
                     session_start();
                     $_SESSION["email"] = $email;
@@ -484,10 +506,10 @@ class client
         if (($cookie_user != "") and ($cookie_key != "")) {
             $is_logout = $this->checkClientLogout($cookie_user);
             if ($is_logout == 0) {
-                $r = $odb->query_td("select * from subconto_cookies where subconto_id='$cookie_user' and cookie='$cookie_key';");
+                $r = $odb->query_td("select * from subconto_cookies where subconto_id = '$cookie_user' and cookie = '$cookie_key';");
                 while (odbc_fetch_row($r)) {
                     $data_to = odbc_result($r, "data_to");
-                    $odb->query_td("delete from SUBCONTO_COOKIES where cookie='$cookie_key' and subconto_id='$cookie_user';");
+                    $odb->query_td("delete from SUBCONTO_COOKIES where cookie = '$cookie_key' and subconto_id = '$cookie_user';");
                     if ($data_to < time()) {
                         $subconto_id = "";
                         setcookie("AvtoliderUser", "", time() - 3600);
@@ -498,7 +520,7 @@ class client
                         $key = $this->generateRandomString(64);
                         setcookie("AvtoliderUser", $client_id, $data_to);
                         setcookie("AvtoliderUserSecure", $key, $data_to);
-                        $odb->query_td("insert into SUBCONTO_COOKIES (subconto_id,cookie,data_to) values('" . $client_id . "','$key','$data_to');");
+                        $odb->query_td("insert into SUBCONTO_COOKIES(subconto_id, cookie, data_to) values('" . $client_id . "', '$key', '$data_to');");
                         $this->get_cookie_client_info($client_id);
                     }
                 }
@@ -550,29 +572,35 @@ class client
         $slave = new slave;
         $answer = "";
         $email = strtolower($email);
-        $r = $odb->query_td("select id,Name,pwd from SUBCONTO where email='$email' limit 0,1;");
+        $r = $odb->query_td("select id,Name,pwd from SUBCONTO where email = '$email' limit 0,1;");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
             $Name = odbc_result($r, "Name");
             $pass = odbc_result($r, "pwd");
-            $message_htm = RD . "/tpl/message_pass_forgot.htm";
+            $message_htm = RD . " / tpl / message_pass_forgot . htm";
             if (file_exists("$message_htm")) {
                 $message = file_get_contents($message_htm);
             }
-            $message = str_replace("{pass}", $pass, $message);
-            $message = str_replace("{email}", $email, $message);
-            $message = str_replace("{name}", $Name, $message);
-            $message = str_replace("{client_id}", $id, $message);
-            $message = str_replace("{flink}", $this->getFastSubcontoAuth($id), $message);
-            $message = str_replace("{remip}", $_SERVER['REMOTE_ADDR'], $message);
+            $message = str_replace("{
+        pass}", $pass, $message);
+            $message = str_replace("{
+        email}", $email, $message);
+            $message = str_replace("{
+        name}", $Name, $message);
+            $message = str_replace("{
+        client_id}", $id, $message);
+            $message = str_replace("{
+        flink}", $this->getFastSubcontoAuth($id), $message);
+            $message = str_replace("{
+        remip}", $_SERVER['REMOTE_ADDR'], $message);
 
-            include_once RD . "/mail/sendmail.class.php";
+            include_once RD . " / mail / sendmail .class.php";
             $Mail = new sendmail();
-            $Mail->mail_to = "$Name <$email>";
-            $Mail->subject = "Password recovery to zakaz.avtolider-ua.com";
+            $Mail->mail_to = "$Name < $email>";
+            $Mail->subject = "Password recovery to zakaz . avtolider - ua . com";
             $Mail->message = $message;
             $Mail->from_name = "Avtolider";
-            $Mail->SendFromMail = "no-reply@avtolider-ua.com";
+            $Mail->SendFromMail = "no - reply@avtolider - ua . com";
             $Mail->Send();
 
             $answer = "ok";
@@ -588,69 +616,69 @@ class client
         $odb = new odb;
         if ($pls == "1") {
             $name = "RegState_form";
-            $function = "showCityForm(this[this.selectedIndex].value);";
+            $function = "showCityForm(this[this . selectedIndex] . value);";
         }
         if ($pls == "2") {
             $name = "state_form";
-            $function = "showCityOrderForm(this[this.selectedIndex].value);";
+            $function = "showCityOrderForm(this[this . selectedIndex] . value);";
         }
-        $form = "<select id='$name' name='$name' onchange='$function' style='width:400px;'><option value='#'> --- </option>";
+        $form = " < select id = '$name' name = '$name' onchange = '$function' style = 'width:400px;' ><option value = '#' > --- </option > ";
         $r = $odb->query_td("select * from REGION_NEW order by id asc;");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "ID");
             $caption = odbc_result($r, "NAME");
-            $form .= "<option value='$id'>$caption</option>";
+            $form .= " < option value = '$id' > $caption</option > ";
         }
-        $form .= "</select>";
+        $form .= "</select > ";
         return $form;
     }
 
     function showCityForm($state)
     {
         $odb = new odb;
-        $form = "<select id='RegCity_form' name='RegCity_form' onchange='checkNewCity(this[this.selectedIndex].value);' style='width:400px;'>";
-        $r = $odb->query_td("select * from CITY_NEW where REGION_ID='$state' order by NAME,ID asc;");
+        $form = "<select id = 'RegCity_form' name = 'RegCity_form' onchange = 'checkNewCity(this[this.selectedIndex].value);' style = 'width:400px;' > ";
+        $r = $odb->query_td("select * from CITY_NEW where REGION_ID = '$state' order by NAME,ID asc;");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "ID");
             $caption = odbc_result($r, "NAME");
-            $form .= "<option value='$id'>$caption</option>";
+            $form .= " < option value = '$id' > $caption</option > ";
         }
-        $form .= "<option value='0'>-- Новый населенный пункт --</option>";
-        $form .= "</select>";
+        $form .= "<option value = '0' > --Новый населенный пункт--</option > ";
+        $form .= "</select > ";
         return $form;
     }
 
     function showCityOrderForm($state)
     {
         $odb = new odb;
-        $form = "<select id='city_form' name='city_form' onchange='checkNewOrderCity(this[this.selectedIndex].value);' style='width:400px;'>";
-        $r = $odb->query_td("select * from CITY_NEW where REGION_ID='$state' order by NAME,ID asc;");
+        $form = "<select id = 'city_form' name = 'city_form' onchange = 'checkNewOrderCity(this[this.selectedIndex].value);' style = 'width:400px;' > ";
+        $r = $odb->query_td("select * from CITY_NEW where REGION_ID = '$state' order by NAME,ID asc;");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "ID");
             $caption = odbc_result($r, "NAME");
-            $form .= "<option value='$id'>$caption</option>";
+            $form .= " < option value = '$id' > $caption</option > ";
         }
-        $form .= "<option value='0'>-- Новый населенный пункт --</option>";
-        $form .= "</select>";
+        $form .= "<option value = '0' > --Новый населенный пункт--</option > ";
+        $form .= "</select > ";
         return $form;
     }
 
     function showActivityForm($sid)
     {
         $odb = new odb;
-        $form = "<select id='RegActivity_form' name='RegActivity_form' style='width:400px;'>";
+        $form = "<select id = 'RegActivity_form' name = 'RegActivity_form' style = 'width:400px;' > ";
         $r = $odb->query_td("select * from SUBCONTO_ACTIVITY order by id asc;");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
             $caption = odbc_result($r, "NAME");
             if ($id == $sid) {
-                $form .= "<option value='$id' selected='selected'>$caption</option>";
+                $form .= " < option value = '$id' selected = 'selected' > $caption</option > ";
             }
             if ($id != $sid) {
-                $form .= "<option value='$id'>$caption</option>";
+                $form .= "<option value = '$id' > $caption</option > ";
             }
         }
-        $form .= "</select>";
+        $form .= "</select > ";
         return $form;
     }
 
@@ -659,8 +687,8 @@ class client
         session_start();
         $odb = new odb;
         $slave = new slave;
-        require_once(RD . "/recaptchalib.php");
-        $privatekey = "6LcepdkSAAAAABAOFjbEHh7rTcr1OqYqB7srixb-";
+        require_once(RD . " / recaptchalib . php");
+        $privatekey = "6LcepdkSAAAAABAOFjbEHh7rTcr1OqYqB7srixb - ";
         $resp = recaptcha_check_answer($privatekey, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
         if (!$resp->is_valid) {
             // What happens when the CAPTCHA was entered incorrectly
@@ -685,18 +713,18 @@ class client
             }
             if ($email != "" and $name != "" and $city != "" and $address != "" and $phone != "") {
                 $remip = $_SERVER['REMOTE_ADDR'];
-                $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO inner join SUBCONTO_USERS on (subconto.id=subconto_users.SubConto_id) where subconto.email='$email' or subconto_users.email='$email' limit 0,1;");
+                $r = $odb->query_td("SELECT subconto . id FROM SUBCONTO inner join SUBCONTO_USERS on(subconto . id = subconto_users . SubConto_id) where subconto . email = '$email' or subconto_users . email = '$email' limit 0,1;");
                 $n = $odb->num_rows($r);
                 if ($n > 0) {
                     $err = 1;
-                    $answer = "Указаный вами EMAIL уже зарегистрирован в нашем интернет-магазине!!!";
+                    $answer = "Указаный вами EMAIL уже зарегистрирован в нашем интернет - магазине!!!";
                 }
                 if ($n == 0) {
 
                     include(RD . '/lib/pwd.gen.php');
                     $pwgen = new PWGen();
                     $pass = $pwgen->generate();
-                    $date = date("Y-m-d");
+                    $date = date("Y - m - d");
                     $r = $odb->query_lider("SELECT max(id) as mid FROM subconto;");
                     odbc_fetch_row($r);
                     $mid = odbc_result($r, "mid") + 1;
@@ -705,33 +733,44 @@ class client
                     $code = odbc_result($r, "code") + 1;
                     $state_name = $this->get_table_caption("region_new", $state);
                     $city_name = $this->get_table_caption("city_new", $city);
-                    $odb->query_lider("INSERT INTO subconto (id,code,Name,email,pwd,country_id,region_id,city_id,Adres,phone,Remark,base_id,dateAdd,flag,place_id) VALUES ('$mid','$code', '$name','$email','$pass','1','100','100','$address','$phone','" . $this->get_table_caption("subconto_activity", $activity) . ", $state_name, $city_name','1','$date','128',23);"); //kuz 25-09-2014 // kuz 4-05-2015 flag=128 Это отметка онлайн(128)
-                    $odb->query_lider("INSERT INTO subcontotypes (subconto_id,subcontotype_id) VALUES ('$mid', '1');");
-                    $odb->query_lider("INSERT INTO subcontotypes (subconto_id,subcontotype_id) VALUES ('$mid', '13');");
+                    $odb->query_lider("INSERT INTO subconto(id, code, Name, email, pwd, country_id, region_id, city_id, Adres, phone, Remark, base_id, dateAdd, flag, place_id) VALUES('$mid', '$code', '$name', '$email', '$pass', '1', '100', '100', '$address', '$phone', '" . $this->get_table_caption("subconto_activity", $activity) . ", $state_name, $city_name', '1', '$date', '128', 23);"); //kuz 25-09-2014 // kuz 4-05-2015 flag=128 Это отметка онлайн(128)
+                    $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '1');");
+                    $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '13');");
 
-                    $message_htm = RD . "/tpl/message_registration.htm";
+                    $message_htm = RD . " / tpl / message_registration . htm";
                     if (file_exists("$message_htm")) {
                         $message = file_get_contents($message_htm);
                     }
-                    $message = str_replace("{pass}", $pass, $message);
-                    $message = str_replace("{email}", $email, $message);
-                    $message = str_replace("{client_name}", $name, $message);
-                    $message = str_replace("{state}", $this->get_table_caption("REGION_NEW", $state), $message);
-                    $message = str_replace("{city}", $this->get_table_caption("CITY_NEW", $city), $message);
-                    $message = str_replace("{address}", $address, $message);
-                    $message = str_replace("{phone}", $phone, $message);
-                    $message = str_replace("{activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
-                    $message = str_replace("{remip}", $remip, $message);
-                    $message = str_replace("{flink}", $this->getFastSubcontoAuth($mid), $message);
-                    $message = str_replace("{client_id}", $mid, $message);
+                    $message = str_replace("{
+        pass}", $pass, $message);
+                    $message = str_replace("{
+        email}", $email, $message);
+                    $message = str_replace("{
+        client_name}", $name, $message);
+                    $message = str_replace("{
+        state}", $this->get_table_caption("REGION_NEW", $state), $message);
+                    $message = str_replace("{
+        city}", $this->get_table_caption("CITY_NEW", $city), $message);
+                    $message = str_replace("{
+        address}", $address, $message);
+                    $message = str_replace("{
+        phone}", $phone, $message);
+                    $message = str_replace("{
+        activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
+                    $message = str_replace("{
+        remip}", $remip, $message);
+                    $message = str_replace("{
+        flink}", $this->getFastSubcontoAuth($mid), $message);
+                    $message = str_replace("{
+        client_id}", $mid, $message);
 
-                    include_once RD . "/mail/sendmail.class.php";
+                    include_once RD . " / mail / sendmail .class.php";
                     $Mail = new sendmail();
-                    $Mail->mail_to = "$name <$email>";
-                    $Mail->subject = "Zakaz.avtolider-ua.com: Client registration";
+                    $Mail->mail_to = "$name < $email>";
+                    $Mail->subject = "Zakaz . avtolider - ua . com: Client registration";
                     $Mail->message = $message;
                     $Mail->from_name = "Avtolider";
-                    $Mail->SendFromMail = "no-reply@avtolider-ua.com";
+                    $Mail->SendFromMail = "no - reply@avtolider - ua . com";
                     $Mail->Send();
                     $err = 0;
                     $answer = "Вы успешно зарегистрировались";
@@ -753,7 +792,7 @@ class client
         include_once(RD . '/lib/pwd.gen.php');
         $pwgen = new PWGen();
         $pass = $pwgen->generate();
-        $date = date("Y-m-d");
+        $date = date("Y - m - d");
         $r = $odb->query_lider("SELECT max(id) as mid FROM subconto;");
         odbc_fetch_row($r);
         $mid = odbc_result($r, "mid") + 1;
@@ -762,34 +801,45 @@ class client
         $code = odbc_result($r, "code") + 1;
         $state_name = $this->get_table_caption("region_new", $state);
         $city_name = $this->get_table_caption("city_new", $city);
-        $odb->query_lider("INSERT INTO subconto (id,code,Name,email,pwd,country_id,region_id,city_id,Adres,phone,Remark,base_id,dateAdd,flag,place_id) VALUES ('$mid','$code', '$name','$email','$pass','1','100','100','$address','$phone','" . $this->get_table_caption("subconto_activity", $activity) . ", $state_name, $city_name','1','$date','128',23);");
-        $odb->query_lider("INSERT INTO subcontotypes (subconto_id,subcontotype_id) VALUES ('$mid', '1');");
-        $odb->query_lider("INSERT INTO subcontotypes (subconto_id,subcontotype_id) VALUES ('$mid', '13');");
+        $odb->query_lider("INSERT INTO subconto(id, code, Name, email, pwd, country_id, region_id, city_id, Adres, phone, Remark, base_id, dateAdd, flag, place_id) VALUES('$mid', '$code', '$name', '$email', '$pass', '1', '100', '100', '$address', '$phone', '" . $this->get_table_caption("subconto_activity", $activity) . ", $state_name, $city_name', '1', '$date', '128', 23);");
+        $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '1');");
+        $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '13');");
 
 
-        $message_htm = RD . "/tpl/message_registration.htm";
+        $message_htm = RD . " / tpl / message_registration . htm";
         if (file_exists("$message_htm")) {
             $message = file_get_contents($message_htm);
         }
-        $message = str_replace("{pass}", $pass, $message);
-        $message = str_replace("{email}", $email, $message);
-        $message = str_replace("{client_name}", $name, $message);
-        $message = str_replace("{state}", $this->get_table_caption("REGION_NEW", $state), $message);
-        $message = str_replace("{city}", $this->get_table_caption("CITY_NEW", $city), $message);
-        $message = str_replace("{address}", $address, $message);
-        $message = str_replace("{phone}", $phone, $message);
-        $message = str_replace("{activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
-        $message = str_replace("{remip}", $_SERVER['REMOTE_ADDR'], $message);
-        $message = str_replace("{flink}", $this->getFastSubcontoAuth($mid), $message);
-        $message = str_replace("{client_id}", $mid, $message);
+        $message = str_replace("{
+        pass}", $pass, $message);
+        $message = str_replace("{
+        email}", $email, $message);
+        $message = str_replace("{
+        client_name}", $name, $message);
+        $message = str_replace("{
+        state}", $this->get_table_caption("REGION_NEW", $state), $message);
+        $message = str_replace("{
+        city}", $this->get_table_caption("CITY_NEW", $city), $message);
+        $message = str_replace("{
+        address}", $address, $message);
+        $message = str_replace("{
+        phone}", $phone, $message);
+        $message = str_replace("{
+        activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
+        $message = str_replace("{
+        remip}", $_SERVER['REMOTE_ADDR'], $message);
+        $message = str_replace("{
+        flink}", $this->getFastSubcontoAuth($mid), $message);
+        $message = str_replace("{
+        client_id}", $mid, $message);
 
-        include_once RD . "/mail/sendmail.class.php";
+        include_once RD . " / mail / sendmail .class.php";
         $Mail = new sendmail();
-        $Mail->mail_to = "$name <$email>";
-        $Mail->subject = "Zakaz.avtolider-ua.com: Client registration";
+        $Mail->mail_to = "$name < $email>";
+        $Mail->subject = "Zakaz . avtolider - ua . com: Client registration";
         $Mail->message = $message;
         $Mail->from_name = "Avtolider";
-        $Mail->SendFromMail = "no-reply@avtolider-ua.com";
+        $Mail->SendFromMail = "no - reply@avtolider - ua . com";
         $Mail->Send();
         return $mid;
     }
@@ -801,7 +851,7 @@ class client
             $r = $odb->query_td("SELECT max(id) as mid FROM CITY_NEW;");
             odbc_fetch_row($r);
             $mid = odbc_result($r, "mid") + 1;
-            $odb->query_td("insert into `CITY_NEW` (ID,NAME,REGION_ID) values ('$mid','$caption','$state');");
+            $odb->query_td("insert into `CITY_NEW` (ID,NAME,REGION_ID) values('$mid', '$caption', '$state');");
             return $mid;
         }
     }
@@ -822,7 +872,7 @@ class client
         $odb = new odb;
         $name = "";
         if ($client_id != 0) {
-            $r = $odb->query_td("select Name from subconto where id='$client_id' limit 0,1;");
+            $r = $odb->query_td("select Name from subconto where id = '$client_id' limit 0,1;");
             while (odbc_fetch_row($r)) {
                 $name = odbc_result($r, "Name");
             }
@@ -836,7 +886,7 @@ class client
         $odb = new odb;
         $name = "Гость";
         if ($client_id != 0) {
-            $r = $odb->query_td("select Name from subconto_users where id='$client_id' limit 0,1;");
+            $r = $odb->query_td("select Name from subconto_users where id = '$client_id' limit 0,1;");
             while (odbc_fetch_row($r)) {
                 $name = odbc_result($r, "Name");
             }
@@ -848,7 +898,7 @@ class client
     {
         $odb = new odb;
         $email = "Anonymouse";
-        $r = $odb->query_td("select email from subconto where id='$client_id' limit 0,1;");
+        $r = $odb->query_td("select email from subconto where id = '$client_id' limit 0,1;");
         while (odbc_fetch_row($r)) {
             $email = odbc_result($r, "email");
         }
@@ -859,19 +909,19 @@ class client
     {
         $odb = new odb;
         $email = strtolower($email);
-        $r = $odb->query_td("select email from subconto where email='$email' limit 0,1;");
+        $r = $odb->query_td("select email from subconto where email = '$email' limit 0,1;");
         $n = $odb->num_rows($r);
         if ($n > 0) {
-            return array(1, "<span style='color:red;'>Email принадлежит другому пользователю</span>");
+            return array(1, " < span style = 'color:red;' > Email принадлежит другому пользователю </span > ");
         }
         if ($n == 0) {
-            $r1 = $odb->query_td("select email from lider_subconto_users where email='$email' limit 0,1;");
+            $r1 = $odb->query_td("select email from lider_subconto_users where email = '$email' limit 0,1;");
             $n1 = $odb->num_rows($r1);
             if ($n > 0) {
-                return array(1, "<span style='color:red;'>Email принадлежит другому пользователю</span>");
+                return array(1, " < span style = 'color:red;' > Email принадлежит другому пользователю </span > ");
             }
             if ($n == 0) {
-                return array(0, "<span style='color:green;'>Доступен для регистрации</span>");
+                return array(0, "<span style = 'color:green;' > Доступен для регистрации </span > ");
             }
         }
     }
@@ -879,7 +929,7 @@ class client
     function get_order_form_data($client_id)
     {
         $odb = new odb;
-        $r = $odb->query_td("select code,Name,email,phone,Adres from subconto where id='$client_id' limit 0,1;");
+        $r = $odb->query_td("select code,Name,email,phone,Adres from subconto where id = '$client_id' limit 0,1;");
         while (odbc_fetch_row($r)) {
             $code = odbc_result($r, "code");
             $name = odbc_result($r, "Name");
@@ -898,7 +948,7 @@ class client
     {
         $odb = new odb;
         //Выбираем активный (первый) адрес доставки в списке адресов доставки по клиенту
-        $r = $odb->query_td("select * from adresdeliv where subconto_id='$client_id' and n='1' limit 0,1;");
+        $r = $odb->query_td("select * from adresdeliv where subconto_id = '$client_id' and n = '1' limit 0,1;");
         while (odbc_fetch_row($r)) {
             $contperson = odbc_result($r, "contperson");
             $phone = odbc_result($r, "phone");
@@ -920,7 +970,7 @@ class client
             $file = 1;
         }
         $name = "";
-        $r = $odb->query_td("select NAME from $tname where id='$id' limit 0,1;");
+        $r = $odb->query_td("select NAME from $tname where id = '$id' limit 0,1;");
         while (odbc_fetch_row($r)) {
             $name = odbc_result($r, "NAME");
         }
@@ -950,17 +1000,17 @@ class client
             $Dolg = 0;
             $nearDolg = 0;
             $r = $odb->query_td("SELECT sday, cDT,
-                                    CASE WHEN ( sday < cDT ) THEN GetDolg( id, cDT ) ELSE GetDolg( id,ssday) END AS os,
-                                    GetDolg( id,scDT ) as dolg,
+                                    CASE WHEN(sday < cDT) THEN GetDolg(id, cDT) ELSE GetDolg(id, ssday) END AS os,
+                                    GetDolg(id, scDT) as dolg,
                                     K_Code
-                                 FROM (select K.id,
+                                 FROM(select K . id,
                                      CURRENT DATE AS cDT,
-                                     CURRENT DATE +360 day AS scDT,
-                                     GetDolgDate(K.id) AS sday,
-                                     GetDolgDate(K.id) + 1 day AS ssday,
-                                     k.code AS K_Code
+                                     CURRENT DATE + 360 day AS scDT,
+                                     GetDolgDate(K . id) AS sday,
+                                     GetDolgDate(K . id) + 1 day AS ssday,
+                                     k . code AS K_Code
                                      FROM klient K
-                                      WHERE K.id ='$client')
+                                      WHERE K . id = '$client')
 							  ");
             while (odbc_fetch_row($r)) {
                 //Дата ближайшего платежа
