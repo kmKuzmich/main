@@ -21,6 +21,7 @@ lib/odbc_errors/
 
 
 #ignoring lonely logs
+admin/php_errors.log
 /php_errors.log
 triger/log.txt
 triger/analog_log.txt
