@@ -234,7 +234,10 @@ class client
     {
         if (isset($_REQUEST[session_name()])) session_start();
 //        session_start();
-        if (empty($_SESSION["client"])) {setcookie("ShowTime", '', -3600);return;}
+        if (empty($_SESSION["client"])) {
+            setcookie("ShowTime", '', -3600);
+            return;
+        }
         $client = $_SESSION["client"];
         $expireDays = 0;
         $show = 0;
@@ -271,8 +274,9 @@ class client
 //        це другий можливий варіант повідомлення
 //                $mess = "<span class='messExp' > У вас є прострочена заборгованність на суму $nearSumm грн .<br /> Прохання погасити її, інакше ми будемо вимушені призупинити Вам відправку товару . <br /> Дякуємо за співпрацю! </span > ";
         }
-
-
+        if ($mess == "") {
+            $show = 0;
+        };
 //        для включения обновлений закоментируй $show=0
 //        $show = 1;
         setcookie("show", $show, $data_to);
