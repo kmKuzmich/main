@@ -92,7 +92,15 @@ class slave {
 	function get_date_from(){ if ($_POST["date_from"]==""){return $_GET["date_from"];} if ($_POST["date_from"]!=""){return $_POST["date_from"];} }
 	function get_date_to(){ if ($_POST["date_to"]==""){return $_GET["date_to"];} if ($_POST["date_to"]!=""){return $_POST["date_to"];} }
 
-	function get_dep(){ if ($_POST["dep"]==""){return $_GET["dep"];} if ($_POST["dep"]!=""){return $_POST["dep"];} }
+	function get_dep()
+	{
+		if ($_POST["dep"] == "") {
+			return $_GET["dep"];
+		}
+		if ($_POST["dep"] != "") {
+			return $_POST["dep"];
+		}
+	}
 	function get_w(){ if ($_POST["w"]==""){return $_GET["w"];} if ($_POST["w"]!=""){return $_POST["w"];} }
 	function get_conf(){ if ($_POST["conf"]==""){return $_GET["conf"];} if ($_POST["conf"]!=""){return $_POST["conf"];} }
 	function get_dep_up(){ if ($_POST["dep_up"]==""){return $_GET["dep_up"];} if ($_POST["dep_up"]!=""){return $_POST["dep_up"];} }

@@ -75,46 +75,127 @@ class order {
 		$navigation="<table><tr><td>$prev_page</td><td> $cur_records </td><td>$next_page</td></tr></table>";
 		return $navigation;	
 	}
-	function show_order_list($client,$page){session_start();$db=new db;$slave=new slave;$dep=$slave->get_dep();list($dep_up,$dep_cur)=$slave->get_file_deps("order");
-		include_once 'lib/client_class.php';$cl=new client;
-		$form_htm=RD."/tpl/order_list.htm";if (file_exists("$form_htm")){ $form = file_get_contents($form_htm);}
-		$status=$this->get_status();if ($status==""){$status=$_SESSION["status"];}
-		$name=$this->get_name();if ($name==""){$name=$_SESSION["name"];}
-		$ord_id=$this->get_ord_id();if ($ord_id==""){$ord_id=$_SESSION["ord_id"];}
-		$payment=$this->get_payment();if ($payment==""){$payment=$_SESSION["payment"];}
-		$data=$this->get_data();if ($data==""){$data=$_SESSION["data"];}
-		$where="";
+
+	function show_order_list($client, $page)
+	{
+		session_start();
+		$db = new db;
+		$slave = new slave;
+		$dep = $slave->get_dep();
+		list($dep_up, $dep_cur) = $slave->get_file_deps("order");
+		include_once 'lib/client_class.php';
+		$cl = new client;
+		$form_htm = RD . "/tpl/order_list.htm";
+		if (file_exists("$form_htm")) {
+			$form = file_get_contents($form_htm);
+		}
+		$status = $this->get_status();
+		if ($status == "") {
+			$status = $_SESSION["status"];
+		}
+		$name = $this->get_name();
+		if ($name == "") {
+			$name = $_SESSION["name"];
+		}
+		$ord_id = $this->get_ord_id();
+		if ($ord_id == "") {
+			$ord_id = $_SESSION["ord_id"];
+		}
+		$payment = $this->get_payment();
+		if ($payment == "") {
+			$payment = $_SESSION["payment"];
+		}
+		$data = $this->get_data();
+		if ($data == "") {
+			$data = $_SESSION["data"];
+		}
+		$where = "";
 		//sort field
-		$asc=$this->get_asc();	if ($asc==""){$asc=$_SESSION["asc"];}if ($asc==""){$asc="$desc";}
-		$sort=$this->get_sort(); if ($sort==""){$sort=$_SESSION["sort"];} if ($sort==""){$sort="id";}
+		$asc = $this->get_asc();
+		if ($asc == "") {
+			$asc = $_SESSION["asc"];
+		}
+		if ($asc == "") {
+			$asc = "$desc";
+		}
+		$sort = $this->get_sort();
+		if ($sort == "") {
+			$sort = $_SESSION["sort"];
+		}
+		if ($sort == "") {
+			$sort = "id";
+		}
 		//-----------
-		if ($ord_id!=""){$where.=" o.id = '$ord_id'";}
-		if ($name!="" and $where!=""){$where.=" and cl.name LIKE '%$name%' ";}if ($name!="" and $where==""){$where.=" cl.name LIKE '%$name%' ";}
-		if ($data!="" and $where!=""){$where.=" and o.data>='$data_from' and o.data<='$data_to'";}if ($data!="" and $where==""){$where.=" o.data>='$data_from' and o.data<='$data_to'";}
-		if ($status!="0" and $where!=""){$where.=" and o.status='$status'";}if ($status!="0" and $where==""){$where.=" o.status = '$status'";}
-		if ($payment!="0" and $where!=""){$where.=" and o.payment='$payment'";}if ($payment!="0" and $where==""){$where.=" o.payment = '$payment'";}
-		if ($where!=""){$where=" where ".$where;}
-		if ($client!=""){$where="where client='$client' ";}
-		$kp=50;
-		if ($page==""){$limit=" limit 0,$kp";}
-		if ($page!=""){ if ($page<0){$page=0;} $from=$page*$kp; $limit=" limit $from,$kp";}
-		$r=$db->query("select o.id, o.data, o.time, o.address, o.remip, cl.name, o.payment, st.caption as status_cap, st.color as color from orders o 
+		if ($ord_id != "") {
+			$where .= " o.id = '$ord_id'";
+		}
+		if ($name != "" and $where != "") {
+			$where .= " and cl.name LIKE '%$name%' ";
+		}
+		if ($name != "" and $where == "") {
+			$where .= " cl.name LIKE '%$name%' ";
+		}
+		if ($data != "" and $where != "") {
+			$where .= " and o.data>='$data_from' and o.data<='$data_to'";
+		}
+		if ($data != "" and $where == "") {
+			$where .= " o.data>='$data_from' and o.data<='$data_to'";
+		}
+		if ($status != "0" and $where != "") {
+			$where .= " and o.status='$status'";
+		}
+		if ($status != "0" and $where == "") {
+			$where .= " o.status = '$status'";
+		}
+		if ($payment != "0" and $where != "") {
+			$where .= " and o.payment='$payment'";
+		}
+		if ($payment != "0" and $where == "") {
+			$where .= " o.payment = '$payment'";
+		}
+		if ($where != "") {
+			$where = " where " . $where;
+		}
+		if ($client != "") {
+			$where = "where client='$client' ";
+		}
+		$kp = 50;
+		if ($page == "") {
+			$limit = " limit 0,$kp";
+		}
+		if ($page != "") {
+			if ($page < 0) {
+				$page = 0;
+			}
+			$from = $page * $kp;
+			$limit = " limit $from,$kp";
+		}
+		$r = $db->query("select o.id, o.data, o.time, o.address, o.remip, cl.name, o.payment, st.caption as status_cap, st.color as color from orders o 
 					  	inner join clients cl on (cl.id=o.client) 
 						inner join status st on (st.id=o.status) 
-						$where order by o.$sort $asc $limit;");		
-		$n=$db->num_rows($r);$list="";$k=0;
-		for ($i=1;$i<=$n;$i++){$k++;
-			$id=$db->result($r,$i-1,"id");
-			$client=$db->result($r,$i-1,"name");
-			$address=$db->result($r,$i-1,"address");
-			$data=$slave->data_word($db->result($r,$i-1,"data"));
-			$time=$db->result($r,$i-1,"time");
-			$remip=$db->result($r,$i-1,"remip");
-			$payment=$this->get_payment_caption($db->result($r,$i-1,"payment"));
-			$status=$db->result($r,$i-1,"status_cap");
-			$color=$db->result($r,$i-1,"color");
-			if ($k==1){$tr_color="ffffff";}if ($k==2){$tr_color="f5f5f5";$k=0;}
-			$list.="
+						$where order by o.$sort $asc $limit;");
+		$n = $db->num_rows($r);
+		$list = "";
+		$k = 0;
+		for ($i = 1; $i <= $n; $i++) {
+			$k++;
+			$id = $db->result($r, $i - 1, "id");
+			$client = $db->result($r, $i - 1, "name");
+			$address = $db->result($r, $i - 1, "address");
+			$data = $slave->data_word($db->result($r, $i - 1, "data"));
+			$time = $db->result($r, $i - 1, "time");
+			$remip = $db->result($r, $i - 1, "remip");
+			$payment = $this->get_payment_caption($db->result($r, $i - 1, "payment"));
+			$status = $db->result($r, $i - 1, "status_cap");
+			$color = $db->result($r, $i - 1, "color");
+			if ($k == 1) {
+				$tr_color = "ffffff";
+			}
+			if ($k == 2) {
+				$tr_color = "f5f5f5";
+				$k = 0;
+			}
+			$list .= "
 				<tr bgcolor='#$tr_color'>
 					<th width=15>$id</th>
 					<td width=300>&nbsp; <a href='javascript:show_order(\"$id\");'>$client</a></td>
@@ -125,8 +206,8 @@ class order {
 					<td bgcolor='#$color'>&nbsp;$status</td>
 				</tr>";
 		}
-		$form=str_replace("{order_list}",$list,$form);
-		$form=str_replace("{navigation}",$this->show_order_navigation($page,$where),$form);
+		$form = str_replace("{order_list}", $list, $form);
+		$form = str_replace("{navigation}", $this->show_order_navigation($page, $where), $form);
 		return $form;
 	}
 	function get_order_header($order_id){include_once RD.'/lib/client_class.php';$db=new db;$slave=new slave;$cl=new client;

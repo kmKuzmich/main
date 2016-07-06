@@ -295,7 +295,7 @@ class shop
             $where = " or client='$client' ";
         }
         $list = "<select id='OrderActiveId' class='OrderActiveId'>";
-        $query = "select id,doc_id,doc_num from orders where (session_id='$session' $where) and status='12' order by id asc;";
+        $query = "select id,doc_id,doc_num from orders where (session_id='$session' $where) and status='12' order by id asc limit 3;";
         $r = $odb->query_td($query);
         $n = $odb->num_rows($r);
         if ($n == 0) {
@@ -389,7 +389,8 @@ class shop
         if ($client != "") {
             $where = " or client='$client' ";
         }
-        $r = $odb->query_td("select id from orders where status='12' and (session_id='$session' $where) order by id asc;");
+//        $r = $odb->query_td("select id from orders where status='12' and (session_id='$session' $where) order by id desc;");
+        $r = $odb->query_td("select id from orders where status='12' and client='$client' order by id desc limit 3;");
         $i = 0;
         while (odbc_fetch_row($r)) {
             $i++;
@@ -498,13 +499,13 @@ class shop
             $block = file_get_contents($block_htm);
         }
         if ($client != "") {
-            $r1 = $odb->query_td("select * from orders where status='12' and session_id='$session';");
+            $r1 = $odb->query_td("select * from orders where status='12' and session_id='$session' limit 3;");
             $n1 = $odb->num_rows($r1);
             if ($n1 > 0) {
                 $odb->query_td("update orders set client='$client' where session_id='$session';");
             }
         }
-        $r = $odb->query_td("select * from orders where status='12' and ($where) order by id asc;");
+        $r = $odb->query_td("select * from orders where status='12' and ($where) order by id desc  limit 3;");
         $list = "";
         $need_reg_mes = "";
         $i = 0;
@@ -519,7 +520,7 @@ class shop
             if ($order_author_user != 0) {
                 $order_author_name = $cl->get_client_name($order_author_user);
             }
-            $order_status = $this->get_status_caption(odbc_result($r, "status"));
+//            $order_status = $this->get_status_caption(odbc_result($r, "status"));
             $order_more_client = odbc_result($r, "more_client");
             $order_sum = $this->getOrderSumm($order_id);
             $list .= "
@@ -1451,6 +1452,7 @@ class shop
     //-------------------------------------------------
     //           DOCS
     //-------------------------------------------------
+//    Эта процедура показует документы для оплаты вызывается из docs.php
     function show_order_docs($page)
     {
         session_start();

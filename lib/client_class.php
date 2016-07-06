@@ -278,7 +278,7 @@ class client
             $show = 0;
         };
 //        для включения обновлений закоментируй $show=0
-        $show = 1;
+//        $show = 1;
         setcookie("show", $show, $data_to);
         setcookie("expireDays", $expireDays, $data_to);
         setcookie("Message", $mess, $data_to);
