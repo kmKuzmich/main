@@ -321,17 +321,27 @@ function showDocOrder(doc_id) {startLoading();
 	}
 }
 
-function showOrderStr(orderId) {startLoading();
-	if (orderId==''){ alert("¬нутренн€€ ошибка сайта");stopLoading(); }
-	if (orderId!=''){ 
-		JsHttpRequest.query('content.php',{ 'w': 'showOrderStr', 'orderId': orderId}, 
-		function (result, errors){ if (errors) {alert(errors);} if (result){ 
-			document.getElementById("InfoFormInfo").innerHTML=result["content"];
-			showInfoForm();
-			document.getElementById("InfoForm").style.width="1000px";
-			document.getElementById("InfoForm").style.marginLeft="-500px";
-			document.getElementById("InfoForm").style.height="auto";stopLoading();
-		}}, true);
+function showOrderStr(orderId) {
+	startLoading();
+	if (orderId == '') {
+		alert("¬нутренн€€ ошибка сайта");
+		stopLoading();
+	}
+	if (orderId != '') {
+		JsHttpRequest.query('content.php', {'w': 'showOrderStr', 'orderId': orderId},
+			function (result, errors) {
+				if (errors) {
+					alert(errors);
+				}
+				if (result) {
+					document.getElementById("InfoFormInfo").innerHTML = result["content"];
+					showInfoForm();
+					document.getElementById("InfoForm").style.width = "1000px";
+					document.getElementById("InfoForm").style.marginLeft = "-500px";
+					document.getElementById("InfoForm").style.height = "auto";
+					stopLoading();
+				}
+			}, true);
 	}
 }
 function showOrderComment(orderId) {startLoading();
