@@ -991,14 +991,14 @@ class client
         $needUpdate = 0;
 //        устанавливаем период обновления долгов для сессии в секундах
 //        $p = 10; //1 * 15 * 60;
-
 //        время существования куки для update
-        $data_to = time() + 5 * 60;//259200;
+        $data_to = time() + 15 * 60;//259200;
 //        если кука NeedUpdate не существует - то обновить данные заново
         if (empty($_COOKIE["needUpdate"])) {
             $needUpdate = 1;
+			setcookie("needUpdate", $needUpdate, $data_to);			
         };
-
+		$needUpdate = 0;
         if (($needUpdate == 1)) {
             $odb = new odb;
             $slave = new slave;
@@ -1047,7 +1047,6 @@ class client
             $Dolg = $_COOKIE["Dolg"];
         }
 //        $_SESSION["NeedUpdate"] = $needUpdate;
-        setcookie("needUpdate", $needUpdate, $data_to);
         return array($nearData, $nearDolg, $Dolg);
     }
 
