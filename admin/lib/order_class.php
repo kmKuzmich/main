@@ -55,25 +55,45 @@ class order {
 		$form = str_replace("{calendar}", $slave->get_calendar("data"), $form);
 		return $form;
 	}
-	function show_order_navigation($page,$where){$db=new db;$slave=new slave;
-		if ($page==""){$page=0;}if ($page!=""){if ($page<0){$page=0;}}$kp=50;
-		$r=$db->query("select count(o.id) as kol from orders o inner join clients cl on (cl.id=o.client) 
+
+	function show_order_navigation($page, $where)
+	{
+		$db = new db;
+		$slave = new slave;
+		if ($page == "") {
+			$page = 0;
+		}
+		if ($page != "") {
+			if ($page < 0) {
+				$page = 0;
+			}
+		}
+		$kp = 50;
+		$r = $db->query("select count(o.id) as kol from orders o inner join clients cl on (cl.id=o.client) 
 						inner join status st on (st.id=o.status) 
 						inner join payment pm on (pm.id=o.payment) $where;");
-		$n=$db->result($r,0,"kol");
-		$k=($page)*$kp;
-		if (($page)*$kp < $n and $kp<=$n){
-			if (($page+1)*$kp<=$n){$np=$page+1;}
-			$next_page="<a href='javascript:load_order_list(\"$np\")'><img src='../theme/images/next.jpg' border=0></a>";
+		$n = $db->result($r, 0, "kol");
+		$k = ($page) * $kp;
+		if (($page) * $kp < $n and $kp <= $n) {
+			if (($page + 1) * $kp <= $n) {
+				$np = $page + 1;
+			}
+			$next_page = "<a href='javascript:load_order_list(\"$np\")'><img src='../theme/images/next.jpg' border=0></a>";
 		}
-		if (($page)*$kp > 0) {
-			if (($page-1)*$kp>=0){$pp=$page-1;}
-			$prev_page="<a href='javascript:load_order_list(\"$pp\")'><img src='../theme/images/prev.jpg' border=0></a>";
+		if (($page) * $kp > 0) {
+			if (($page - 1) * $kp >= 0) {
+				$pp = $page - 1;
+			}
+			$prev_page = "<a href='javascript:load_order_list(\"$pp\")'><img src='../theme/images/prev.jpg' border=0></a>";
 		}
-		$cur_from=$page*$kp;$cur_to=($page+1)*$kp;if ($cur_to>$n){$cur_to=$n;}
-		$cur_records="Отображено записи: $cur_from - $cur_to";
-		$navigation="<table><tr><td>$prev_page</td><td> $cur_records </td><td>$next_page</td></tr></table>";
-		return $navigation;	
+		$cur_from = $page * $kp;
+		$cur_to = ($page + 1) * $kp;
+		if ($cur_to > $n) {
+			$cur_to = $n;
+		}
+		$cur_records = "Отображено записи: $cur_from - $cur_to";
+		$navigation = "<table><tr><td>$prev_page</td><td> $cur_records </td><td>$next_page</td></tr></table>";
+		return $navigation;
 	}
 
 	function show_order_list($client, $page)

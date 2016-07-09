@@ -159,33 +159,36 @@ class client
                         limit 0,1;
                             ");
         */
-        $r = $odb->query_td("
-			select M.id,M.Day,M.header,M.body,D.Num
-				from Messages M
-					join Doc D on D.id=M.id
-					left outer join Messages as M1 on M.group_id is not null and M1.id1=M.id  and M1.client_id='$client_id'
-					left outer join DocState DS on DS.id= nvl(M1.state_id,M.state_id)
-					left outer join mess_status as mss on mss.mess_id=nvl(M.id,M1.id) and mss.client_id='$client_id'				 					
-				where (M.client_id='$client_id'
-						or '$client_id' in (select SubConto_id from SubContoTypes as TS where TS.SubcontoType_id=M.group_id)  )				
-					and M.sDay<=current_date 
-					and mss.mess_id is null
-					and nvl(M1.state_id,M.state_id)=27
-				limit 0,1;");
+        $needUpdateM = 0;
+        if ($needUpdateM == 1) {
+            $r = $odb->query_td("
+                select M.id,M.Day,M.header,M.body,D.Num
+                    from Messages M
+                        join Doc D on D.id=M.id
+                        left outer join Messages as M1 on M.group_id is not null and M1.id1=M.id  and M1.client_id='$client_id'
+                        left outer join DocState DS on DS.id= nvl(M1.state_id,M.state_id)
+                        left outer join mess_status as mss on mss.mess_id=nvl(M.id,M1.id) and mss.client_id='$client_id'				 					
+                    where (M.client_id='$client_id'
+                            or '$client_id' in (select SubConto_id from SubContoTypes as TS where TS.SubcontoType_id=M.group_id)  )				
+                        and M.sDay<=current_date 
+                        and mss.mess_id is null
+                        and nvl(M1.state_id,M.state_id)=27
+                    limit 0,1;");
 
-        while (odbc_fetch_row($r)) {
-            $ex = 1;
-            $id = odbc_result($r, "id");
-            $message = "[#" . odbc_result($r, "num") . "] " . odbc_result($r, "header");
-            $data = odbc_result($r, "day");
-            $form_htm = RD . "/tpl/client_messageBox_form.htm";
-            if (file_exists("$form_htm")) {
-                $form = file_get_contents($form_htm);
+            while (odbc_fetch_row($r)) {
+                $ex = 1;
+                $id = odbc_result($r, "id");
+                $message = "[#" . odbc_result($r, "num") . "] " . odbc_result($r, "header");
+                $data = odbc_result($r, "day");
+                $form_htm = RD . "/tpl/client_messageBox_form.htm";
+                if (file_exists("$form_htm")) {
+                    $form = file_get_contents($form_htm);
+                }
+                $form = str_replace("{id}", $id, $form);
+                $form = str_replace("{message}", $message, $form);
+                $form = str_replace("{data}", $data, $form);
+
             }
-            $form = str_replace("{id}", $id, $form);
-            $form = str_replace("{message}", $message, $form);
-            $form = str_replace("{data}", $data, $form);
-
         }
         return array($ex, $form);
     }
@@ -994,11 +997,23 @@ class client
 //        время существования куки для update
         $data_to = time() + 15 * 60;//259200;
 //        если кука NeedUpdate не существует - то обновить данные заново
-        if (empty($_COOKIE["needUpdate"])) {
+        if (empty($_SESSION["Data_to"]) || ($_SESSION["Data_to"] < time())) {
+            $_SESSION["Data_to"] = $data_to;
             $needUpdate = 1;
-			setcookie("needUpdate", $needUpdate, $data_to);			
+            $_SESSION["needUpdate"] = $needUpdate;
+            $_SESSION["nearData"] = '';
+            $_SESSION["nearDolg"] = 0;
+            $_SESSION["Dolg"] = 0;
+        } else {
+            $_SESSION["needUpdate"] = $needUpdate;
         };
-		$needUpdate = 0;
+
+//        if (empty($_COOKIE["needUpdate"])) {
+//            $needUpdate = 1;
+//			setcookie("needUpdate", $needUpdate, $data_to);
+//        };
+
+//		$needUpdate = 0;
         if (($needUpdate == 1)) {
             $odb = new odb;
             $slave = new slave;
@@ -1027,24 +1042,24 @@ class client
                 $Dolg = odbc_result($r, dolg);
                 $kCode = odbc_result($r, K_Code);
             }
-//            $_SESSION["nearData"] = $nearData;
-            setcookie("nearData", $nearData, $data_to);
-//            $_SESSION["nearDolg"] = $nearDolg;
-            setcookie("nearDolg", $nearDolg, $data_to);
-//            $_SESSION["Dolg"] = $Dolg;
-            setcookie("Dolg", $Dolg, $data_to);
-//            $_SESSION["kCode"] = $kCode;
-            setcookie("kCode", $kCode, $data_to);
-//            $_SESSION["LastUpdateTime"] = time();
-            setcookie("LastUpdateTime", time(), $data_to);
+            $_SESSION["nearData"] = $nearData;
+//            setcookie("nearData", $nearData, $data_to);
+            $_SESSION["nearDolg"] = $nearDolg;
+//            setcookie("nearDolg", $nearDolg, $data_to);
+            $_SESSION["Dolg"] = $Dolg;
+//            setcookie("Dolg", $Dolg, $data_to);
+            $_SESSION["kCode"] = $kCode;
+//            setcookie("kCode", $kCode, $data_to);
+            $_SESSION["LastUpdateTime"] = time();
+//            setcookie("LastUpdateTime", time(), $data_to);
 //            echo "дата".$nearData." сума б ".$nearDolg."сума о".$Dolg;
         } else {
-//            $nearData = $_SESSION["nearData"];
-            $nearData = $_COOKIE["nearData"];
-//            $nearDolg = $_SESSION["nearDolg"];
-            $nearDolg = $_COOKIE["nearDolg"];
-//            $Dolg = $_SESSION["Dolg"];
-            $Dolg = $_COOKIE["Dolg"];
+            $nearData = $_SESSION["nearData"];
+//            $nearData = $_COOKIE["nearData"];
+            $nearDolg = $_SESSION["nearDolg"];
+//            $nearDolg = $_COOKIE["nearDolg"];
+            $Dolg = $_SESSION["Dolg"];
+//            $Dolg = $_COOKIE["Dolg"];
         }
 //        $_SESSION["NeedUpdate"] = $needUpdate;
         return array($nearData, $nearDolg, $Dolg);

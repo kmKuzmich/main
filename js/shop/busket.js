@@ -165,15 +165,24 @@ function updateBusketInformer(){
 		document.getElementById("BusketInformer").innerHTML=result["content"];
 	}}, true);
 }
-function drop_busket_position(model,order_id) {
-	if (model=='' && order_id==''){ alert("¬нутренн€€ ошибка сайта"); }
-	if (model!='' || order_id==''){ 
-		JsHttpRequest.query('content.php',{ 'w': 'dropModel', 'model': model}, 
-		function (result, errors){ if (errors) {alert(errors);} if (result){ 
-			showOrderStr(order_id);
-		}}, true);
+
+function drop_busket_position(model, order_id) {
+	if (model == '' && order_id == '') {
+		alert("¬нутренн€€ ошибка сайта");
+	}
+	if (model != '' || order_id == '') {
+		JsHttpRequest.query('content.php', {'w': 'dropModel', 'model': model},
+			function (result, errors) {
+				if (errors) {
+					alert(errors);
+				}
+				if (result) {
+					showOrderStr(order_id);
+				}
+			}, true);
 	}
 }
+
 function confimOrder(orderId){startLoading();
 	JsHttpRequest.query('content.php',{ 'w': 'confirmOrder', 'orderId': orderId}, 
 	function (result, errors){ if (errors) {alert(errors);} if (result){ 

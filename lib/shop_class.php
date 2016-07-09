@@ -467,11 +467,22 @@ class shop
         return $er;
     }
 
+//    Удаление строки заявки
     function dropModel($or_id)
     {
         $odb = new odb;
         if ($or_id != "") {
             $odb->query_td("delete from orders_str where id='$or_id';");
+        }
+        return;
+    }
+
+//    Псевдо-Удаление Скрытие активной заявки - перевод её в статус =17 - скрытые заявки
+    function dropOrder($order_id)
+    {
+        $odb = new odb;
+        if ($order_id != "") {
+            $odb->query_td("update orders set status=17 where order_id='$order_id' and status=12;");
         }
         return;
     }
