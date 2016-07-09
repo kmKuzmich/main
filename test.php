@@ -5,6 +5,18 @@ define("RD", dirname (__FILE__));
 require_once (RD."/lib/odbc_class.php");
 $odb=new odb;
 
+$r = $odb->query_td("select oc.order_id, o.* from orders_check oc left outer join orders o on o.id=oc.order_id where oc.status in (0,1) and o.id in (4540,5234) order by oc.order_id asc;");
+$k = 0;
+$m = 0;
+while (odbc_fetch_row($r)) {
+	$k += 1;
+	$order_id = odbc_result($r, "order_id");
+
+//	$order_id = 2075;
+	$odb->query_td("update orders_check set status=0 where order_id='$order_id';");
+	print($order_id);
+
+}
 /*
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', true);
@@ -35,7 +47,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 }
 */
 
-
+/*
 $art1="¿ ¡";
 $art2=mb_convert_case($art1, MB_CASE_LOWER ); //, "CP1251"
 echo $art1." = = ".$art2."<br>";
@@ -63,5 +75,5 @@ $ip = "<br>»Ïˇ  ".$_SERVER['HTTP_ACCEPT'];
 echo $ip;
 print "<br>".date('r')."<br>";
 
-//$client_id=$_SESSION["client_id"];
+//$client_id=$_SESSION["client_id"];*/
 ?>

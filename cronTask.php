@@ -1,4 +1,8 @@
 <?php
+//Этот скрипт
+//1) рассылает напоминания клиентам из календаря клиента (отключено)
+//2) копирует заявки клиентов отмеченные статусом =1 (не отправлена) в Lider doc docrow
+
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', false);
 define('RD', dirname(__FILE__));
@@ -56,7 +60,7 @@ $k = 0;
 //        $odb->query_td("update tasks set is_mailed=1 where id='$id';");
 //    }
 //}
-print "k=$k";
+//print "k=$k";
 
 $odb->query_lider("create variable @last_id integer ");
 $odb->query_lider("insert into Local(user_id) values(-1);");
@@ -148,9 +152,11 @@ while (odbc_fetch_row($r)) {
             $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment');");
             print "insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment');";
         }
-//изменить статус на 0
-        $odb->query_td("update orders_check set status=0 where order_id='$order_id';");
     }
+//изменить статус на 0
+    $odb->query_td("update orders_check set status=0 where order_id='$order_id';");
+    echo "$order_id <br/>";
+
 }
 odbc_close_all();
 print "k=$k, m=$m";
