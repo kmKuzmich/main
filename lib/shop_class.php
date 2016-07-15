@@ -400,9 +400,15 @@ class shop
             $sum = round(odbc_result($r1, "summ"), 2) + 0;
             $summ += $sum;
         }
+        $busket_link = "location.href='?dep=busket';";
+        if ($i == 1) {
+            $busket_link = "showOrderStr('$order_id');";
+        }
         $summ = $slave->int_to_money($summ);
         $form = str_replace("{summ}", $summ, $form);
         $form = str_replace("{status}", "$i шт", $form);
+        $form = str_replace("{busket_link}", $busket_link, $form);
+
         return $form;
     }
 
@@ -517,6 +523,8 @@ class shop
             }
         }
         $r = $odb->query_td("select * from orders where status='12' and ($where) order by id desc  limit 3;");
+        $n = $odb->num_rows($r);
+        $r = $odb->query_td("select * from orders where status='12' and ($where) order by id desc  limit 3;");
         $list = "";
         $need_reg_mes = "";
         $i = 0;
@@ -543,6 +551,11 @@ class shop
 				<td align='left'>$order_more_client</td>
 				<td><img src='/theme/images/arrowEnter.png' id='arrow" . $order_id . "' border=0 alt='Структура заказа' title='Структура заказа' style='cursor:pointer;' onclick='showOrderStr(\"$order_id\");'></td>
 			</tr><tr><td colspan=6 class='border_bot_dot'>&nbsp;</td></tr>";
+            if ($n == 1) {
+                $block = $this->showOrderStr($order_id);
+                $block = str_replace("{hid_style}", " style='display:none;'", $block);
+                $list .= "<tr><td colspan=6 class='border_bot_dot'>$block</td></tr>";
+            }
         }
         if ($list == "") {
             $list = "
