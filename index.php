@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', false);
 if ($_SERVER['REMOTE_ADDR']=="78.152.169.139"){@ini_set('display_errors', true);}
 define('RD', dirname (__FILE__));
