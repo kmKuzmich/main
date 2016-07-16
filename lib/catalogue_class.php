@@ -1110,33 +1110,33 @@ class catalogue
             }
 
 //               если результат =0 или поиск в техдоке и не по наименованию
-//            if ((($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
-//                $query = "select
-//                                  I.id as id,
-//                                  I.code,
-//                                  I.scode,
-//                                  I.name,
-//                                  I.flag,
-//                                  I.help,
-//                                  I.prod_id,
-//                                  I.isImage
-//                        from (select
-//                                    unique StripSpaces(P.code) as code,
-//                                    P.brand_id as prod_id1
-//                              from carProductLookup L
-//                                join carProduct P on P.id=L.product_id
-//                              where scode=upper( StripSpaces( '$art' )) ) T
-//                        left outer join tdBrand B on B.brand_id=T.prod_id1
-//                        left outer join Producent P on P.id=B.prod_id
-//                        left outer join Item I on I.scode=T.code and I.prod_id=P.id
-//                        where I.id is not null;
-//                        ";
-//                $r = $odb->query_td($query);
-//                $n = $odb->num_rows($r);
-//                $byTD = 1; //основной ѕризнак что поиск проведЄн по TecDoc
-//            }
+            if ((($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
+                $query = "select
+                                  I.id as id,
+                                  I.code,
+                                  I.scode,
+                                  I.name,
+                                  I.flag,
+                                  I.help,
+                                  I.prod_id,
+                                  I.isImage
+                        from (select
+                                    unique StripSpaces(P.code) as code,
+                                    P.brand_id as prod_id1
+                              from carProductLookup L
+                                join carProduct P on P.id=L.product_id
+                              where scode=upper( StripSpaces( '$art' )) ) T
+                        left outer join tdBrand B on B.brand_id=T.prod_id1
+                        left outer join Producent P on P.id=B.prod_id
+                        left outer join Item I on I.scode=T.code and I.prod_id=P.id
+                        where I.id is not null;
+                        ";
+                $r = $odb->query_td($query);
+                $n = $odb->num_rows($r);
+                $byTD = 1; //основной ѕризнак что поиск проведЄн по TecDoc
+            }
 
-            //≈сли ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
+//            ≈сли ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
             if (($n == 0) or ($by_name == 1)) {
                 //Ёто поиск только по наименованию, поиск ведЄтс€ по sName - это поле только в DB2, надо уточнить чем оно отличаетс€ от обычного
                 //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
