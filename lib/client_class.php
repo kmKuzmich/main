@@ -631,14 +631,15 @@ class client
             $name = "state_form";
             $function = "showCityOrderForm(this[this . selectedIndex] . value);";
         }
-        $form = " < select id = '$name' name = '$name' onchange = '$function' style = 'width:400px;' ><option value = '#' > --- </option > ";
+        $form = " <select id = '$name' name = '$name' onchange = '$function' style = 'width:400px;' > 
+                   <option value = '#' > --- </option> ";
         $r = $odb->query_td("select * from REGION_NEW order by id asc;");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "ID");
             $caption = odbc_result($r, "NAME");
-            $form .= " < option value = '$id' > $caption</option > ";
+            $form .= " <option value = '$id' > $caption</option> ";
         }
-        $form .= "</select > ";
+        $form .= "</select> ";
         return $form;
     }
 
@@ -650,10 +651,10 @@ class client
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "ID");
             $caption = odbc_result($r, "NAME");
-            $form .= " < option value = '$id' > $caption</option > ";
+            $form .= " <option value = '$id' > $caption</option> ";
         }
-        $form .= "<option value = '0' > --Новый населенный пункт--</option > ";
-        $form .= "</select > ";
+        $form .= "<option value = '0' > --Новый населенный пункт--</option>";
+        $form .= "</select> ";
         return $form;
     }
 
@@ -665,10 +666,10 @@ class client
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "ID");
             $caption = odbc_result($r, "NAME");
-            $form .= " < option value = '$id' > $caption</option > ";
+            $form .= " <option value = '$id' > $caption</option> ";
         }
-        $form .= "<option value = '0' > --Новый населенный пункт--</option > ";
-        $form .= "</select > ";
+        $form .= "<option value = '0' > --Новый населенный пункт--</option> ";
+        $form .= "</select> ";
         return $form;
     }
 
@@ -681,13 +682,13 @@ class client
             $id = odbc_result($r, "id");
             $caption = odbc_result($r, "NAME");
             if ($id == $sid) {
-                $form .= " < option value = '$id' selected = 'selected' > $caption</option > ";
+                $form .= " <option value = '$id' selected = 'selected' > $caption</option > ";
             }
             if ($id != $sid) {
                 $form .= "<option value = '$id' > $caption</option > ";
             }
         }
-        $form .= "</select > ";
+        $form .= "</select> ";
         return $form;
     }
 
