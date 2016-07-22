@@ -46,25 +46,60 @@ class odb
         $this->r_td = odbc_exec($this->db_td, $query);
         if (odbc_error()) {
             if (substr_count(odbc_errormsg($this->db_td), "SQL0973N") == 0) {
-                $fp = fopen(RD . '/lib/odbc_errors/db2_error.txt', 'a+');
-                fwrite($fp, "DB2-> data=" . date("Y-m-d H:i:s") . ":" . odbc_errormsg($this->db_td) . "\r\n" . $query . "\r\n");
+                $fp = fopen(RD . '/lib/odbc_errors/pg_error.txt', 'a+');
+                fwrite($fp, "PG-> data=" . date("Y-m-d H:i:s") . ":" . odbc_errormsg($this->db_td) . "\r\n" . $query . "\r\n");
                 fclose($fp);
             }
         }
+
         return $this->r_td;
+
     }
 
     function connect_td()
     {
         $this->auth_td_param();
-        $this->db_td = odbc_pconnect($this->source_td, $this->username_td, $this->passwordl_td);
+        //This condition checks if connection is already established, to init some additional tables such as AnalogTemp, and other variables in PostGres
+        if (!$this->db_td) {
+            $this->db_td = odbc_pconnect($this->source_td, $this->username_td, $this->passwordl_td);
+            $this->query_init();
+        }
+//        $this->db_td = odbc_pconnect($this->source_td, $this->username_td, $this->passwordl_td);
+    }
+
+
+    function query_init()
+    {
+        $qInit = "
+                    ------------------
+                    create temporary table  AnalogTemp(
+                      lev smallint null,
+                      item_id integer,
+                      item_id0 integer null,
+                      dop smallint null
+                    ) on commit preserve rows;
+                    ------------------
+                    set enable_seqscan = off;
+                    ------------------        
+                    ";
+        odbc_exec($this->db_td, $qInit);
+        if (odbc_error()) {
+            $fp = fopen(RD . '/lib/odbc_errors/pg_error.txt', 'a+');
+            fwrite($fp, "PG-> data=" . date("Y-m-d H:i:s") . ":" . odbc_errormsg($this->db_td) . "\r\n" . $qInit . "\r\n");
+            fclose($fp);
+        }
+
     }
 
     function auth_td_param()
     {
-        $this->source_td = 'TD';
+//        $this->source_td = 'TD';
+//        $this->username_td = 'dba';
+//        $this->passwordl_td = 'sql';
+        $this->source_td = 'PgLider';
         $this->username_td = 'dba';
         $this->passwordl_td = 'sql';
+
     }
 
 // Returns Number of Rows in Query by passing through All rows
@@ -81,7 +116,7 @@ class odb
 // Connection to PostGreSQL ODBC Driver To DB PgLider
     function auth_pg_param()
     {
-        $this->source_pg = 'PgLider';
+        $this->source_pg = 'pgLider';
         $this->username_pg = 'dba';
         $this->passwordl_pg = 'sql';
     }

@@ -1058,19 +1058,25 @@ class catalogue
         if (file_exists("$form_htm")) {
             $form = file_get_contents($form_htm);
         }
-        if (strlen($art) > 2 and $atr != "Поиск запчастей") {
+        if (strlen($art) > 2 and $art != "Поиск запчастей") {
+            //запоминаем первоначальный поиск чтоб потом по нему потом поискатьпо наименованию
             $artName = mb_convert_case($art, MB_CASE_LOWER, "CP1251");;
-            //избавляемся от лишних пробелов в искомой строке
-            $art = trim($art);
+            //избавляемся от лишних пробелов в искомой строке (отключил , чуть ниже избавимся)
+//            $art = trim($art);
             //приводим в нижний регистр в кодировке win-1251
             $art = mb_convert_case($art, MB_CASE_LOWER, "CP1251"); //kuzya  22.05.2015
-            //удаляем кавычки и аппостроф и ещё раз избавляемся от пробелов
-            $art = str_replace(array('"', "'", '.'), "", trim($art));
+            //избавляемся от лишних пробелов в искомой строке
+            $art = trim($art);
+            //удаляем кавычки и аппостроф ( и ещё раз избавляемся от пробелов нафига - отключил???)
+//            $art = str_replace(array('"', "'", '.'), "", trim($art));
+            $art = str_replace(array('"', "'", '.'), "", $art);
+            //чистим для поиска по обрезаному наименованию.
             $artName = str_replace(array('"', "'"), "", $artName);
-            //удаляем спец символы, и опять переводим в нижн регистр и сохраняем в $art1 чтоб дальше можно было искать по оригиналу и не только
+            //удаляем спец символы, и опять переводим в нижн регистр (но уже другим способом) и сохраняем в $art1 чтоб дальше можно было искать по оригиналу и не только
             $art1 = strtolower(str_replace(array('_', '-', '—', '+', '/', '.', ',', '\\', ' ', '"', '\''), "", trim($art)));
             //Эта текстовая переменная отвечает за то что нельзя показывать в прайсе 1134 - производитель Service и скрытые позиции в прайсе
-            $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
+//            $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
+            $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
             //Эта переменная добавляет фильтр по производителю, если указан
             $where2 = "";
             if ($by_producent != "") {
@@ -1093,6 +1099,7 @@ class catalogue
                 $n = $odb->num_rows($r);
                 $kol = $n;
 
+                
                 if ($n == 0) {
                     //Если по точному не нашли ищем по полям Code и sCode  по  совпадению спереди кода %art% кроме sCode art1 и art2
                     $where = "(code LIKE '%$art%') or (code LIKE '$art1%') or (scode LIKE '%$art%') or (scode LIKE '$art1%')";
@@ -1121,7 +1128,7 @@ class catalogue
                                   I.prod_id,
                                   I.isImage
                         from (select
-                                    unique StripSpaces(P.code) as code,
+                                    distinct StripSpaces(P.code) as code,
                                     P.brand_id as prod_id1
                               from carProductLookup L
                                 join carProduct P on P.id=L.product_id
@@ -1317,6 +1324,8 @@ class catalogue
 
             $form = str_replace("{items_list}", $list, $form);
         }
+
+
         if (strlen($art) < 3) {
             $form = str_replace("{items_list}", "", $form);
         }
@@ -1349,6 +1358,9 @@ class catalogue
 
     function saveArtSearch($art, $by_name, $by_producent, $byTD)
     {
+        //пока нет таблицы history_search и websearch тупо вываливаемся, когда появятся будем пробовать в них записывать.
+        return;
+
         session_start();
         $odb = new odb;
         $client = $_SESSION["client"];
