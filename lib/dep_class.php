@@ -6,7 +6,7 @@ class dep
     {
         $odb = new odb;
         $slave = new slave;
-        $r = $odb->query_td("select * from deps where id='$dep' and ison='1';");
+        $r = $odb->query_td("select * from deps where id='$dep' and ison='1' limit 7 offset 0;");
         odbc_longreadlen($r, 4096);
         while (odbc_fetch_row($r)) {
             $caption = odbc_result($r, "caption");
@@ -18,7 +18,7 @@ class dep
             }
         }
         if ($desc == "<br />" or $desc == "") {
-            $r1 = $odb->query_td("select * from deps where dep_up='$dep' and ison='1' and visible='1' limit 0,1;");
+            $r1 = $odb->query_td("select * from deps where dep_up='$dep' and ison='1' and visible='1' limit 1 offset 0;");
             while (odbc_fetch_row($r1)) {
                 $id = odbc_result($r1, "id");
                 $caption = odbc_result($r1, "caption");

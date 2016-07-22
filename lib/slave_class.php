@@ -26,7 +26,7 @@ class slave {
 	function meta_head() { $config=new config; list($cTitle,$cKeywords,$cDescription,$seo_info)=$config->get_meta_data();
 		$odb=new odb;$dep_cur=$this->get_dep_cur();$dep=$this->get_dep();
 		if ($dep_cur!=""){
-			$r=$odb->query_td("select caption,key_words,description,seo_info from deps where id='$dep_cur' and ison='1' and visible='1' limit 0,1;");
+			$r = $odb->query_td("select caption,key_words,description,seo_info from deps where id='$dep_cur' and ison='1' and visible='1' limit 1 offset 0;");
 			while(odbc_fetch_row($r)){
 				$title=odbc_result($r,"caption");
 				$keywords=odbc_result($r,"key_words");

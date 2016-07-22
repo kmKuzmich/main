@@ -1092,71 +1092,75 @@ class catalogue
 
 //            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
             if ($by_name == 0) {
-                //»щем по пол€м Code и sCode  по точному совпадению art% art1% art2%
+                //»щем по пол€м Code или sCode  по "точному" совпадению art% art1%
                 $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
                 $query = "select * from item where ($where) $where2 $exclude order by id asc;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
-                $kol = $n;
 
+//нафига эта переменна не пойму, вроде нигде не использветс€ пока что убираю
+//                $kol = $n;
+
+                /*                дальше отключаю дл€ тестов с строки 1104 по 1163
                 
-                if ($n == 0) {
-                    //≈сли по точному не нашли ищем по пол€м Code и sCode  по  совпадению спереди кода %art% кроме sCode art1 и art2
-                    $where = "(code LIKE '%$art%') or (code LIKE '$art1%') or (scode LIKE '%$art%') or (scode LIKE '$art1%')";
-                    $query = "select * from item where ($where) $where2  $exclude order by id asc;";
-                    $r = $odb->query_td($query);
-                    $n = $odb->num_rows($r);
-                }
-                if ($n == 0) {
-                    //≈сли и так ничего не нашли ищем по совпадению спереди кода дл€ всех вариантов
-                    $where = "(code LIKE '%$art%') or (code LIKE '%$art1%') or (scode LIKE '%$art%') or (scode LIKE '%$art1%')";
-                    $query = "select * from item where ($where) $where2 $where2  $exclude order by id asc;";
-                    $r = $odb->query_td($query);
-                    $n = $odb->num_rows($r);
-                }
-            }
-
-//               если результат =0 или поиск в техдоке и не по наименованию
-            if ((($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
-                $query = "select
-                                  I.id as id,
-                                  I.code,
-                                  I.scode,
-                                  I.name,
-                                  I.flag,
-                                  I.help,
-                                  I.prod_id,
-                                  I.isImage
-                        from (select
-                                    distinct StripSpaces(P.code) as code,
-                                    P.brand_id as prod_id1
-                              from carProductLookup L
-                                join carProduct P on P.id=L.product_id
-                              where scode=upper( StripSpaces( '$art' )) ) T
-                        left outer join tdBrand B on B.brand_id=T.prod_id1
-                        left outer join Producent P on P.id=B.prod_id
-                        left outer join Item I on I.scode=T.code and I.prod_id=P.id
-                        where I.id is not null;
-                        ";
-                $r = $odb->query_td($query);
-                $n = $odb->num_rows($r);
-                $byTD = 1; //основной ѕризнак что поиск проведЄн по TecDoc
-            }
-
-//            ≈сли ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
-            if (($n == 0) or ($by_name == 1)) {
-                //Ёто поиск только по наименованию, поиск ведЄтс€ по sName - это поле только в DB2, надо уточнить чем оно отличаетс€ от обычного
-                //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
-                //–азбираем $art в массив по пробелам - излишне потому что делали trim
-                //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
-                $where = "";
-                $artn = explode(" ", $artName);
-                foreach ($artn as $artan) {
-                    $where .= " and locate('$artan',sname)>0";
-                }
-                $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
-                $r = $odb->query_td($query);
-                $n = $odb->num_rows($r);
+                                if ($n == 0) {
+                                    //≈сли по точному не нашли ищем по пол€м Code и sCode  по  совпадению спереди кода %art% кроме sCode art1 и art2
+                                    $where = "(code LIKE '%$art%') or (code LIKE '$art1%') or (scode LIKE '%$art%') or (scode LIKE '$art1%')";
+                                    $query = "select * from item where ($where) $where2  $exclude order by id asc;";
+                                    $r = $odb->query_td($query);
+                                    $n = $odb->num_rows($r);
+                                }
+                                if ($n == 0) {
+                                    //≈сли и так ничего не нашли ищем по совпадению спереди кода дл€ всех вариантов
+                                    $where = "(code LIKE '%$art%') or (code LIKE '%$art1%') or (scode LIKE '%$art%') or (scode LIKE '%$art1%')";
+                                    $query = "select * from item where ($where) $where2 $where2  $exclude order by id asc;";
+                                    $r = $odb->query_td($query);
+                                    $n = $odb->num_rows($r);
+                                }
+                            }
+                
+                //               если результат =0 или поиск в техдоке и не по наименованию
+                            if ((($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
+                                $query = "select
+                                                  I.id as id,
+                                                  I.code,
+                                                  I.scode,
+                                                  I.name,
+                                                  I.flag,
+                                                  I.help,
+                                                  I.prod_id,
+                                                  I.isImage
+                                        from (select
+                                                    distinct StripSpaces(P.code) as code,
+                                                    P.brand_id as prod_id1
+                                              from carProductLookup L
+                                                join carProduct P on P.id=L.product_id
+                                              where scode=upper( StripSpaces( '$art' )) ) T
+                                        left outer join tdBrand B on B.brand_id=T.prod_id1
+                                        left outer join Producent P on P.id=B.prod_id
+                                        left outer join Item I on I.scode=T.code and I.prod_id=P.id
+                                        where I.id is not null;
+                                        ";
+                                $r = $odb->query_td($query);
+                                $n = $odb->num_rows($r);
+                                $byTD = 1; //основной ѕризнак что поиск проведЄн по TecDoc
+                            }
+                
+                //            ≈сли ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
+                            if (($n == 0) or ($by_name == 1)) {
+                                //Ёто поиск только по наименованию, поиск ведЄтс€ по sName - это поле только в DB2, надо уточнить чем оно отличаетс€ от обычного
+                                //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
+                                //–азбираем $art в массив по пробелам - излишне потому что делали trim
+                                //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
+                                $where = "";
+                                $artn = explode(" ", $artName);
+                                foreach ($artn as $artan) {
+                                    $where .= " and locate('$artan',sname)>0";
+                                }
+                                $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
+                                $r = $odb->query_td($query);
+                                $n = $odb->num_rows($r);
+                            */
             }
 
 
@@ -1171,6 +1175,7 @@ class catalogue
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
                 $kol = $n;
+
             }*/
 
 

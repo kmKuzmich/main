@@ -17,7 +17,7 @@ class config
         $key_words = "";
         $description = "";
         $seo_info = "";
-        $r = $odb->query_td("select * from config limit 0,1;");
+        $r = $odb->query_td("select * from config limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $title = odbc_result($r, "title");
             $key_words = odbc_result($r, "key_words");
