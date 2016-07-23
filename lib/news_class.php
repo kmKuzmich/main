@@ -2,7 +2,8 @@
 class news {
 	function show_main_page_news(){$db=new db; $slave=new slave; $dep="news";list($dep_up,$dep_cur)=$slave->get_file_deps($dep);
 		$news_htm=RD."/tpl/news_list_main.htm";	if (!file_exists("$news_htm")){ $form=""; }	if (file_exists("$news_htm")){ $form = file_get_contents($news_htm);}
-		$r=$db->query_lider("select * from news order by data desc limit 0,20;");$n=$db->num_rows($r);
+		$r = $db->query_lider("select * from news order by data desc limit 20 offset 0;");
+		$n = $db->num_rows($r);
 		if ($n>0){$k=0;$list="";
 			for ($i=1;$i<=$n;$i++){$k++;
 				if ($k==1){$list.="<li>";}
@@ -26,7 +27,9 @@ class news {
 	function show_range_news(){$db=new db; $slave=new slave;$dep="news"; list($dep_up,$dep_cur)=$slave->get_file_deps($dep);
 		$bside_htm=RD."/tpl/bottom_slide.htm";$form="";if (file_exists("$bside_htm")){ $form = file_get_contents($bside_htm);}
 		$news_htm=RD."/tpl/news_list_range.htm";$block="";if (file_exists("$news_htm")){ $block = file_get_contents($news_htm);}
-		$r=$db->query_lider("select * from news order by data desc limit 0,20;");$n=$db->num_rows($r);$list="";
+		$r = $db->query_lider("select * from news order by data desc limit 20 offset 0;");
+		$n = $db->num_rows($r);
+		$list = "";
 		for ($i=1;$i<=$n;$i++){
 			$id=$db->result($r,$i-1,"id");
 			$caption=$db->result($r,$i-1,"caption_ru");
@@ -45,7 +48,8 @@ class news {
 	}
 	function show_short_list($news_id){ $db=new db; $slave=new slave;$dep="news";$news_list="";	list($dep_up,$dep_cur)=$slave->get_file_deps($dep);
 		$form_htm=RD."/tpl/news_list.htm";if (file_exists("$form_htm")){ $form = file_get_contents($form_htm);}
-		$r=$db->query_lider("select * from news where id!='$news_id' order by data desc limit 0,6;");$n=$db->num_rows($r);
+		$r = $db->query_lider("select * from news where id!='$news_id' order by data desc limit 6 offset 0;");
+		$n = $db->num_rows($r);
 		if ($n>0){
 			for ($i=1;$i<=$n;$i++){
 				$id=$db->result($r,$i-1,"id");
@@ -69,11 +73,13 @@ class news {
 		$form_htm=RD."/tpl/news_list.htm";if (file_exists("$form_htm")){ $form = file_get_contents($form_htm);}
 		$news_list="<table align='center' width='98%' border='0'>";
 		$where="";if ($data!=""){$where=" where data='$data' ";}
-		$r=$db->query_lider("select * from news $where order by data desc limit 0,50;");$n=$db->num_rows($r);
+		$r = $db->query_lider("select * from news $where order by data desc limit 50 offset 0;");
+		$n = $db->num_rows($r);
 		if ($n==0){
 			$news_list.="<tr><td align='center'><h3>Новостей за $data не найдено</h3></td><tr>";
 			$where="";if ($data!=""){$where=" where data<='$data' ";}
-			$r=$db->query_lider("select * from news $where order by data desc limit 0,50;");$n=$db->num_rows($r);
+			$r = $db->query_lider("select * from news $where order by data desc limit 50 offset 0;");
+			$n = $db->num_rows($r);
 			if ($n>0){$news_list.="<tr><td><h4>Новости ранее $data</h4></td><tr>";}
 		}
 		if ($n>0){

@@ -50,7 +50,7 @@ class catalogue
         if (file_exists("$form_htm")) {
             $form = file_get_contents($form_htm);
         }
-        $r = $db->query_lider("select * from catalogue where id='$id' limit 0,1;");
+        $r = $db->query_lider("select * from catalogue where id='$id' limit 1;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $id = $db->result($r, 0, "id");
@@ -453,7 +453,7 @@ class catalogue
     {
         $db = new db;
         $cat = 0;
-        $r = $db->query_lider("select file from items_name where def='1' order by id asc limit 0,1;");
+        $r = $db->query_lider("select file from items_name where def='1' order by id asc limit 1;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $cat = $db->result($r, 0, "file");
@@ -714,7 +714,7 @@ class catalogue
             }
         }
         $cur_page = $page;
-        $limit = " limit 0,$kpp";
+        $limit = " limit $kpp offset 0";
         if ($where != "") {
             $r = $db->query_lider("select count(lider_id) as kol from `items_$category` where 1 $where;");
             $kol = $db->result($r, 0, "kol");
@@ -767,10 +767,10 @@ class catalogue
             }
             $lmt = $kpp * $pg;
             if ($page == "all") {
-                $limit = " limit 0,$kol";
+                $limit = " limit $kol";
             }
             if ($page != "all") {
-                $limit = " limit $lmt,$kpp";
+                $limit = " limit $kpp offset $lmt";
             }
         }
         return array($menu, $limit);
@@ -1416,8 +1416,8 @@ class catalogue
             $er = 0;
 
             //Проверяем есть ли запись в History_Search по клиенту
-            // $query="select art from history_search where client='$client' order by id desc limit 0,1";
-            $query = "select art,prod_id,(days(current date)-days(data)) as ago from history_search where client='$client' and art='" . strtolower($art) . "' and prod_id='$by_producent' order by id desc limit 0,1";  //and (days(current date)-days(data))>0
+            // $query="select art from history_search where client='$client' order by id desc limit 1 offset 0";
+            $query = "select art,prod_id,(days(current date)-days(data)) as ago from history_search where client='$client' and art='" . strtolower($art) . "' and prod_id='$by_producent' order by id desc limit 1 offset 0";  //and (days(current date)-days(data))>0
             //Это сколько дней назад был поиск  >> "and (days(current date)-days(data))=0" реализовано через if ниже $ago>0
 
             $r = $odb->query_td($query);
@@ -1627,7 +1627,7 @@ class catalogue
             }
             if ($where != "") {
                 $where = " where " . substr($where, 3);
-                $r = $odb->query_td("SELECT * FROM producent $where order by name limit 0,10");
+                $r = $odb->query_td("SELECT * FROM producent $where order by name limit 10");
                 while (odbc_fetch_row($r)) {
                     $id = odbc_result($r, "id");
                     $name = odbc_result($r, "name");
@@ -1675,7 +1675,7 @@ class catalogue
             $where .= " and otype='$otype'";
         }
 
-        $r = $odb->query_td("select * from sto_items where ison='1' $where order by id asc limit 0,20");
+        $r = $odb->query_td("select * from sto_items where ison='1' $where order by id asc limit 20");
         $list = "";
         $i = 0;
         while (odbc_fetch_row($r)) {
@@ -1781,7 +1781,7 @@ class catalogue
     function getItemId($code)
     {
         $odb = new odb;
-        $r = $odb->query_td("select id from item where code='$code' limit 0,1;");
+        $r = $odb->query_td("select id from item where code='$code' limit 1 offset 0;");
         $id = "";
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
@@ -1794,7 +1794,7 @@ class catalogue
         session_start();
         $odb = new odb;
         $slave = new slave;
-        $r = $odb->query_td("select * from item where id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select * from item where id='$item_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $code = odbc_result($r, "code");
             $name = str_replace("'", "&rsquo;", odbc_result($r, "name"));
@@ -1874,7 +1874,7 @@ class catalogue
     function getItemCaptionCode($item_id)
     {
         $odb = new odb;
-        $r = $odb->query_td("select code,Name from item where id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select code,Name from item where id='$item_id' limit 1 offset 0;");
         $caption = "";
         $code = "";
         while (odbc_fetch_row($r)) {
@@ -1888,7 +1888,7 @@ class catalogue
     {
         $odb = new odb;
         $articleId = 0;
-        $r = $odb->query_td("select article_id,data from item_tecdoc where item_id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select article_id,data from item_tecdoc where item_id='$item_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $articleId = odbc_result($r, "article_id");
             $articleData = odbc_result($r, "data");
@@ -2020,14 +2020,14 @@ class catalogue
     function getItemProducentTd($item_id)
     {
         $odb = new odb;
-        $r = $odb->query_td("select prod_id from item where id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select prod_id from item where id='$item_id' limit 1 offset 0;");
         $prod_id = "";
         $prod_td_id = "";
         while (odbc_fetch_row($r)) {
             $prod_id = odbc_result($r, "prod_id");
             break;
         }
-        $r = $odb->query_td("select tdid,name from producent where id='$prod_id' limit 0,1;");
+        $r = $odb->query_td("select tdid,name from producent where id='$prod_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $prod_td_id = odbc_result($r, "tdid");
             $prod_name = odbc_result($r, "name");
@@ -2145,7 +2145,7 @@ class catalogue
         session_start();
         $odb = new odb;
         $name = "";
-        $r = $odb->query_td("SELECT Name,remark FROM subconto WHERE id = '$id' limit 0,1;");
+        $r = $odb->query_td("SELECT Name,remark FROM subconto WHERE id = '$id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $name = odbc_result($r, "Name");
             $remark = odbc_result($r, "Remark");
@@ -2324,14 +2324,14 @@ class catalogue
     function getRandomItem()
     {
         $odb = new odb;
-        //$r=$odb->query_td("select code from item order by rand() limit 0,1;");$code="";while(odbc_fetch_row($r)){$code=odbc_result($r,"code");}return $code;
+        //$r=$odb->query_td("select code from item order by rand() limit 1 offset 0;");$code="";while(odbc_fetch_row($r)){$code=odbc_result($r,"code");}return $code;
         return "3397001543";
     }
 
     function getItemCaption($item_id)
     {
         $odb = new odb;
-        $r = $odb->query_td("select code,Name from item where id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select code,Name from item where id='$item_id' limit 1 offset 0;");
         $caption = "";
         while (odbc_fetch_row($r)) {
             $caption = odbc_result($r, "code") . " " . odbc_result($r, "Name");
@@ -2344,7 +2344,7 @@ class catalogue
         $odb = new odb;
 //		foreach()
         $code = strtolower(str_replace(array('_', '-', '—', '/', '.', ',', '\\', ' '), "", trim($code)));
-        $r = $odb->query_td("select id from item where code='$code' limit 0,1;");
+        $r = $odb->query_td("select id from item where code='$code' limit 1 offset 0;");
         $id = "";
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
@@ -2374,7 +2374,7 @@ class catalogue
     function getDefaultValuta()
     {
         $odb = new odb;
-        $r = $odb->query_td("select id from valuta where isCurrent='1' limit 0,1;");
+        $r = $odb->query_td("select id from valuta where isCurrent='1' limit 1 offset 0;");
         $valuta_id = 0;
         while (odbc_fetch_row($r)) {
             $valuta_id = odbc_result($r, "id");
@@ -2386,7 +2386,7 @@ class catalogue
     {
         $odb = new odb;
         $slave = new slave;
-        $r = $odb->query_td("select kurs from valuta where id='$valuta_id' limit 0,1;");
+        $r = $odb->query_td("select kurs from valuta where id='$valuta_id' limit 1 offset 0;");
         $kurs = 1;
         while (odbc_fetch_row($r)) {
             $kurs = $slave->tomoney(odbc_result($r, "kurs"));
@@ -2406,7 +2406,7 @@ class catalogue
         $koef = 0;
         $profit = 0;
         $skid = 0;
-        $r = $odb->query_td("select * from discounts where discount_id='$discount_id' and group_id='$group_id' limit 0,1;");
+        $r = $odb->query_td("select * from discounts where discount_id='$discount_id' and group_id='$group_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $koef = $slave->tomoney(odbc_result($r, "koef"));
             $profit = $slave->tomoney(odbc_result($r, "profit"));
@@ -2421,7 +2421,7 @@ class catalogue
         $slave = new slave;
         session_start();
         $client_id = $_SESSION["client_id"];
-        $r = $odb->query_td("select * from item where id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select * from item where id='$item_id' limit 1 offset 0;");
         $mdc = 0;
         while (odbc_fetch_row($r)) {
             $vPriceZak = $slave->tomoney(odbc_result($r, "vPriceZak"));
@@ -2443,7 +2443,7 @@ class catalogue
         }
         /*		Рассчёт фиксированной цены, Например Exist
 			if ($client_id<>"") {
-			$r=$odb->query_td("select Price from PriceListKlient where id='$item_id' and klient_id='$client_id' limit 0,1;");$PriceFix=0;
+			$r=$odb->query_td("select Price from PriceListKlient where id='$item_id' and klient_id='$client_id' limit 1 offset 0;");$PriceFix=0;
 			while(odbc_fetch_row($r)){
 				$PriceFix=$slave->tomoney(odbc_result($r,"Price"));
 			}
@@ -2458,7 +2458,7 @@ class catalogue
         session_start();
         $odb = new odb;
         $slave = new slave;
-        $r = $odb->query_td("select * from item where id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select * from item where id='$item_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $valuta_id = odbc_result($r, "val_id");
             $discount_id = odbc_result($r, "discount_id");
@@ -2712,7 +2712,7 @@ class catalogue
     function getItemRemark($item_id)
     {
         $odb = new odb;
-        $r = $odb->query_td("select help from item where id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select help from item where id='$item_id' limit 1 offset 0;");
         $remark = "";
         while (odbc_fetch_row($r)) {
             $remark = odbc_result($r, "help");
@@ -2781,7 +2781,7 @@ class catalogue
     {
         $odb = new odb;
         $articleId = 0;
-        $r = $odb->query_td("select * from item_tecdoc where item_id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select * from item_tecdoc where item_id='$item_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $articleId = odbc_result($r, "article_id");
             $articleData = odbc_result($r, "data");
@@ -3157,7 +3157,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     {
         $db = new db;
         $caption = "";
-        $r = $db->query_lider("select caption from `items_$category` where `lider_id`='$lider_id' limit 0,1;");
+        $r = $db->query_lider("select caption from `items_$category` where `lider_id`='$lider_id' limit 1 offset 0;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $caption = $db->result($r, 0, "caption");
@@ -3183,7 +3183,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     {
         $db = new db;
         $displacement = "";
-        $r = $db->query_lider("select displacement from `items_$category` where `lider_id`='$lider_id' limit 0,1;");
+        $r = $db->query_lider("select displacement from `items_$category` where `lider_id`='$lider_id' limit 1 offset 0;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $displacement = $db->result($r, 0, "displacement");
@@ -3275,7 +3275,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         $odb = new odb;
         $ex = 0;
         if ($code != "") {
-            $r = $odb->query_td("select * from sto_items where code='$code' limit 0,1;");
+            $r = $odb->query_td("select * from sto_items where code='$code' limit 1 offset 0;");
             while (odbc_fetch_row($r)) {
                 $ex = 1;
                 break;
@@ -3303,7 +3303,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             $where = " where (" . substr($where, 0, -3) . ")";
         }
         $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
-        $r = $odb->query_td("select * from item $where  $exclude order by code limit 0,100;");
+        $r = $odb->query_td("select * from item $where  $exclude order by code limit 1 offset 000;");
         $kol = $n;
         $list = "";
         $flist = "";
@@ -3444,7 +3444,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     {
         $odb = new odb;
         $scode = strtolower(str_replace(array('_', '-', '—', '/', '.', ',', '\\', ' '), "", trim($code)));
-        $r = $odb->query_td("select id from item where code='$code' or scode LIKE '$scode' limit 0,1;");
+        $r = $odb->query_td("select id from item where code='$code' or scode LIKE '$scode' limit 1 offset 0;");
         $id = "";
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
@@ -4073,7 +4073,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     function get_sklad_options($sklad)
     {
         $db = new db;
-        $r = $db->query("select * from sklad where id='$sklad' limit 0,1;");
+        $r = $db->query("select * from sklad where id='$sklad' limit 1 offset 0;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $caption = $db->result($r, 0, "caption");
@@ -4118,7 +4118,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         }
         $r = $db->query("select sum(rate) as r_sum from catalogue_vote where model='$model';");
         $rate = $db->result($r, 0, "r_sum");
-        $r = $db->query("select votes from catalogue where id='$model' limit 0,1;");
+        $r = $db->query("select votes from catalogue where id='$model' limit 1 offset 0;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $votes = $db->result($r, 0, "votes");
@@ -4202,7 +4202,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     function show_catalogue_seo_info($cur_id)
     {
         $db = new db;
-        $r = $db->query("select seo_info from catalogue where id='$cur_id' limit 0,1;");
+        $r = $db->query("select seo_info from catalogue where id='$cur_id' limit 1 offset 0;");
         $n = $db->num_rows($r);
         if ($n > 0) {
             return $db->result($r, 0, "seo_info");
@@ -4382,7 +4382,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     function get_model_image($id)
     {
         $db = new db;
-        $r = $db->query("select cat from catalogue_galery where id='$id' limit 0,1;");
+        $r = $db->query("select cat from catalogue_galery where id='$id' limit 1 offset 0;");
         $n = $db->num_rows($r);
         if ($n > 0) {
             $model = $db->result($r, 0, "cat");
@@ -4556,7 +4556,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     {
         $db = new db;
         $dep = "23";
-        $r = $db->query("select id,caption,short_caption from catalogue where top_id='$cur_id' and is_folder='1' and ison='1' order by lenta,id asc limit 0,8;");
+        $r = $db->query("select id,caption,short_caption from catalogue where top_id='$cur_id' and is_folder='1' and ison='1' order by lenta,id asc limit 8 offset 0;");
         $n = $db->num_rows($r);
         if ($n > 0) {
             $nex_menu = "";
@@ -4748,7 +4748,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         $slave = new slave;
         $r = $db->query("select sum(rate) as r_sum from catalogue_vote where model='$model';");
         $rate = $db->result($r, 0, "r_sum");
-        $r = $db->query("select votes from catalogue where id='$model' limit 0,1;");
+        $r = $db->query("select votes from catalogue where id='$model' limit 1 offset 0;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $votes = $db->result($r, 0, "votes");
@@ -4862,7 +4862,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         $list = "<table border=0><tr align='left' valign='top'>";
         for ($i = 1; $i <= $kolc; $i++) {
             if ($_SESSION["model$i"] != "") {
-                $r = $db->query("select * from catalogue where ison='1' and id='" . $_SESSION["model$i"] . "' limit 0,1;");
+                $r = $db->query("select * from catalogue where ison='1' and id='" . $_SESSION["model$i"] . "' limit 1 offset 0;");
                 $n = $db->num_rows($r);
                 if ($n > 0) {
                     $prm = 0;

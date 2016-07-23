@@ -56,39 +56,76 @@ class odb
 
     }
 
+    /**
+     * @function connect_td() иниициализация соединения PG
+     */
     function connect_td()
     {
         $this->auth_td_param();
-        //This condition checks if connection is already established, to init some additional tables such as AnalogTemp, and other variables in PostGres
+        //* This condition checks if connection is already established, to init some additional tables such as AnalogTemp, and other variables in PostGres
         if (!$this->db_td) {
-            $this->db_td = odbc_pconnect($this->source_td, $this->username_td, $this->passwordl_td);
+//            $this->db_td = odbc_pconnect($this->source_td, $this->username_td, $this->passwordl_td);
+            $this->db_td = odbc_connect($this->source_td, $this->username_td, $this->passwordl_td);
             $this->query_init();
         }
-//        $this->db_td = odbc_pconnect($this->source_td, $this->username_td, $this->passwordl_td);
+
     }
 
 
+    /**
+     *Инициализация обязательных таблиц для работы с базой в  PG
+     */
     function query_init()
     {
-        $qInit = "
-                    ------------------
-                    create temporary table  AnalogTemp(
-                      lev smallint null,
-                      item_id integer,
-                      item_id0 integer null,
-                      dop smallint null
-                    ) on commit preserve rows;
-                    ------------------
-                    set enable_seqscan = off;
-                    ------------------        
-                    ";
-        odbc_exec($this->db_td, $qInit);
+        /**проверяем существует ли таблица - возможно соединение уже установлено, и таблицы и переменные созданы
+         * встроенная функция PG = ifTableExists возвращает 't' если таблица существует иначе 'f'
+         */
+        /** @var вызов встроенной функции ifTableExists  возвращает 't' если таблица существует иначе 'f' $qInit */
+        $qInit = "select ifTableExists('AnalogTemp');";
+        $this->r_td = odbc_exec($this->db_td, $qInit);
+        $this->chk_odbc_pg($qInit);
+        /** @var Проверка таблицы AnalogTemp 't' если таблица существует иначе 'f'  $chk */
+        $chk = odbc_result($this->r_td, 1);
+//        echo $chk."хмммм <br>";
+        if ((!$chk) || ($chk == 'f')) {
+
+            $qInit = "select Value from dba.GlobalVar where name='@ListPlace' limit 1;";
+            $this->r_td = odbc_exec($this->db_td, $qInit);
+            $this->chk_odbc_pg($qInit);
+            $listPlace = odbc_result($this->r_td, 1);
+            $qInit = "
+                        ------------------
+                        create temporary table  AnalogTemp(
+                          lev smallint null,
+                          item_id integer,
+                          item_id0 integer null,
+                          dop smallint null
+                        ) on commit preserve rows;
+                        ------------------
+                        set enable_seqscan = off;
+                        ------------------
+                        create temporary table placeSel
+                          as select id as place_id
+                          from Place
+                          where code in ($listPlace);
+                           ------------------   
+                        ";
+            odbc_exec($this->db_td, $qInit);
+            $this->chk_odbc_pg($qInit);
+        };
+    }
+
+    /**
+     * @function chk_odbc_pg - если при выполнении последнего запроса біла ошибка запишет её в файл ошибок
+     * @param $query - строка которую запишем в файл ошибок
+     */
+    function chk_odbc_pg($query)
+    {
         if (odbc_error()) {
             $fp = fopen(RD . '/lib/odbc_errors/pg_error.txt', 'a+');
-            fwrite($fp, "PG-> data=" . date("Y-m-d H:i:s") . ":" . odbc_errormsg($this->db_td) . "\r\n" . $qInit . "\r\n");
+            fwrite($fp, "PG-> data=" . date("Y-m-d H:i:s") . ":" . odbc_errormsg($this->db_td) . "\r\n" . $query . "\r\n");
             fclose($fp);
         }
-
     }
 
     function auth_td_param()
@@ -96,7 +133,7 @@ class odb
 //        $this->source_td = 'TD';
 //        $this->username_td = 'dba';
 //        $this->passwordl_td = 'sql';
-        $this->source_td = 'PgLider';
+        $this->source_td = 'pgLider';
         $this->username_td = 'dba';
         $this->passwordl_td = 'sql';
 
