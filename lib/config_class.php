@@ -26,6 +26,7 @@ class config
         }
         return array($title, $key_words, $description, $seo_info);
     }
+
 //Метод get_module_file($file,$var)  на входе получает код ID-файла, на выходе, если второй атрибут==1 - получает название файла-события который вызывается на выполнение из папки /event иначе если ==2 то просто первый атрибут
 //
     function get_module_file($file, $var)

@@ -214,7 +214,7 @@ class shop
         if ($order_id == "") {
             $order_id = $this->getOrderActiveId();
         }
-        $r = $odb->query_td("select quant from orders_str where order_id='$order_id' and item_id='$item_id' limit 0,1;");
+        $r = $odb->query_td("select quant from orders_str where order_id='$order_id' and item_id='$item_id' limit 1;");
         $kol = 0;
         while (odbc_fetch_row($r)) {
             $kol = $slave->tomoney(odbc_result($r, "quant"));
@@ -275,7 +275,7 @@ class shop
         if ($client != "") {
             $where = " or client='$client' ";
         }
-        $r = $odb->query_td("select id from orders where (session_id='$session' $where) and status='12' order by id asc limit 0,1;");
+        $r = $odb->query_td("select id from orders where (session_id='$session' $where) and status='12' order by id asc limit 1;");
         $id = 0;
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
@@ -355,7 +355,7 @@ class shop
         $cat = new catalogue;
         session_start();
         $summ = round($kol * $price, 2);
-        $query = "select id from orders_str where item_id='$item_id' and order_id='$order_id' limit 0,1;";
+        $query = "select id from orders_str where item_id='$item_id' and order_id='$order_id' limit 1;";
         $r = $odb->query_td($query);
         $n = $odb->num_rows($r);
         if ($n == 0) {
@@ -390,7 +390,7 @@ class shop
             $where = " or client='$client' ";
         }
 //        $r = $odb->query_td("select id from orders where status='12' and (session_id='$session' $where) order by id desc;");
-        $r = $odb->query_td("select id from orders where status='12' and client='$client' order by id desc limit 3;");
+        $r = $odb->query_td("select id from orders where status=12 and client='$client' order by id desc limit 3;");
         $i = 0;
         while (odbc_fetch_row($r)) {
             $i++;
@@ -460,7 +460,7 @@ class shop
         $odb = new odb;
         if ($or_id != "") {
             $er = 0;
-            $r = $odb->query_td("select quant,price from orders_str where id='$or_id' limit 0,1;");
+            $r = $odb->query_td("select quant,price from orders_str where id='$or_id' limit 1;");
             while (odbc_fetch_row($r)) {
                 $count = odbc_result($r, "quant");
                 $price = odbc_result($r, "price");
@@ -580,7 +580,7 @@ class shop
         $odb = new odb;
         $slave = new slave;
         $cl = new client;
-        $r = $odb->query_td("select * from orders where id='$order_id' limit 0,1;");
+        $r = $odb->query_td("select * from orders where id='$order_id' limit 1;");
         while (odbc_fetch_row($r)) {
             $order_num = odbc_result($r, "doc_num");
             $order_data = $slave->data_word(odbc_result($r, "data"));
@@ -819,7 +819,7 @@ class shop
     function show_payment_comment($comment)
     {
         $odb = new odb;
-        $r = $odb->query_td("select \"desc\" from payment where id='$comment' limit 0,1;");
+        $r = $odb->query_td("select \"desc\" from payment where id='$comment' limit 1;");
         $desc = "";
         while (odbc_fetch_row($r)) {
             $desc = "<br /><hr>" . odbc_result($r, "desc") . "<hr><br />";
@@ -1214,13 +1214,14 @@ class shop
             $order_list = file_get_contents($order_list_htm);
         }
         $kp = 9;
-        $limit = " limit 0,$kp";
+        $limit = " limit $kp";
         if ($page != "") {
             if ($page < 0) {
                 $page = 0;
             }
             $from = $page * $kp;
-            $limit = " limit $from,$kp";
+//            $limit = " limit $from,$kp";
+            $limit = " limit $kp offset $from";
         }
         $list = "";
         $r = $odb->query_td("select to_char(D.Day,'dd-mm-yyyy') \"day\", D.Num \"num\", nvl(cast(D.sum as numeric(12,2)) ||'','') \"sum\",
@@ -1317,7 +1318,7 @@ class shop
     function getDocUserRemark($doc_id)
     {
         $odb = new odb;
-        $r = $odb->query_td("select more_client from orders where doc_id='$doc_id' limit 0,1;");
+        $r = $odb->query_td("select more_client from orders where doc_id='$doc_id' limit 1;");
         $remark = "";
         while (odbc_fetch_row($r)) {
             $remark = odbc_result($r, "more_client");
@@ -1347,7 +1348,7 @@ class shop
 		
 		left outer join DocInfo DI on D.id=DI.doc_id
 		
-		where D.id='$doc_id' limit 0,1;");
+		where D.id='$doc_id' limit 1;");
         while (odbc_fetch_row($r)) {
             $subconto_id = odbc_result($r, "subconto_id");
             $client_id = odbc_result($r, "klient_id");

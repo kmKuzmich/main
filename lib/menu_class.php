@@ -197,7 +197,7 @@ class menu
         if ($dep_cur == "") {
             $dep_cur = "0";
         }
-        $r = $odb->query_td("select dep_up from deps where id='$dep_cur' and visible='1' and ison='1' limit 0,1;");
+        $r = $odb->query_td("select dep_up from deps where id='$dep_cur' and visible='1' and ison='1' limit 1;");
         while (odbc_fetch_row($r)) {
             $dep_up = odbc_result($r, "dep_up");
             if ($dep_up == 0) {

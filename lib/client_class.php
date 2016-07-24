@@ -43,7 +43,7 @@ class client
             if (file_exists("$form_htm")) {
                 $form = file_get_contents($form_htm);
             }
-            $r = $odb->query_td("select * from SUBCONTO where ID='$client_id' limit 0,1;");
+            $r = $odb->query_td("select * from SUBCONTO where ID='$client_id' limit 1 offset 0;");
             $sDolg = "";
             while (odbc_fetch_row($r)) {
                 $code = odbc_result($r, "CODE");
@@ -108,7 +108,7 @@ class client
         $odb = new odb;
         $flink = "";
         $client_id = htmlspecialchars(trim($client_id), ENT_QUOTES);
-        $r = $odb->query_td("select * from SUBCONTO_FASTLINK where subconto_id='$client_id' and ison=1 limit 0,1;");
+        $r = $odb->query_td("select * from SUBCONTO_FASTLINK where subconto_id='$client_id' and ison=1 limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $flink = odbc_result($r, "flink");
         }
@@ -124,7 +124,7 @@ class client
         $answer = "";
         $client_id = htmlspecialchars(trim($client_id), ENT_QUOTES);
         $flink = htmlspecialchars(trim($flink), ENT_QUOTES);
-        $r = $odb->query_td("select * from SUBCONTO_FASTLINK where subconto_id='$client_id' and flink='$flink' and ison=1 limit 0,1;");
+        $r = $odb->query_td("select * from SUBCONTO_FASTLINK where subconto_id='$client_id' and flink='$flink' and ison=1 limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             session_start();
             $id = odbc_result($r, "id");
@@ -156,7 +156,7 @@ class client
                                 and not exists(select M1.id  from Messages as M1 where M1.id1=M.id and M1.client_id='$client_id')))
                             and mss.mess_id is null
                             and M.state_id =27
-                        limit 0,1;
+                        limit 1 offset 0;
                             ");
         */
         $needUpdateM = 0;
@@ -173,7 +173,7 @@ class client
                         and M.sDay<=current_date 
                         and mss.mess_id is null
                         and nvl(M1.state_id,M.state_id)=27
-                    limit 0,1;");
+                    limit 1 offset 0;");
 
             while (odbc_fetch_row($r)) {
                 $ex = 1;
@@ -198,7 +198,7 @@ class client
         $odb = new odb;
         session_start();
         $client_id = $_SESSION["client"];
-//		$r=$odb->query_td("select M.id,M.Day,M.header,M.body,DS.name from Messages as M left outer join DocState DS on DS.id=M.state_id where M.id='$mess_id' and sDay<=current_date and (M.client_id='$client_id' or ('$client_id' in (select SubConto_id from SubContoTypes as TS where TS.SubcontoType_id=M.group_id) and not exists(select M1.id  from Messages as M1 where M1.id1=M.id and M1.client_id='$client_id'))) limit 0,1;");
+//		$r=$odb->query_td("select M.id,M.Day,M.header,M.body,DS.name from Messages as M left outer join DocState DS on DS.id=M.state_id where M.id='$mess_id' and sDay<=current_date and (M.client_id='$client_id' or ('$client_id' in (select SubConto_id from SubContoTypes as TS where TS.SubcontoType_id=M.group_id) and not exists(select M1.id  from Messages as M1 where M1.id1=M.id and M1.client_id='$client_id'))) limit 1 offset 0;");
 
         $r = $odb->query_td("
 			select M.id,M.Day,M.header,M.body,D.Num 
@@ -212,7 +212,7 @@ class client
 					and M.sDay<=current_date 
 					and mss.mess_id is null
 					and nvl(M1.state_id,M.state_id)=27
-				limit 0,1;");
+				limit 1 offset 0;");
 
 
         while (odbc_fetch_row($r)) {
@@ -407,7 +407,7 @@ class client
         if ($pass != "" and $email != "") {
             setcookie("AvtoliderUser", "", time() - 3600);
             setcookie("AvtoliderUserSecure", "", time() - 3600);
-            $r = $odb->query_td("select * from SUBCONTO where lcase(EMAIL) = lcase('$email') and PWD = '$pass' limit 0,1;");
+            $r = $odb->query_td("select * from SUBCONTO where lcase(EMAIL) = lcase('$email') and PWD = '$pass' limit 1 offset 0;");
             while (odbc_fetch_row($r)) {
                 session_start();
                 $_SESSION["client_user"] = 0;
@@ -431,7 +431,7 @@ class client
                 }
             }
             if ($answer == "") {
-                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where lcase(EMAIL) = lcase('$email') and PWD = '$pass' and ISON = '1' limit 0,1;");
+                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where lcase(EMAIL) = lcase('$email') and PWD = '$pass' and ISON = '1' limit 1 offset 0;");
                 while (odbc_fetch_row($r1)) {
                     session_start();
                     $_SESSION["email"] = $email;
@@ -475,7 +475,7 @@ class client
         $slave = new slave;
         $odb = new odb;
         if ($id != "") {
-            $r = $odb->query_td("select * from SUBCONTO where id = '$id' limit 0,1;");
+            $r = $odb->query_td("select * from SUBCONTO where id = '$id' limit 1 offset 0;");
             while (odbc_fetch_row($r)) {
                 session_start();
                 $_SESSION["client_user"] = 0;
@@ -486,7 +486,7 @@ class client
 //                list ($nearData,$sDolg,$Dolg) = $this->getSubcontoNearDataSumNew($_SESSION["client"]);
             }
             if ($answer == "") {
-                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where SUBCONTO_ID = '$id' and ISON = '1' limit 0,1;");
+                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where SUBCONTO_ID = '$id' and ISON = '1' limit 1 offset 0;");
                 while (odbc_fetch_row($r1)) {
                     session_start();
                     $_SESSION["email"] = $email;
@@ -581,7 +581,7 @@ class client
         $slave = new slave;
         $answer = "";
         $email = strtolower($email);
-        $r = $odb->query_td("select id,Name,pwd from SUBCONTO where email = '$email' limit 0,1;");
+        $r = $odb->query_td("select id,Name,pwd from SUBCONTO where email = '$email' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
             $Name = odbc_result($r, "Name");
@@ -723,7 +723,7 @@ class client
             }
             if ($email != "" and $name != "" and $city != "" and $address != "" and $phone != "") {
                 $remip = $_SERVER['REMOTE_ADDR'];
-                $r = $odb->query_td("SELECT subconto . id FROM SUBCONTO inner join SUBCONTO_USERS on(subconto . id = subconto_users . SubConto_id) where subconto . email = '$email' or subconto_users . email = '$email' limit 0,1;");
+                $r = $odb->query_td("SELECT subconto . id FROM SUBCONTO inner join SUBCONTO_USERS on(subconto . id = subconto_users . SubConto_id) where subconto . email = '$email' or subconto_users . email = '$email' limit 1 offset 0;");
                 $n = $odb->num_rows($r);
                 if ($n > 0) {
                     $err = 1;
@@ -882,7 +882,7 @@ class client
         $odb = new odb;
         $name = "";
         if ($client_id != 0) {
-            $r = $odb->query_td("select Name from subconto where id = '$client_id' limit 0,1;");
+            $r = $odb->query_td("select Name from subconto where id = '$client_id' limit 1 offset 0;");
             while (odbc_fetch_row($r)) {
                 $name = odbc_result($r, "Name");
             }
@@ -896,7 +896,7 @@ class client
         $odb = new odb;
         $name = "Гость";
         if ($client_id != 0) {
-            $r = $odb->query_td("select Name from subconto_users where id = '$client_id' limit 0,1;");
+            $r = $odb->query_td("select Name from subconto_users where id = '$client_id' limit 1 offset 0;");
             while (odbc_fetch_row($r)) {
                 $name = odbc_result($r, "Name");
             }
@@ -908,7 +908,7 @@ class client
     {
         $odb = new odb;
         $email = "Anonymouse";
-        $r = $odb->query_td("select email from subconto where id = '$client_id' limit 0,1;");
+        $r = $odb->query_td("select email from subconto where id = '$client_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $email = odbc_result($r, "email");
         }
@@ -919,13 +919,13 @@ class client
     {
         $odb = new odb;
         $email = strtolower($email);
-        $r = $odb->query_td("select email from subconto where email = '$email' limit 0,1;");
+        $r = $odb->query_td("select email from subconto where email = '$email' limit 1 offset 0;");
         $n = $odb->num_rows($r);
         if ($n > 0) {
             return array(1, " < span style = 'color:red;' > Email принадлежит другому пользователю </span > ");
         }
         if ($n == 0) {
-            $r1 = $odb->query_td("select email from lider_subconto_users where email = '$email' limit 0,1;");
+            $r1 = $odb->query_td("select email from lider_subconto_users where email = '$email' limit 1 offset 0;");
             $n1 = $odb->num_rows($r1);
             if ($n > 0) {
                 return array(1, " < span style = 'color:red;' > Email принадлежит другому пользователю </span > ");
@@ -939,7 +939,7 @@ class client
     function get_order_form_data($client_id)
     {
         $odb = new odb;
-        $r = $odb->query_td("select code,Name,email,phone,Adres from subconto where id = '$client_id' limit 0,1;");
+        $r = $odb->query_td("select code,Name,email,phone,Adres from subconto where id = '$client_id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $code = odbc_result($r, "code");
             $name = odbc_result($r, "Name");
@@ -958,7 +958,7 @@ class client
     {
         $odb = new odb;
         //Выбираем активный (первый) адрес доставки в списке адресов доставки по клиенту
-        $r = $odb->query_td("select * from adresdeliv where subconto_id = '$client_id' and n = '1' limit 0,1;");
+        $r = $odb->query_td("select * from adresdeliv where subconto_id = '$client_id' and n = '1' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $contperson = odbc_result($r, "contperson");
             $phone = odbc_result($r, "phone");
@@ -980,7 +980,7 @@ class client
             $file = 1;
         }
         $name = "";
-        $r = $odb->query_td("select NAME from $tname where id = '$id' limit 0,1;");
+        $r = $odb->query_td("select NAME from $tname where id = '$id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $name = odbc_result($r, "NAME");
         }

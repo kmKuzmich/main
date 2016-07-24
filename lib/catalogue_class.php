@@ -1617,16 +1617,24 @@ class catalogue
         return array($itemsArr, $i, $dopsArr);
     }
 
+
+    /** @function showProducentList - выводит дл€ выбора список производителей с ссылками на поиск по производителю
+     * @param $proda - массив производителей
+     * @return string - форма вывода "табов" производителей
+     */
     function showProducentList($proda)
     {
         $odb = new odb;
         $where = "";
         if ($proda != "") {
+//            из массива производителей $proda - создаЄм строку запроса типа "id=1 or id=2...."
             foreach ($proda as $prod_id) {
                 $where .= " or id='$prod_id' ";
             }
             if ($where != "") {
+//                обрезаем "or " в начале полученной строки списка производителей.
                 $where = " where " . substr($where, 3);
+//                выводим максимум 10 производителей чтоб не загромождать выбор
                 $r = $odb->query_td("SELECT * FROM producent $where order by name limit 10");
                 while (odbc_fetch_row($r)) {
                     $id = odbc_result($r, "id");
@@ -3229,7 +3237,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             $where .= " and otype='$otype'";
         }
 
-        $r = $odb->query_td("select * from sto_items where ison='1' $where order by id asc limit 0,20");
+        $r = $odb->query_td("select * from sto_items where ison='1' $where order by id asc limit 20 offset 0");
         $list = "";
         $i = 0;
         while (odbc_fetch_row($r)) {
@@ -3303,7 +3311,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             $where = " where (" . substr($where, 0, -3) . ")";
         }
         $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
-        $r = $odb->query_td("select * from item $where  $exclude order by code limit 1 offset 000;");
+        $r = $odb->query_td("select * from item $where  $exclude order by code limit 1 offset 0;");
         $kol = $n;
         $list = "";
         $flist = "";
@@ -3466,7 +3474,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         if ($where != "") {
             $where = " where (" . substr($where, 0, -3) . ") $exclude";
         }
-        $r = $odb->query_td("select * from item $where limit 0,30;");
+        $r = $odb->query_td("select * from item $where limit 30 offset 0;");
         $kol = $n;
         $list = "";
         $i = 0;
@@ -3854,6 +3862,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
     function get_param_fromto($param_id)
     {
         session_start();
+//        объект db объ€влен в классах mysql_class.php и mysql_lider_class.php это подключение к базе данных материнского сайта, копи€ базы хранитс€ на сервере Lider дл€ более быстрого и надЄжного доступа
         $db = new db;
         $r = $db->query("select caption from catalogue_sub_params where param_id='$param_id' order by id asc limit 0,2;");
         $n = $db->num_rows($r);
@@ -4212,6 +4221,9 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         }
     }
 
+
+//    ќчень странна€ функци€, имеет обращение к базе материнского сайта и возвращает какие то лимиты
+//применение в проекте состо€нием  24/07/2016 не обнаружено
     function get_limit($top_id, $cur_id, $page, $where, $where_ses)
     {
         session_start();
@@ -4554,9 +4566,10 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 
     function show_seo_tree_next($cur_id)
     {
+//      объект db объ€влен в классах mysql_class.php и mysql_lider_class.php это подключение к базе данных материнского сайта, копи€ базы хранитс€ на сервере Lider дл€ более быстрого и надЄжного доступа
         $db = new db;
         $dep = "23";
-        $r = $db->query("select id,caption,short_caption from catalogue where top_id='$cur_id' and is_folder='1' and ison='1' order by lenta,id asc limit 8 offset 0;");
+        $r = $db->query("select id,caption,short_caption from catalogue where top_id='$cur_id' and is_folder='1' and ison='1' order by lenta,id asc limit 8;");
         $n = $db->num_rows($r);
         if ($n > 0) {
             $nex_menu = "";
@@ -4574,6 +4587,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 
     function show_model_opinion($model_id)
     {
+//      объект db объ€влен в классах mysql_class.php и mysql_lider_class.php это подключение к базе данных материнского сайта, копи€ базы хранитс€ на сервере Lider дл€ более быстрого и надЄжного доступа
         $db = new db;
         $slave = new slave;
         $dep = "23";
@@ -4649,6 +4663,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 
     function op_limit($model, $page)
     {
+//      объект db объ€влен в классах mysql_class.php и mysql_lider_class.php это подключение к базе данных материнского сайта, копи€ базы хранитс€ на сервере Lider дл€ более быстрого и надЄжного доступа
         $db = new db;
         $kpp = 15;
         $r = $db->query("select count(id) as kol from catalogue_opinion where model='$model';");
@@ -4748,7 +4763,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         $slave = new slave;
         $r = $db->query("select sum(rate) as r_sum from catalogue_vote where model='$model';");
         $rate = $db->result($r, 0, "r_sum");
-        $r = $db->query("select votes from catalogue where id='$model' limit 1 offset 0;");
+        $r = $db->query("select votes from catalogue where id='$model' limit 1;");
         $n = $db->num_rows($r);
         if ($n == 1) {
             $votes = $db->result($r, 0, "votes");
@@ -4862,7 +4877,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         $list = "<table border=0><tr align='left' valign='top'>";
         for ($i = 1; $i <= $kolc; $i++) {
             if ($_SESSION["model$i"] != "") {
-                $r = $db->query("select * from catalogue where ison='1' and id='" . $_SESSION["model$i"] . "' limit 1 offset 0;");
+                $r = $db->query("select * from catalogue where ison='1' and id='" . $_SESSION["model$i"] . "' limit 1;");
                 $n = $db->num_rows($r);
                 if ($n > 0) {
                     $prm = 0;
