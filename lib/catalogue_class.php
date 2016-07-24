@@ -1616,7 +1616,7 @@ class catalogue
         $i = 0;
         $itemsArr = array();
         $dopsArr = array();
-        $odb->query_td("Call listanalog($item_id);");
+        $odb->query_td("select listanalog($item_id);");
         $r = $odb->query_td("select * from analogtemp order by lev,item_id asc;");
         while (odbc_fetch_row($r)) {
             $i += 1;
