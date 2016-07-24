@@ -48,7 +48,8 @@ class client
             while (odbc_fetch_row($r)) {
                 $code = odbc_result($r, "CODE");
                 $name = substr(odbc_result($r, "NAME"), 0, 40);
-                list($saldo, $nearSumm, $kredit, $days) = $this->getClientKredit($client_id);
+//                list($saldo, $nearSumm, $kredit, $days) = $this->getClientKredit($client_id);
+                list($nearData, $nearSumm, $saldo) = $this->getSubcontoNearDataSumNew($client_id);
                 if ($saldo == "") {
                     $saldo = 0;
                 }
@@ -407,7 +408,7 @@ class client
         if ($pass != "" and $email != "") {
             setcookie("AvtoliderUser", "", time() - 3600);
             setcookie("AvtoliderUserSecure", "", time() - 3600);
-            $r = $odb->query_td("select * from SUBCONTO where lcase(EMAIL) = lcase('$email') and PWD = '$pass' limit 1 offset 0;");
+            $r = $odb->query_td("select * from SUBCONTO where lower(EMAIL) = lower('$email') and PWD = '$pass' limit 1 offset 0;");
             while (odbc_fetch_row($r)) {
                 session_start();
                 $_SESSION["client_user"] = 0;
@@ -431,7 +432,7 @@ class client
                 }
             }
             if ($answer == "") {
-                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where lcase(EMAIL) = lcase('$email') and PWD = '$pass' and ISON = '1' limit 1 offset 0;");
+                $r1 = $odb->query_td("select SUBCONTO_ID,NAME from SUBCONTO_USERS where lower(EMAIL) = lower('$email') and PWD = '$pass' and ISON = '1' limit 1 offset 0;");
                 while (odbc_fetch_row($r1)) {
                     session_start();
                     $_SESSION["email"] = $email;
@@ -1013,26 +1014,26 @@ class client
 //            $needUpdate = 1;
 //			setcookie("needUpdate", $needUpdate, $data_to);
 //        };
-
-//		$needUpdate = 0;
+//отключаю  - пока в PG нет функций GetDolg и GetDolgDate
+        $needUpdate = 0;
         if (($needUpdate == 1)) {
             $odb = new odb;
             $slave = new slave;
             $nearData = "";
             $Dolg = 0;
             $nearDolg = 0;
-            $r = $odb->query_td("SELECT sday, cDT,
-                                    CASE WHEN(sday < cDT) THEN GetDolg(id, cDT) ELSE GetDolg(id, ssday) END AS os,
-                                    GetDolg(id, scDT) as dolg,
-                                    K_Code
-                                 FROM(select K . id,
-                                     CURRENT DATE + 1 day AS cDT,
-                                     CURRENT DATE + 360 day AS scDT,
+            $r = $odb->query_td("SELECT s1.sday, s1.cDT,
+                                    CASE WHEN(s1.sday < s1.cDT) THEN GetDolg(s1.id, s1.cDT) ELSE GetDolg(s1.id, s1.ssday) END AS os,
+                                    GetDolg(s1.id, s1.scDT) as dolg,
+                                    s1.K_Code
+                                 FROM(select K.id,
+                                     date(CURRENT_DATE + interval '1 day') AS cDT,
+                                     date(CURRENT_DATE + interval '1 year' ) AS scDT,
                                      GetDolgDate(K . id) AS sday,
-                                     GetDolgDate(K . id) + 1 day AS ssday,
-                                     k . code AS K_Code
+                                     date (GetDolgDate(K . id) + interval '1 day') AS ssday,
+                                     k.code AS K_Code
                                      FROM klient K
-                                      WHERE K . id = '$client')
+                                      WHERE K.id = '$client') as s1
 							  ");
             while (odbc_fetch_row($r)) {
                 //ƒата ближайшего платежа
@@ -1071,6 +1072,8 @@ class client
 
     function getClientKredit($id)
     {
+//        ќтключаю функцию за ненадобностью, нужно  использовать новую getSubcontoNearDataSumNew
+        return;
         $odb = new odb;
         $r = $odb->query_td("
 		select sd as \"sd\",
@@ -1120,6 +1123,8 @@ class client
 
     function getSubcontoNearDataSum($client)
     {
+//        ќтключаю функцию за ненадобностью, нужно  использовать новую getSubcontoNearDataSumNew
+        return;
         $odb = new odb;
         $slave = new slave;
         $r = $odb->query_td("
@@ -1185,7 +1190,6 @@ class client
             ) {
                 $sDolgN += $os;
             }
-
         }
         $sDolgN = round($sDolgN, 2);
         if ($sDolgN < 0) {
@@ -1193,119 +1197,6 @@ class client
         }
         $nearSumm = $slave->int_to_money($nearSumm);
         return array($nearData, $nearSumm, $sDolgN);
-    }
-
-
-    //это € тут поковыр€лс€ и по ходу шо то сламал, лучше потом удалить вовсе
-    function getSubcontoNearDataSum1($client)
-    {
-        $odb = new odb;
-        $slave = new slave;
-        //—ледующий запрос строит список документов долгов и просрочек,
-        // непон€тно зачем то вложенным запросом это сделано, может дл€ DB2 потому что в SA он работает как обычно
-        $r = $odb->query_td("
-		select *
-	     from (select KD.Name \"docName\",
-	    	D.Num \"num\",
-    		to_char(D.Day,'dd-mm-yyyy') \"day\",
-			case when D.sDay < current date then 'style=\"color:red\"' else '' end as \"clr\",
-			case when D.kinddoc_id in (3,27,20,28) then 
-				nvl(to_char(D.sDay,'dd-mm-yyyy'),'') 
-				else nvl(to_char(D.sDay,'dd-mm-yyyy'),'') end as \"sday\",
-		   cast(case
-        	when nvl(D.val_id,0)!=978 then
-	           case when D.KindDoc_id in (3,27,20,28) then D.sum
-    	           else -D.sum end
-        	end as numeric(12,2)) as \"s\",
-		   cast(case
-        	  when nvl(D.val_id,0)!=978 then
-            case when D.KindDoc_id in (3,27,20,28) then D.sum-nvl(D.osum,0)
-            else -D.osum end
-        end as numeric(12,2)) as \"os\",
-		  cast(case when nvl(D.val_id,0)=978 then
-           case when D.KindDoc_id in (3,27,20,28) then D.vsum
-           else -D.vsum
-           end
-        end as numeric(12,2)) as \"vs\",
-		   cast(case
-         when nvl(D.val_id,0)=978 then
-          case when D.KindDoc_id in (3,27,20,28) then D.vsum-nvl(D.vosum,0)
-          else -D.vosum
-          end
-         end as numeric(12,2)) as \"vos\",
-	    D.id \"doc_id\",
-		D.kinddoc_id \"kinddoc_id\",
-		D.SubConto_id
-	 from DocOpen O
-        left outer join Doc D on D.id=O.doc_id
-        join KindDoc KD on KD.id=D.KindDoc_id
-	  where O.SubConto_id='$client')
-  where \"os\"!=0 or \"vos\"!=0
- order by \"sday\",\"num\";");
-        $nearData = "";
-        $nearSumm = 0;
-        $nearSumm1 = 0;
-        $k = 0;
-        $i = 0;
-        $sDolgN = 0;
-        $now = date('d-m-Y');
-        //проводим непосредственно выбор ближайшей даты, ближайшей суммы и суммы просрочки
-        while (odbc_fetch_row($r)) {
-            $k += 1;
-            $i += 1;
-            $day = odbc_result($r, "day");
-            $kinddoc_id = odbc_result($r, "kinddoc_id");
-
-            $sday = odbc_result($r, "sday");
-            if ($nearData == "" & $sday != "") {
-                $nearData = $sday;
-            }
-            $os = $slave->tomoney(odbc_result($r, "os"));
-
-//			след.строка дл€ Debug
-//			echo "б.дата $nearData VS sday $sday VS today $now б.сум $nearSumm >>  $os and $nearSumm1\n ";
-//			if ($sday > $now) {
-//				echo "no expire\n";
-//			} else {
-//				echo "expired\n";
-//			};
-            $nearSumm += $os;
-//			если аванс, то если аванс больше задолженности, то (сбросить дату документа), иначе прибавить к задолженности и если б.дата > даты документа то установить дату документа
-            if (in_array($kinddoc_id, array(40, 61))) {
-                if (($nearSumm < abs($os))) {
-//					$nearSumm = 0; //обнулить задолженность-не надо, потому что потом ещЄ долги есть на которые этот аванс должен пойти,
-                    $nearData = "";
-                }
-            } elseif (($sday < $nearData) || ($nearSumm > 0)) {
-                $nearData = $sday;
-            }
-
-//
-//
-//			провер€ем, если дата текущ.док.в строке больше чем текуща€ дата или вид документа аванс = изменить ближ.сум.опл.
-//			if ($sday <= date("Ymd") || in_array($kinddoc_id,array(40,61)) ) //, mktime(0, 0, 0, date("m"), date("d"), date("Y"))))
-//			{
-//				$nearSumm += $os;
-////				если дата док в строке меньше чем ближ.дата и она не пусто и это не аванс - установить ближ.дат = дата строки
-//				if (($sday < $nearData )& ($sday!="") & ($nearSumm >0) & (!in_array($kinddoc_id,array(40,61)))) {
-////					echo "$nearData или  $sday xxx\n";
-//					$nearData = $sday;
-//				}
-//			}
-
-            $sDolgN += $os;
-        }
-        if ($nearSumm <= 0) {
-            $nearSumm = $os;
-            $nearData = $sday;
-        }
-        $sDolgN = round($sDolgN, 2);
-        if ($sDolgN < 0) {
-            $sDolgN = 0;
-        }
-        $nearSumm = $slave->int_to_money($nearSumm);
-        return array($nearData, $nearSumm, $sDolgN);
-
     }
 }
 

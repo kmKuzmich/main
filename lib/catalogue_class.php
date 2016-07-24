@@ -877,7 +877,7 @@ class catalogue
         if ($client != "" and $client > 0) {
             $curdata = date("Y-m-d");
             $form = "<h3 align='center' style='color:#000; margin:5;'>НАКОПЛЕННЫЕ БОНУСЫ</h3>";
-            $r = $odb->query_td("select * from action where eday>='$curdata' and status=1 order by id asc;"); //Kuz убрал =>> and (flag is null or flag=0)
+            $r = $odb->query_td("select * from action where eday>='$curdata' and status='1' order by id asc;"); //Kuz убрал =>> and (flag is null or flag=0)
             while (odbc_fetch_row($r)) {
 
                 $id = odbc_result($r, "id");
@@ -1097,9 +1097,8 @@ class catalogue
                 $query = "select * from item where ($where) $where2 $exclude order by id asc;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
-
 //нафига эта переменна не пойму, вроде нигде не использвется пока что убираю
-//                $kol = $n;
+                $kol = $n;
 
                 /*                дальше отключаю для тестов с строки 1104 по 1163
                 
@@ -1178,7 +1177,7 @@ class catalogue
 
             }*/
 
-
+//нафига повторно запускать???? отключаю!
             $r = $odb->query_td($query);
             $list = "";
 
@@ -1187,14 +1186,21 @@ class catalogue
             if ($n > 1 and $by_producent == "" and $byTD <> 1) {
                 $kt = -1;
                 $k = 0;
+                $proda_w = ""; //строка с несколькими prod_id  передаётся дальше в процедуру вывода табов
                 while (odbc_fetch_row($r)) {
                     $prm = 0;
                     $k += 1;
                     $prod_id = odbc_result($r, "prod_id");
-                    $proda[$k] = $prod_id;
+//                    $proda[$k] = $prod_id;
+//                    $proda_w .= "or id= $prod_id";
+                    $proda_w .= ",$prod_id";
                 }
+//                строка с несколькими prod_id  передаётся дальше в процедуру вывода табов
+//                $proda_w .="where ".substr($proda_w, 3);
+                $proda_w = "id in (" . substr($proda_w, 1) . ")";
                 //Вывод табов производителей
-                $form = $this->showProducentTabs($proda);
+                $form = $this->showProducentTabs($proda_w);
+//                echo "ok $n <br>";
             }
             //Если результат поисков больше 16 строк и (выбран пр-ль или поиск по TD) и искали не по наименованию, готовим вывод результата поиска с аналогами
             if ($n > 16 and ($by_producent != "" or $byTD == 1) and ($by_name == 0 or $by_name == "")) {
@@ -1442,27 +1448,33 @@ class catalogue
         }
     }
 
+//    function showProducentTabs($proda)
+//аргумент $proda заменил на $proda_w - вместо массива $proda передаю строку $where
     function showProducentTabs($proda)
     {
         $odb = new odb;
-        $where = "";
+//        $where = "";
         if ($proda != "") {
             $form_htm = RD . "/tpl/catalogue_producent_list.htm";
             if (file_exists("$form_htm")) {
                 $form = file_get_contents($form_htm);
             }
-            foreach ($proda as $prod_id) {
-                $where .= " or id='$prod_id' ";
-            }
-            if ($where != "") {
-                $where = " where " . substr($where, 3);
+//            Отключаю эту часть, потому что решил что лучше строку $where подготовить раньше, в цикле когда готовится массив $proda
+//            foreach ($proda as $prod_id) {
+//                $where .= " or id='$prod_id' ";
+//            }
+//            if ($where != "") {
+//                $where = " where " . substr($where, 3);
+
+            $where = "where " . $proda;
                 $query = "SELECT * FROM producent $where order by name;";
                 $r = $odb->query_td($query);
                 while (odbc_fetch_row($r)) {
                     $id = odbc_result($r, "id");
                     $name = odbc_result($r, "name");
                     $list .= "<div class='ProducentTab' onclick='search_biproducent(\"$id\")'><a href='#$name' onclick='search_biproducent(\"$id\")'>$name</a></div>";
-                }
+//                }
+
             }
             $form = str_replace("{list}", $list, $form);
         }
@@ -1478,7 +1490,7 @@ class catalogue
         if ($itemsArr == Null) {
             list($itemsArr, $kolItems, $dopsArr) = $this->createAnalogList($item_id, 0, 0);/*$itemsArr[0]=$item_id; list($itemsArr,$kolItems)=$this->createAnalogList($itemsArr,$itemsArr,0,0);*/
         }
-        $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
+        $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
         $where = "";
         foreach ($itemsArr as $item) {
             $where .= " id='$item' or";
@@ -3310,7 +3322,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         if ($where != "") {
             $where = " where (" . substr($where, 0, -3) . ")";
         }
-        $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
+        $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
         $r = $odb->query_td("select * from item $where  $exclude order by code limit 1 offset 0;");
         $kol = $n;
         $list = "";
