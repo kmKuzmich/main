@@ -166,6 +166,7 @@ function updateBusketInformer(){
 	}}, true);
 }
 
+
 function drop_busket_position(model, order_id) {
 	if (model == '' && order_id == '') {
 		alert("¬нутренн€€ ошибка сайта");

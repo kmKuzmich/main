@@ -475,6 +475,7 @@ class shop
 
 //    Удаление строки заявки
     function dropModel($or_id)
+//    function dropModel($item_id)
     {
         $odb = new odb;
         if ($or_id != "") {
@@ -629,9 +630,7 @@ class shop
             $or_price = $slave->tomoney(odbc_result($r, "price"));
             $or_summ = $slave->tomoney(odbc_result($r, "summ"));
 
-
             list($or_price, $or_summ) = $cat->updateOrderItemPriceSumm($or_id, $or_model, $or_count, $or_price, $or_summ);
-
             list($quant, $quant1, $quant_res, $quant1_res) = $cat->getItemQuantKol($or_model);
             $color = "";
             if ($or_count > $quant) {
@@ -1110,7 +1109,7 @@ class shop
                 $j++;
                 if (odbc_result($r1, "quant") > 0) {
                     $or_id = odbc_result($r1, "id");
-                    $or_model = odbc_result($r1, "item_id");
+                    $or_item_id = odbc_result($r1, "item_id");
                     $or_code = odbc_result($r1, "code");
                     $or_caption = odbc_result($r1, "name");
                     $or_count = $slave->int_to_money(odbc_result($r1, "quant"));
@@ -1128,7 +1127,7 @@ class shop
 					</tr>
 					<tr><td colspan='8' bgcolor='#282828' class='dotted' height='1'></td></tr>";
 //					$odb->query_td("insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model);");
-                    $odb->query_lider("insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_model');");
+                    $odb->query_lider("insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_item_id');");
                 }
             }
 

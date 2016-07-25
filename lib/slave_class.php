@@ -22,7 +22,19 @@ class slave {
 		if ($cur==$start){$site_year="$start ";}
 		return $site_year."ã";
 	}
-	function tomoney($val){$vls=explode(",",$val); return $vls[0].".".substr($vls[1],0,2);}
+
+	function tomoney($val)
+	{
+		if (strrpos($val, ",")) {
+			$vls = explode(",", $val);
+			$result = $vls[0] . "." . substr($vls[1], 0, 2);
+		} else {
+			$vls = explode(".", $val);
+			$result = $vls[0] . "." . substr($vls[1], 0, 2);
+		}
+		return $result;
+	}
+
 	function meta_head() { $config=new config; list($cTitle,$cKeywords,$cDescription,$seo_info)=$config->get_meta_data();
 		$odb=new odb;$dep_cur=$this->get_dep_cur();$dep=$this->get_dep();
 		if ($dep_cur!=""){
