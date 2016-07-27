@@ -1476,7 +1476,7 @@ class shop
     //-------------------------------------------------
     //           DOCS
     //-------------------------------------------------
-//    Эта процедура показует документы для оплаты вызывается из docs.php
+//    Эта процедура показует ДОЛГИ и АВАНСЫ - документы для оплаты вызывается из docs.php
     function show_order_docs($page)
     {
         session_start();
@@ -1503,7 +1503,7 @@ class shop
 	     from (select KD.Name \"docName\",
 	    	D.Num \"num\",
     		to_char(D.Day,'dd-mm-yyyy') \"day\",
-			case when D.sDay < current date then 'style=\"color:red\"' else '' end as \"clr\",
+			case when D.sDay < date(now()) then 'style=\"color:red\"' else '' end as \"clr\",
 			case when D.kinddoc_id in (61) then 
 				nvl(to_char(Null,'dd-mm-yyyy'),'') 
 				else nvl(to_char(D.sDay,'dd-mm-yyyy'),'') end as \"sday\",

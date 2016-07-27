@@ -23,6 +23,7 @@ class slave {
 		return $site_year."г";
 	}
 
+//	преобразование запятой в точку и отображение до 2-х знаков после запятой
 	function tomoney($val)
 	{
 		if (strrpos($val, ",")) {

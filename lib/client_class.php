@@ -1015,26 +1015,42 @@ class client
 //			setcookie("needUpdate", $needUpdate, $data_to);
 //        };
 //отключаю  - пока в PG нет функций GetDolg и GetDolgDate
-        $needUpdate = 0;
+        $needUpdate = 1;
         if (($needUpdate == 1)) {
             $odb = new odb;
             $slave = new slave;
             $nearData = "";
             $Dolg = 0;
             $nearDolg = 0;
-            $r = $odb->query_td("SELECT s1.sday, s1.cDT,
-                                    CASE WHEN(s1.sday < s1.cDT) THEN GetDolg(s1.id, s1.cDT) ELSE GetDolg(s1.id, s1.ssday) END AS os,
-                                    GetDolg(s1.id, s1.scDT) as dolg,
-                                    s1.K_Code
-                                 FROM(select K.id,
-                                     date(CURRENT_DATE + interval '1 day') AS cDT,
-                                     date(CURRENT_DATE + interval '1 year' ) AS scDT,
-                                     GetDolgDate(K . id) AS sday,
-                                     date (GetDolgDate(K . id) + interval '1 day') AS ssday,
-                                     k.code AS K_Code
-                                     FROM klient K
-                                      WHERE K.id = '$client') as s1
-							  ");
+            $r = $odb->query_td("
+                        SELECT s1.sday, s1.cDT,
+                            CASE WHEN(s1.sday < s1.cDT) 
+                            THEN GetDolg(s1.id, DATE(s1.cDT) ) ELSE 
+                            GetDolg(s1.id, DATE(s1.ssday) ) END AS os,
+                            GetDolg(s1.id, DATE(s1.scDT) ) as dolg,
+                            s1.K_Code
+                        FROM(select K.id,
+                                date(now())+1 AS cDT,
+                                date(now()) + interval '1 year' AS scDT,
+                                GetDolgDate(K . id) AS sday,
+                                date(GetDolgDate(K.id)) + interval '1 day' AS ssday,
+                                k.code AS K_Code
+                            FROM klient K
+                            WHERE K.id = $client) as s1	
+              		  ");
+//SELECT s1.sday, s1.cDT,
+//                                    CASE WHEN(s1.sday < s1.cDT) THEN GetDolg(s1.id, s1.cDT) ELSE GetDolg(s1.id, s1.ssday) END AS os,
+//                                    GetDolg(s1.id, s1.scDT) as dolg,
+//                                    s1.K_Code
+//                                 FROM(select K.id,
+//                                     date(CURRENT_DATE + interval '1 day') AS cDT,
+//                                     date(CURRENT_DATE + interval '1 year' ) AS scDT,
+//                                     GetDolgDate(K . id) AS sday,
+//                                     date (GetDolgDate(K . id) + interval '1 day') AS ssday,
+//                                     k.code AS K_Code
+//                                     FROM klient K
+//                                      WHERE K.id = '$client') as s1
+//              		  \");
             while (odbc_fetch_row($r)) {
                 //Дата ближайшего платежа
                 $nearData = odbc_result($r, sday);
@@ -1096,12 +1112,12 @@ class client
                          end) as numeric(12,2)) as sdE,
 
                    cast(sum(case when  nvl(D.val_id,980)=980 then
-                             case when D.sDay < current date    and DP.Property_id=3
+                             case when D.sDay < date(now()) and DP.Property_id=3
                                  then D.sum-nvl(D.osum,0)
                                 when DP.Property_id is null then  -D.osum end
                              end) as numeric(12,2)) as sDolg,
                    cast(sum(case when nvl(D.val_id,980)=978 then
-                             case when D.sDay <= current date and DP.Property_id=3
+                             case when D.sDay <= date(now()) and DP.Property_id=3
                                then D.vsum-nvl(D.vosum,0)
                              when DP.Property_id is null then -D.vosum end
                             end) as numeric(12,2)) as sDolgE
@@ -1132,7 +1148,7 @@ class client
 	     from (select KD.Name \"docName\",
 	    	D.Num \"num\",
     		to_char(D.Day,'dd-mm-yyyy') \"day\",
-			case when D.sDay < current date then 'style=\"color:red\"' else '' end as \"clr\",
+			case when D.sDay < date(now()) then 'style=\"color:red\"' else '' end as \"clr\",
 			case when D.kinddoc_id not in (3,27,20,28) then 
 				nvl(to_char(D.sDay,'dd-mm-yyyy'),'') 
 				else nvl(to_char(D.sDay,'dd-mm-yyyy'),'') end as \"sday\",
