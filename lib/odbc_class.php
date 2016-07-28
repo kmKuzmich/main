@@ -89,10 +89,10 @@ class odb
 //        echo $chk."υμμμμ <br>";
         if ((!$chk) || ($chk == 'f')) {
 
-            $qInit = "select Value from dba.GlobalVar where name='@ListPlace' limit 1;";
-            $this->r_td = odbc_exec($this->db_td, $qInit);
-            $this->chk_odbc_pg($qInit);
-            $listPlace = odbc_result($this->r_td, 1);
+//            $qInit = "select Value from dba.GlobalVar where name='@ListPlace' limit 1;";
+//            $this->r_td = odbc_exec($this->db_td, $qInit);
+//            $this->chk_odbc_pg($qInit);
+//            $listPlace = odbc_result($this->r_td, 1);
             $qInit = "
                         ------------------
                         create temporary table  AnalogTemp(
@@ -104,12 +104,14 @@ class odb
                         ------------------
                         set enable_seqscan = off;
                         ------------------
-                        create temporary table placeSel
-                          as select id as place_id
-                          from Place
-                          where code in ($listPlace);
-                           ------------------   
                         ";
+
+//                        create temporary table placeSel
+//                          as select id as place_id
+//                          from Place
+//                          where code in ($listPlace);
+//                           ------------------
+//                        ";
             odbc_exec($this->db_td, $qInit);
             $this->chk_odbc_pg($qInit);
         };

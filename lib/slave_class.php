@@ -114,10 +114,28 @@ class slave {
 			return $_POST["dep"];
 		}
 	}
-	function get_w(){ if ($_POST["w"]==""){return $_GET["w"];} if ($_POST["w"]!=""){return $_POST["w"];} }
+
+	function get_w()
+	{
+		if ($_POST["w"] == "") {
+			return $_GET["w"];
+		}
+		if ($_POST["w"] != "") {
+			return $_POST["w"];
+		}
+	}
 	function get_conf(){ if ($_POST["conf"]==""){return $_GET["conf"];} if ($_POST["conf"]!=""){return $_POST["conf"];} }
 	function get_dep_up(){ if ($_POST["dep_up"]==""){return $_GET["dep_up"];} if ($_POST["dep_up"]!=""){return $_POST["dep_up"];} }
-	function get_dep_cur(){ if ($_POST["dep_cur"]==""){return $_GET["dep_cur"];} if ($_POST["dep_cur"]!=""){return $_POST["dep_cur"];} }
+
+	function get_dep_cur()
+	{
+		if ($_POST["dep_cur"] == "") {
+			return $_GET["dep_cur"];
+		}
+		if ($_POST["dep_cur"] != "") {
+			return $_POST["dep_cur"];
+		}
+	}
 
 	function get_sub_menu(){ if ($_POST["sub_menu"]==""){return $_GET["sub_menu"];} if ($_POST["sub_menu"]!=""){return $_POST["sub_menu"];} }
 	function get_top_id(){ if ($_POST["top_id"]==""){return $_GET["top_id"];} if ($_POST["top_id"]!=""){return $_POST["top_id"];} }
@@ -149,38 +167,58 @@ class slave {
 		}
 		return $caption;
 	}
-	function get_file_deps($file){$odb=new odb;
-		$r=$odb->query_td("select id from module_files where file='$file' and system='1';");
-		while (odbc_fetch_row($r)){
-			$id=odbc_result($r,"id");
-			$r1=$odb->query_td("select id,dep_up from deps where file='$id';");
-			while (odbc_fetch_row($r1)){ $dep_cur=odbc_result($r1,"id");$dep_up=odbc_result($r1,"dep_up");}
+
+	function get_file_deps($file)
+	{
+		$odb = new odb;
+		$r = $odb->query_td("select id from module_files where file='$file' and system='1';");
+		while (odbc_fetch_row($r)) {
+			$id = odbc_result($r, "id");
+			$r1 = $odb->query_td("select id,dep_up from deps where file='$id';");
+			while (odbc_fetch_row($r1)) {
+				$dep_cur = odbc_result($r1, "id");
+				$dep_up = odbc_result($r1, "dep_up");
+			}
 		}
-		return array($dep_up,$dep_cur);
+		return array($dep_up, $dep_cur);
 	}
-	function find_up_level($dep_cur){$odb=new odb;
-		$r=$odb->query_td("select id from main_banners where dep_cur='$dep_cur' and ison='1';");$n=$odb->num_rows($r);
-		if ($n>0){ $result=$dep_cur; }
-		if ($n==0){
-			$r1=$odb->query_td("select dep_up from deps where id='$dep_cur' and ison='1';");
-			while (odbc_fetch_row($r1)){
-				$dep_up=odbc_result($r1,"dep_up");
-				if ($dep_up!="0"){ $result=$this->find_up_level($dep_up);}
+
+	function find_up_level($dep_cur)
+	{
+		$odb = new odb;
+		$r = $odb->query_td("select id from main_banners where dep_cur='$dep_cur' and ison='1';");
+		$n = $odb->num_rows($r);
+		if ($n > 0) {
+			$result = $dep_cur;
+		}
+		if ($n == 0) {
+			$r1 = $odb->query_td("select dep_up from deps where id='$dep_cur' and ison='1';");
+			while (odbc_fetch_row($r1)) {
+				$dep_up = odbc_result($r1, "dep_up");
+				if ($dep_up != "0") {
+					$result = $this->find_up_level($dep_up);
+				}
 			}
 		}
 		return $result;
 	}
-	function show_navigation($id,$nav_menu){$odb=new odb;
-		$r=$odb->query_td("select dep_up,caption,file from deps where id='$id';");
-		while (odbc_fetch_row($r)){
-			$dep_up=odbc_result($r,"dep_up");
-			$file=odbc_result($r,"file");
-			$caption=odbc_result($r,"caption");
-			$menu=" &raquo; <a class='navigation' href='?dep=$file&dep_up=$dep_up&dep_cur=$id'>$caption</a>";
-			$nav_menu=$menu.$nav_menu;
-			$nav_menu=$this->show_navigation($dep_up,$nav_menu);
+
+	function show_navigation($id, $nav_menu)
+	{
+		$odb = new odb;
+		$r = $odb->query_td("select dep_up,caption,file from deps where id='$id';");
+		$n = $odb->num_rows(($r));
+		while (odbc_fetch_row($r)) {
+			$dep_up = odbc_result($r, "dep_up");
+			$file = odbc_result($r, "file");
+			$caption = odbc_result($r, "caption");
+			$menu = " &raquo; <a class='navigation' href='?dep=$file&dep_up=$dep_up&dep_cur=$id'>$caption</a>";
+			$nav_menu = $menu . $nav_menu;
+			$nav_menu = $this->show_navigation($dep_up, $nav_menu);
 		}
-		if ($n==0){$nav_menu="&nbsp; <a class='navigation' href='?'>Главная</a>".$nav_menu;}
+		if ($n == 0) {
+			$nav_menu = "&nbsp; <a class='navigation' href='?'>Главная</a>" . $nav_menu;
+		}
 		return $nav_menu;
 	}
 	

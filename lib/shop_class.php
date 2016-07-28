@@ -1223,21 +1223,24 @@ class shop
             $limit = " limit $kp offset $from";
         }
         $list = "";
-        $r = $odb->query_td("select to_char(D.Day,'dd-mm-yyyy') \"day\", D.Num \"num\", nvl(cast(D.sum as numeric(12,2)) ||'','') \"sum\",
-		     nvl(D.Remark,'') \"remark\",
-		     nvl(DS.Name,'') \"state\",
-		     D.id \"doc_id\",
-			 nvl(DI.remark,'') \"dremark\",
-			 nvl(DI.DIRECTION,'') \"napr\"
-  from Doc D
-    left outer join DocStates DSS on D.id=DSS.doc_id and DSS.n=0
-    left outer join DocState DS on DS.id=DSS.state_id
-	left outer join DocInfo DI on DI.doc_id=D.id
-   where D.SubConto_id='$client'
-     and D.KindDoc_id=12
-   order by D.Day desc,D.Num desc
-   limit 20;
-		");
+        $r = $odb->query_td("
+                        select date(D.Day) as day, 
+                            D.Num num, 
+                            cast(D.sum as numeric(12,2)) sum,
+                            COALESCE(D.Remark,'') remark,
+                            COALESCE(DS.Name,'') state,
+                            D.id doc_id,
+                            COALESCE(DI.remark,'') dremark,
+                            COALESCE(DI.DIRECTION,'') napr
+                          from Doc D
+                            left outer join DocStates DSS on D.id=DSS.doc_id and DSS.n=0
+                            left outer join DocState DS on DS.id=DSS.state_id
+                            left outer join DocInfo DI on DI.doc_id=D.id
+                           where D.SubConto_id='$client'
+                             and D.KindDoc_id=12
+                           order by day desc,D.Num desc
+                           limit 20;
+		            ");
         $j = 0;
         while (odbc_fetch_row($r)) {
             $j++;
@@ -1255,7 +1258,7 @@ class shop
                 $direction = ", " . $direction;
             }
             $state = odbc_result($r, "state");
-            $show_button = "<img src='/theme/images/arrowEnter.png' id='arrow" . $order_id . "' border=0 alt='Структура заказа' title='Структура заказа' style='cursor:pointer;' onclick='showDocOrder(\"$doc_id\");'>";
+            $show_button = "<img src='/theme/images/arrowEnter.png' id='arrow" . $doc_id . "' border=0 alt='Структура заказа' title='Структура заказа' style='cursor:pointer;' onclick='showDocOrder(\"$doc_id\");'>";
             $per = $this->getDocPersent($doc_id);
             $userRemark = $this->getDocUserRemark($doc_id);
             $list .= "
@@ -1337,7 +1340,7 @@ class shop
 			D.num \"num\",
 			to_char(D.Day,'dd-mm-yyyy') \"day\",
 			D.subconto_id,
-			nvl(D.klient_id,D.subconto_id) \"klient_id\",
+			COALESCE(D.klient_id,D.subconto_id) \"klient_id\",
 			DI.Remark \"remark\",
 			DI.DRemark \"dremark\",
 			DI.phone \"phone\",
@@ -1499,44 +1502,43 @@ class shop
             $block = file_get_contents($block_htm);
         }
         $r = $odb->query_td("
-		select *
-	     from (select KD.Name \"docName\",
-	    	D.Num \"num\",
-    		to_char(D.Day,'dd-mm-yyyy') \"day\",
-			case when D.sDay < date(now()) then 'style=\"color:red\"' else '' end as \"clr\",
-			case when D.kinddoc_id in (61) then 
-				nvl(to_char(Null,'dd-mm-yyyy'),'') 
-				else nvl(to_char(D.sDay,'dd-mm-yyyy'),'') end as \"sday\",
-		   cast(case
-        	when nvl(D.val_id,0)!=978 then
-	           case when D.KindDoc_id in (3,27,20,28) then D.sum
-    	           else -D.sum end
-        	end as numeric(12,2)) as \"s\",
-		   cast(case
-        	  when nvl(D.val_id,0)!=978 then
-            case when D.KindDoc_id in (3,27,20,28) then D.sum-nvl(D.osum,0)
-            else -D.osum end
-        end as numeric(12,2)) as \"os\",
-		  cast(case when nvl(D.val_id,0)=978 then
-           case when D.KindDoc_id in (3,27,20,28) then D.vsum
-           else -D.vsum
-           end
-        end as numeric(12,2)) as \"vs\",
-		   cast(case
-         when nvl(D.val_id,0)=978 then
-          case when D.KindDoc_id in (3,27,20,28) then D.vsum-nvl(D.vosum,0)
-          else -D.vosum
-          end
-         end as numeric(12,2)) as \"vos\",
-	    D.id \"doc_id\",
-		D.flag \"doc_flag\",
-		D.SubConto_id
-	 from DocOpen O
-        left outer join Doc D on D.id=O.doc_id
-        join KindDoc KD on KD.id=D.KindDoc_id
-		  where O.SubConto_id='$client')
-		  where \"os\"!=0 or \"vos\"!=0
-		 order by \"sday\",\"num\";");
+                select *
+                 from (select KD.Name as docName,
+                    D.Num as num,
+                    date(D.Day) as day,
+                    case when D.sDay < date(now()) then 'style=\"color:red\" ' else '' end as clr,
+                    case when D.kinddoc_id in (61) then date(null) else date(coalesce(D.sDay,null)) end as sday,
+                cast(case
+                    when coalesce(D.val_id,0)!=978 then
+                        case when D.KindDoc_id in (3,27,20,28) then D.sum
+                    else -D.sum end
+                    end as numeric(12,2)) as s,
+                   cast(case
+                      when coalesce(D.val_id,0)!=978 then
+                    case when D.KindDoc_id in (3,27,20,28) then D.sum-coalesce(D.osum,0)
+                    else -D.osum end
+                end as numeric(12,2)) as os,
+                  cast(case when coalesce(D.val_id,0)=978 then
+                   case when D.KindDoc_id in (3,27,20,28) then D.vsum
+                   else -D.vsum
+                   end
+                end as numeric(12,2)) as vs,
+                   cast(case
+                 when coalesce(D.val_id,0)=978 then
+                  case when D.KindDoc_id in (3,27,20,28) then D.vsum-coalesce(D.vosum,0)
+                  else -D.vosum
+                  end
+                 end as numeric(12,2)) as vos,
+                D.id doc_id,
+                D.flag doc_flag,
+                D.SubConto_id
+             from DocOpen O
+                left outer join Doc D on D.id=O.doc_id
+                join KindDoc KD on KD.id=D.KindDoc_id
+                  where O.SubConto_id='$client') as s1
+                  where os!=0 or vos!=0
+                 order by s1.sday,s1.num;
+        ");
         $list = "";
         $need_reg_mes = "";
         $k = 0;

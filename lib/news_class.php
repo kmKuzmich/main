@@ -23,29 +23,44 @@ class news {
 		}
 		return $list;
 	}
-	
-	function show_range_news(){$db=new db; $slave=new slave;$dep="news"; list($dep_up,$dep_cur)=$slave->get_file_deps($dep);
-		$bside_htm=RD."/tpl/bottom_slide.htm";$form="";if (file_exists("$bside_htm")){ $form = file_get_contents($bside_htm);}
-		$news_htm=RD."/tpl/news_list_range.htm";$block="";if (file_exists("$news_htm")){ $block = file_get_contents($news_htm);}
+
+	function show_range_news()
+	{
+		$db = new db;
+		$slave = new slave;
+		$dep = "news";
+		list($dep_up, $dep_cur) = $slave->get_file_deps($dep);
+		$bside_htm = RD . "/tpl/bottom_slide.htm";
+		$form = "";
+		if (file_exists("$bside_htm")) {
+			$form = file_get_contents($bside_htm);
+		}
+		$news_htm = RD . "/tpl/news_list_range.htm";
+		$block = "";
+		if (file_exists("$news_htm")) {
+			$block = file_get_contents($news_htm);
+		}
 		$r = $db->query_lider("select * from news order by data desc limit 20 offset 0;");
 		$n = $db->num_rows($r);
 		$list = "";
-		for ($i=1;$i<=$n;$i++){
-			$id=$db->result($r,$i-1,"id");
-			$caption=$db->result($r,$i-1,"caption_ru");
-			$short_desc=$db->result($r,$i-1,"short_desc_ru");
-			$data=$db->result($r,$i-1,"data");
-			$list.="<li>$block</li>"; 
-			$list=str_replace("{caption}", $caption, $list);
-			$list=str_replace("{short_desc}", $short_desc, $list);
-			$list=str_replace("{data}", $slave->data_word($data), $list);
-			$list=str_replace("{pic}", "<img src='http://www.avtolider-ua.com/thumb.php?image=news/$id.jpg&size=80' class='newsImg' border='0'  align='left' hspace='5' vspace='5'>", $list);
-			$list=str_replace("{url}", "?dep=$dep&w=show_news&dep_up=$dep_up&dep_cur=$dep_cur&news_id=$id", $list);
+//		for ($i = 1; $i <= $n; $i++) {
+		for ($i = 1; $i <= 20; $i++) {
+			$id = $db->result($r, $i - 1, "id");
+			$caption = $db->result($r, $i - 1, "caption_ru");
+			$short_desc = $db->result($r, $i - 1, "short_desc_ru");
+			$data = $db->result($r, $i - 1, "data");
+			$list .= "<li>$block</li>";
+			$list = str_replace("{caption}", $caption, $list);
+			$list = str_replace("{short_desc}", $short_desc, $list);
+			$list = str_replace("{data}", $slave->data_word($data), $list);
+			$list = str_replace("{pic}", "<img src='http://www.avtolider-ua.com/thumb.php?image=news/$id.jpg&size=80' class='newsImg' border='0'  align='left' hspace='5' vspace='5'>", $list);
+			$list = str_replace("{url}", "?dep=$dep&w=show_news&dep_up=$dep_up&dep_cur=$dep_cur&news_id=$id", $list);
 		}
-		$form=str_replace("{bottom_slide_caption}","<div style='margin-left:15px; margin-top:-15px;'>&nbsp;Новости<br />Компании</div>",$form);
-		$form=str_replace("{bottom_slide}",$list,$form);
+		$form = str_replace("{bottom_slide_caption}", "<div style='margin-left:15px; margin-top:-15px;'>&nbsp;Новости<br />Компании</div>", $form);
+		$form = str_replace("{bottom_slide}", $list, $form);
 		return $form;
 	}
+
 	function show_short_list($news_id){ $db=new db; $slave=new slave;$dep="news";$news_list="";	list($dep_up,$dep_cur)=$slave->get_file_deps($dep);
 		$form_htm=RD."/tpl/news_list.htm";if (file_exists("$form_htm")){ $form = file_get_contents($form_htm);}
 		$r = $db->query_lider("select * from news where id!='$news_id' order by data desc limit 6 offset 0;");

@@ -1,5 +1,5 @@
 <?php
-
+//не нашёл применения єтого скрипта
 include RD.'/lib/documents_class.php';
 $documents= new documents;$menu= new menu;
 $documents_htm=RD."/tpl/documents.htm";

@@ -7,7 +7,7 @@ class dep
         $odb = new odb;
         $slave = new slave;
         $r = $odb->query_td("select * from deps where id='$dep' and ison='1' limit 7 offset 0;");
-        odbc_longreadlen($r, 4096);
+//        odbc_longreadlen($r, 4096);
         while (odbc_fetch_row($r)) {
             $caption = odbc_result($r, "caption");
             $desc = odbc_result($r, 'desc');

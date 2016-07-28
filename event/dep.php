@@ -1,4 +1,5 @@
 <?php
+//не нашёл применения єтого скрипта
 include RD . '/lib/dep_class.php';
 $dep = new dep;
 $slave = new slave;

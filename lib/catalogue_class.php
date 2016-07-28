@@ -776,7 +776,70 @@ class catalogue
         return array($menu, $limit);
     }
 
+    /**
+     * @param $item_id по хаданному ID артикула возвращает наличие на складе
+     * @return array результат массив строк - кол на складе без резерва, кол на филиале, кол резерва, в приход
+     * list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
+     */
     function getItemQuant($item_id)
+    {
+        session_start();
+        $odb = new odb;
+        $quant = 0;
+        $quant1 = 0;
+//        list($listPlaceExpr, $listPlaceKm) = $this->getSkladIDS();
+//        $r = $odb->query_td("SELECT
+//                              sum( S.quant ) AS kol
+//                             FROM store S inner join subconto SC on (SC.id=S.SubConto_id)
+//                                  inner join subcontotypes SCT on (SCT.SubConto_id=SC.id)
+//                             WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1'
+//                                and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+//        while (odbc_fetch_row($r)) {
+//            $quant += odbc_result($r, "kol");
+//        }
+//        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '2' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+//        while (odbc_fetch_row($r)) {
+//            $quant_r += odbc_result($r, "kol");
+//            $quant -= $quant_r;
+//        }
+//        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '4' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+//        while (odbc_fetch_row($r)) {
+//            $quant_p = odbc_result($r, "kol");
+//        }
+
+        $quant = 1;
+        $quant1 = 1;
+        $quant_r = 1;
+        $quant_p = 1;
+//    если значение =0 то установить строку пусто, для красоты
+//    если значение >10 то установить строку ">10"
+        if ($quant == 0) {
+            $quant_res = "";
+        }
+        if ($quant >= 1 and $quant <= 10) {
+            $quant_res = $quant;
+        }
+        if ($quant > 10) {
+            $quant_res = ">10";
+        }
+//        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1' and SC.code in($listPlaceExpr) GROUP BY S.SubConto_id;");
+//        while (odbc_fetch_row($r)) {
+//            $quant1 += odbc_result($r, "kol");
+//        }
+
+        if ($quant1 == 0) {
+            $quant1_res = "";
+        }
+        if ($quant1 >= 1 and $quant1 <= 10) {
+            $quant1_res = $quant1;
+        }
+        if ($quant1 > 10) {
+            $quant1_res = ">10";
+        }
+        return array($quant_res, $quant1_res, $quant_r, $quant_p);
+    }
+
+    function getItemQuantOld($item_id)
     {
         session_start();
         $odb = new odb;
@@ -1095,7 +1158,8 @@ class catalogue
 //            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
             if ($by_name == 0) {
                 //Ищем по полям Code или sCode  по "точному" совпадению art% art1%
-                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
+//                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
+                $where = "(scode LIKE '$art1%')";
                 $query = "select * from item where ($where) $where2 $exclude order by id asc;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
@@ -1202,7 +1266,6 @@ class catalogue
                 $proda_w = "id in (" . substr($proda_w, 1) . ")";
                 //Вывод табов производителей
                 $form = $this->showProducentTabs($proda_w);
-//                echo "ok $n <br>";
             }
             //Если результат поисков больше 16 строк и (выбран пр-ль или поиск по TD) и искали не по наименованию, готовим вывод результата поиска с аналогами
             if ($n > 16 and ($by_producent != "" or $byTD == 1) and ($by_name == 0 or $by_name == "")) {
@@ -1263,7 +1326,7 @@ class catalogue
                     $valuta_id = odbc_result($r, "val_id");
                     $discount_id = odbc_result($r, "discount_id");
                     $price = $slave->tomoney(odbc_result($r, "pricePro"));
-                    //Цена клиента
+//                    Цена клиента
 //					$price_client=$this->getItemPrice($id,$valuta_id,$price,$discount_id);
                     $price_client = $this->getItemPrice2($id);
 
@@ -1273,7 +1336,7 @@ class catalogue
                     list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
                     $quant_r_img = "";
                     if ($quant_r > 0) {
-                        $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерв' title='Товар в резерв' align='middle' hspace='2'></a>";
+                        $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерве' title='Товар в резерве' align='middle' hspace='2'></a>";
                     }
                     $quant_p_img = "";
                     if ($quant_p > 0) {
@@ -1292,6 +1355,7 @@ class catalogue
                     if ($producent == $prod_id or $by_producent == $prod_id) {
                         $k++;
                         if ($k <= 15) {
+//                            формирование списка позиций
                             $list .= "<tr><td colspan=10 style='border-bottom:1px solid #8c8c8c; font-size:2px;' height=2>&nbsp;</td></tr>
 						<tr align='center' id='ri$id' height='25'>
 							<td>$icon_flag</td>
@@ -1311,7 +1375,7 @@ class catalogue
                             }
                         }
                     }
-// Пробуем вывести сообщение клиенту о задолженности
+// Выводим сообщение клиенту о задолженности
                     $clnt->showMessageExp($client_id);
 
                     if ($k == 15) {
@@ -1347,7 +1411,7 @@ class catalogue
             $filter = "по названию";
         }
         if ($by_code == "1") {
-            $filter .= " строгий отбор";
+            $filter .= " строгий поиск";
         }
         if ($by_sklad == "1") {
             $filter .= ", только наличие";
@@ -1372,7 +1436,7 @@ class catalogue
     function saveArtSearch($art, $by_name, $by_producent, $byTD)
     {
         //пока нет таблицы history_search и websearch тупо вываливаемся, когда появятся будем пробовать в них записывать.
-        return;
+        //return;
 
         session_start();
         $odb = new odb;
@@ -1425,7 +1489,7 @@ class catalogue
 
             //Проверяем есть ли запись в History_Search по клиенту
             // $query="select art from history_search where client='$client' order by id desc limit 1 offset 0";
-            $query = "select art,prod_id,(days(current date)-days(data)) as ago from history_search where client='$client' and art='" . strtolower($art) . "' and prod_id='$by_producent' order by id desc limit 1 offset 0";  //and (days(current date)-days(data))>0
+            $query = "select art,prod_id,(date(now())-date(data)) as ago from history_search where client='$client' and art='" . strtolower($art) . "' and prod_id='$by_producent' order by id desc limit 1 offset 0";  //and (days(current date)-days(data))>0
             //Это сколько дней назад был поиск  >> "and (days(current date)-days(data))=0" реализовано через if ниже $ago>0
 
             $r = $odb->query_td($query);
@@ -3131,7 +3195,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             }
         }
         if ($client != "") {
-            $r = $odb->query_td("select art from history_search where client='$client' order by id desc limit 0,50");
+            $r = $odb->query_td("select art from history_search where client='$client' order by id desc limit 50 offset 0");
             while (odbc_fetch_row($r)) {
                 $art = odbc_result($r, "art");
                 $art_cap = $art;

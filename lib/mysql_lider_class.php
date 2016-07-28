@@ -17,7 +17,7 @@ class db{
 	}
 	
 	function close(){
-		@mysql_close($this->db_id);
+		@mysql_close($this->dbl_id);
 	}
 	function num_rows($result){
 		$this->n=mysql_numrows($result);

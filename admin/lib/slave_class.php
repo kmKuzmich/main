@@ -67,7 +67,17 @@ class slave {
 	function get_date_to(){ if ($_POST["date_to"]==""){return $_GET["date_to"];} if ($_POST["date_to"]!=""){return $_POST["date_to"];} }
 	
 	function get_dep(){ if ($_POST["dep"]==""){return $_GET["dep"];} if ($_POST["dep"]!=""){return $_POST["dep"];} }
-	function get_dep_up(){ if ($_POST["dep_up"]==""){return $_GET["dep_up"];} if ($_POST["dep_up"]!=""){return $_POST["dep_up"];} }
+
+	function get_dep_up()
+	{
+		if ($_POST["dep_up"] == "") {
+			return $_GET["dep_up"];
+		}
+		if ($_POST["dep_up"] != "") {
+			return $_POST["dep_up"];
+		}
+	}
+	
 	function get_dep_cur(){ if ($_POST["dep_cur"]==""){return $_GET["dep_cur"];} if ($_POST["dep_cur"]!=""){return $_POST["dep_cur"];} }
 	function get_cur_id(){ if ($_POST["cur_id"]==""){return $_GET["cur_id"];} if ($_POST["cur_id"]!=""){return $_POST["cur_id"];} }
 	function get_w(){ if ($_POST["w"]==""){return $_GET["w"];} if ($_POST["w"]!=""){return $_POST["w"];} }
