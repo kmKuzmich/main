@@ -777,9 +777,10 @@ class catalogue
     }
 
     /**
-     * @param $item_id по хаданному ID артикула возвращает наличие на складе
+     * @param $item_id по заданному ID артикула возвращает наличие на складе
      * @return array результат массив строк - кол на складе без резерва, кол на филиале, кол резерва, в приход
      * list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
+     * $quant1 - кол-во без резерва в ХМ, $quant1 - кол-во Exp, $quant_r - резерв, $quant_p - в приходе
      */
     function getItemQuant($item_id)
     {
@@ -787,56 +788,66 @@ class catalogue
         $odb = new odb;
         $quant = 0;
         $quant1 = 0;
-//        list($listPlaceExpr, $listPlaceKm) = $this->getSkladIDS();
-//        $r = $odb->query_td("SELECT
-//                              sum( S.quant ) AS kol
-//                             FROM store S inner join subconto SC on (SC.id=S.SubConto_id)
-//                                  inner join subcontotypes SCT on (SCT.SubConto_id=SC.id)
-//                             WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1'
-//                                and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
-//        while (odbc_fetch_row($r)) {
-//            $quant += odbc_result($r, "kol");
-//        }
-//        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '2' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
-//        while (odbc_fetch_row($r)) {
-//            $quant_r += odbc_result($r, "kol");
-//            $quant -= $quant_r;
-//        }
-//        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '4' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
-//        while (odbc_fetch_row($r)) {
-//            $quant_p = odbc_result($r, "kol");
-//        }
+        list($listPlaceExpr, $listPlaceKm) = $this->getSkladIDS();
+        $listPlace = $listPlaceKm . ',' . $listPlaceExpr;
 
-        $quant = 1;
-        $quant1 = 1;
-        $quant_r = 1;
-        $quant_p = 1;
-//    если значение =0 то установить строку пусто, для красоты
-//    если значение >10 то установить строку ">10"
-        if ($quant == 0) {
-            $quant_res = "";
-        }
-        if ($quant >= 1 and $quant <= 10) {
-            $quant_res = $quant;
-        }
-        if ($quant > 10) {
-            $quant_res = ">10";
-        }
-//        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1' and SC.code in($listPlaceExpr) GROUP BY S.SubConto_id;");
-//        while (odbc_fetch_row($r)) {
-//            $quant1 += odbc_result($r, "kol");
-//        }
+        //kind_id=1 - всё наличие с учётом резервов, без учёта ведомостей приходов
+        //kind_id=2 - резерв
+        //kind_id=4 - приход
 
-        if ($quant1 == 0) {
-            $quant1_res = "";
+        $r = $odb->query_td("
+                        select 
+                            (sum (case when S.kind=1 then S.quant else 0 end)) as qA,
+                            (sum (case when S.kind=2 then S.quant else 0 end)) as qR,
+                            (sum (case when S.kind=4 then S.quant else 0 end)) as qI,
+                            (case
+                                when P.code in ($listPlaceKm) then 'Km'       
+                                when P.code in ($listPlaceExpr) then 'Exp'
+                            end) as PlaceKind
+                        from Store S join Place P on S.Subconto_id=P.id
+                        where S.kind in (1,2,4) and S.item_id =$item_id
+                        and P.code in ($listPlace)
+                        group by PlaceKind
+
+                 ");
+
+        while (odbc_fetch_row($r)) {
+            switch (odbc_result($r, PlaceKind)) {
+                case 'Km':
+                    $kmQuantAll = odbc_result($r, qA);
+                    $kmQuantR = odbc_result($r, qR);
+                    $kmQuantInc = odbc_result($r, qI);
+                    break;
+                case 'Exp':
+                    $exQuantAll = odbc_result($r, qA);
+                    break;
+            }
         }
-        if ($quant1 >= 1 and $quant1 <= 10) {
-            $quant1_res = $quant1;
+        $kmQuantAll = $this->quantFormat($kmQuantAll - $kmQuantR);
+        $quant1_res = $this->quantFormat($exQuantAll);
+        $quant_r = $this->quantFormat($kmQuantR);
+        $quant_p = $this->quantFormat($kmQuantInc);
+
+        return array($kmQuantAll, $quant1_res, $quant_r, $quant_p);
+    }
+
+    /** Преобразует числовой аргумент (кол-во) в строковой ''-пусто, от '1' до '10' или '>10'
+     * для вывода кол-ва в прайсе
+     * @param $q
+     * @return string
+     */
+    function quantFormat($q)
+    {
+        if ($q == 0) {
+            $qResult = "";
         }
-        if ($quant1 > 10) {
-            $quant1_res = ">10";
+        if ($q >= 1 and $q <= 10) {
+            $qResult = $q;
         }
-        return array($quant_res, $quant1_res, $quant_r, $quant_p);
+        if ($q > 10) {
+            $qResult = ">10";
+        }
+        return $qResult;
     }
 
     function getItemQuantOld($item_id)
@@ -846,16 +857,22 @@ class catalogue
         $quant = 0;
         $quant1 = 0;
         list($listPlaceExpr, $listPlaceKm) = $this->getSkladIDS();
-        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+        $r = $odb->query_td("SELECT sum( S.quant ) AS kol 
+                    FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) 
+                    WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
         while (odbc_fetch_row($r)) {
             $quant += odbc_result($r, "kol");
         }
-        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '2' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+        $r = $odb->query_td("SELECT sum( S.quant ) AS kol
+                     FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id)
+                      WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '2' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
         while (odbc_fetch_row($r)) {
             $quant_r += odbc_result($r, "kol");
             $quant -= $quant_r;
         }
-        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '4' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
+        $r = $odb->query_td("SELECT sum( S.quant ) AS kol 
+                    FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) 
+                    WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '4' and SC.code in($listPlaceKm) GROUP BY S.SubConto_id;");
         while (odbc_fetch_row($r)) {
             $quant_p = odbc_result($r, "kol");
         }
@@ -868,7 +885,9 @@ class catalogue
         if ($quant > 10) {
             $quant_res = ">10";
         }
-        $r = $odb->query_td("SELECT sum( S.quant ) AS kol FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1' and SC.code in($listPlaceExpr) GROUP BY S.SubConto_id;");
+        $r = $odb->query_td("SELECT sum( S.quant ) AS kol 
+                    FROM store S inner join subconto SC on (SC.id=S.SubConto_id) inner join subcontotypes SCT on (SCT.SubConto_id=SC.id) 
+                    WHERE SCT.SubContoType_id='3' and S.item_id = '$item_id' AND S.kind = '1' and SC.code in($listPlaceExpr) GROUP BY S.SubConto_id;");
         while (odbc_fetch_row($r)) {
             $quant1 += odbc_result($r, "kol");
         }
@@ -886,20 +905,41 @@ class catalogue
 
     //$art1=strtolower(str_replace(array('_', '-', '—', '/', '.', ',', '\\',' '),"",trim($art)));
 
+//    Возвращает перечень складов для которых показывать остаток
+//    обновляет этот перечень каждый час
     function getSkladIDS()
     {
+        if (isset($_REQUEST[session_name()])) session_start();
+        $needUpdate = 0;
+        $data_to = time() + 60 * 60;//259200;
+        if (empty($_SESSION["placeData_to"]) || ($_SESSION["Data_to"] < time())) {
+            $_SESSION["placeData_to"] = $data_to;
+            $needUpdate = 1;
+            $_SESSION["placeNeedUpdate"] = $needUpdate;
+        } else {
+            $_SESSION["placeNeedUpdate"] = $needUpdate;
+        };
+
         $odb = new odb;
-        $r = $odb->query_td("SELECT name,value FROM globalvar where name='@ListPlaceExpr' or name='@ListPlaceKm';");
-        while (odbc_fetch_row($r)) {
-            $name = odbc_result($r, "name");
-            $value = odbc_result($r, "value");
-            if ($name == "@ListPlaceExpr") {
-                $listPlaceExpr = $value;
+        if (($needUpdate == 1)) {
+            $r = $odb->query_td("SELECT name,value FROM globalvar where name='@ListPlaceExpr' or name='@ListPlaceKm';");
+            while (odbc_fetch_row($r)) {
+                $name = odbc_result($r, "name");
+                $value = odbc_result($r, "value");
+                if ($name == "@ListPlaceExpr") {
+                    $listPlaceExpr = $value;
+                    $_SESSION["listPlaceExpr"] = $listPlaceExpr;
+                }
+                if ($name == "@ListPlaceKm") {
+                    $listPlaceKm = $value;
+                    $_SESSION["listPlaceKm"] = $listPlaceKm;
+                }
             }
-            if ($name == "@ListPlaceKm") {
-                $listPlaceKm = $value;
-            }
+        } else {
+            $listPlaceExpr = $_SESSION["listPlaceExpr"];
+            $listPlaceKm = $_SESSION["listPlaceKm"];
         }
+
         return array($listPlaceExpr, $listPlaceKm);
     }
 
@@ -1459,6 +1499,7 @@ class catalogue
         $query1 = "insert into history_search (client,art,data,ip,prod_id) values ('$client','" . strtolower($art) . "','$data','$remip',$by_producent)";
         // $query1="insert into history_search (client,art,data,ip) values ('$client','$art','$data','$remip')";
         $query2 = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id) values ($client,'$remip','" . strtolower($art) . "','$by_code',$by_producent)";
+
         //если клиент пусто то выполнить какую то ерунду????
         if ($client == 0) {
             $er = 1;
@@ -1480,6 +1521,9 @@ class catalogue
                 $_SESSION["artProd_id$search_count"] = $by_producent;
                 $odb->query_td($query1);
                 $odb->query_td($query2);
+
+                $this->saveToFileWS($query2);
+
             }
         }
 
@@ -1501,17 +1545,32 @@ class catalogue
             if ($n == 0) {
                 $odb->query_td($query1);
                 $odb->query_td($query2);
+
+                $this->saveToFileWS($query2);
+
 //				 print "FIND!!!! $art_ses' и '$art' </n>'";
             } else
                 if ($ago > 0) {
                     $odb->query_td($query2);
+                    $this->saveToFileWS($query2);
+
+
 //				 print "FINDING!!!! $art_ses' и '$art' </n>'";
                 }
         }
         $query_td = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id) values ($client,'$remip','$art','$by_code','9999')";
         if ($byTD == 1) {
             $odb->query_td($query_td);
+            $this->saveToFileWS($query_td);
         }
+    }
+
+    function saveToFileWS($q)
+    {
+        $fp = fopen(RD . '/lib/odbc_errors/websearch.txt', 'a+');
+        fwrite($fp, $q . ": PG-> Time =" . date("Y-m-d H:i:s") . "\r\n");
+        fclose($fp);
+
     }
 
 //    function showProducentTabs($proda)
@@ -1533,12 +1592,12 @@ class catalogue
 //                $where = " where " . substr($where, 3);
 
             $where = "where " . $proda;
-                $query = "SELECT * FROM producent $where order by name;";
-                $r = $odb->query_td($query);
-                while (odbc_fetch_row($r)) {
-                    $id = odbc_result($r, "id");
-                    $name = odbc_result($r, "name");
-                    $list .= "<div class='ProducentTab' onclick='search_biproducent(\"$id\")'><a href='#$name' onclick='search_biproducent(\"$id\")'>$name</a></div>";
+            $query = "SELECT * FROM producent $where order by name;";
+            $r = $odb->query_td($query);
+            while (odbc_fetch_row($r)) {
+                $id = odbc_result($r, "id");
+                $name = odbc_result($r, "name");
+                $list .= "<div class='ProducentTab' onclick='search_biproducent(\"$id\")'><a href='#$name' onclick='search_biproducent(\"$id\")'>$name</a></div>";
 //                }
 
             }

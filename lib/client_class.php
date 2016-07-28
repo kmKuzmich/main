@@ -1015,7 +1015,7 @@ class client
 //			setcookie("needUpdate", $needUpdate, $data_to);
 //        };
 //отключаю  - пока в PG нет функций GetDolg и GetDolgDate
-        $needUpdate = 1;
+//        $needUpdate = 1;
         if (($needUpdate == 1)) {
             $odb = new odb;
             $slave = new slave;

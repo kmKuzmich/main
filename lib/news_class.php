@@ -40,7 +40,7 @@ class news {
 		if (file_exists("$news_htm")) {
 			$block = file_get_contents($news_htm);
 		}
-		$r = $db->query_lider("select * from news order by data desc limit 20 offset 0;");
+		$r = $db->query_lider("select * from news order by data desc limit 20;");
 		$n = $db->num_rows($r);
 		$list = "";
 //		for ($i = 1; $i <= $n; $i++) {

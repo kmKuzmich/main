@@ -7,12 +7,12 @@ class dep
         $odb = new odb;
         $slave = new slave;
         $r = $odb->query_td("select * from deps where id='$dep' and ison='1' limit 7 offset 0;");
-//        odbc_longreadlen($r, 4096);
+        odbc_longreadlen($r, 5120);
         while (odbc_fetch_row($r)) {
-            $caption = odbc_result($r, "caption");
-            $desc = odbc_result($r, 'desc');
+            $caption = odbc_result($r, 'caption');
+            $desc = odbc_result($r, '\"desc\"');
             if ($desc != "") {
-                while (($chunk = odbc_result($r, 'desc')) !== false) {
+                while (($chunk = odbc_result($r, '\"desc\"')) !== false) {
                     $desc .= $chunk;
                 }
             }
@@ -22,7 +22,7 @@ class dep
             while (odbc_fetch_row($r1)) {
                 $id = odbc_result($r1, "id");
                 $caption = odbc_result($r1, "caption");
-                $desc = odbc_result($r1, "desc");
+                $desc = odbc_result($r1, '\"desc\"');
                 $file = odbc_result($r1, "file");
                 if ($desc == "<br />" or $desc == "" and $file == "") {
                     echo "<script>";
