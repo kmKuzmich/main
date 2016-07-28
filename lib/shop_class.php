@@ -391,9 +391,9 @@ class shop
         }
         $r = $odb->query_td("select id from orders where status='12' and (session_id='$session' $where) order by id desc;");
 //        $r = $odb->query_td("select id from orders where status=12 and client='$client' order by id desc limit 3 offset 0;");
-        $n = $odb->num_rows($r);
+//        $n = $odb->num_rows($r);
         $i = 0;
-        if ($n != 0) {
+//        if ($n != 0) {
             while (odbc_fetch_row($r)) {
                 $i++;
                 $order_id = odbc_result($r, "id");
@@ -402,9 +402,9 @@ class shop
                 $sum = round(odbc_result($r1, "summ"), 2) + 0;
                 $summ += $sum;
             }
-        } else {
-            $summ = 0;
-        };
+//        } else {
+//            $summ = 0;
+//        };
         $busket_link = "location.href='?dep=busket';";
         if ($i == 1) {
             $busket_link = "showOrderStr('$order_id');";

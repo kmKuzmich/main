@@ -1223,10 +1223,10 @@ class catalogue
                                     $n = $odb->num_rows($r);
                                 }
                             }
-                
+                */
                 //               если результат =0 или поиск в техдоке и не по наименованию
-                            if ((($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
-                                $query = "select
+                if ((($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
+                    $query = "select
                                                   I.id as id,
                                                   I.code,
                                                   I.scode,
@@ -1236,36 +1236,38 @@ class catalogue
                                                   I.prod_id,
                                                   I.isImage
                                         from (select
-                                                    distinct StripSpaces(P.code) as code,
+                                                    P.code as code,
                                                     P.brand_id as prod_id1
-                                              from carProductLookup L
-                                                join carProduct P on P.id=L.product_id
-                                              where scode=upper( StripSpaces( '$art' )) ) T
+                                              from car.ProductLookup L
+                                                join car.Product P on P.id=L.product_id
+                                              where scode=upper('$art1') ) T
                                         left outer join tdBrand B on B.brand_id=T.prod_id1
                                         left outer join Producent P on P.id=B.prod_id
                                         left outer join Item I on I.scode=T.code and I.prod_id=P.id
                                         where I.id is not null;
                                         ";
-                                $r = $odb->query_td($query);
-                                $n = $odb->num_rows($r);
-                                $byTD = 1; //основной Признак что поиск проведён по TecDoc
-                            }
-                
-                //            Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
-                            if (($n == 0) or ($by_name == 1)) {
-                                //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
-                                //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
-                                //Разбираем $art в массив по пробелам - излишне потому что делали trim
-                                //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
-                                $where = "";
-                                $artn = explode(" ", $artName);
-                                foreach ($artn as $artan) {
-                                    $where .= " and locate('$artan',sname)>0";
-                                }
-                                $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
-                                $r = $odb->query_td($query);
-                                $n = $odb->num_rows($r);
-                            */
+                    $r = $odb->query_td($query);
+                    $n = $odb->num_rows($r);
+                    $byTD = 1; //основной Признак что поиск проведён по TecDoc
+
+
+                    //            Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
+                    if (($n == 0) or ($by_name == 1)) {
+                        //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
+                        //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
+                        //Разбираем $art в массив по пробелам - излишне потому что делали trim
+                        //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
+                        $where = "";
+                        $artn = explode(" ", $artName);
+                        foreach ($artn as $artan) {
+                            $where .= " and locate('$artan',sname)>0";
+                        }
+                        $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
+                        $r = $odb->query_td($query);
+                        $n = $odb->num_rows($r);
+
+                    }
+                }
             }
 
 

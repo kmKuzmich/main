@@ -22,8 +22,8 @@ $dep_cur = $slave->get_dep_cur();
 $w = $slave->get_w();
 
 //если $dep не пустое и не равно 0 и интереджер то прочитать часть имени управл€ющего файла
-//if ($dep != "" and $dep != "0" and is_numeric($dep)) {
-if ($dep != "" and $dep != "0") {
+if ($dep != "" and $dep != "0" and is_numeric($dep)) {
+//if ($dep != "" and $dep != "0") {
     $fn = $config->get_module_file($dep, 1);
 }
 if ($fn != "") {
