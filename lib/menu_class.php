@@ -11,7 +11,7 @@ class menu
         $dep_up = $this->find_dep_up($dep_cur);
         $r = $odb->query_td("select id,caption,file,link
                             from deps
-                            where dep_up=0 and visible='1' and ison='1' order by lenta,id asc limit 7;");
+                            where dep_up=0 and visible='1' and ison='1' order by lenta,id asc limit 7 offset 0;");
         $m = 1;
         $menu = "";
         while (odbc_fetch_row($r)) {

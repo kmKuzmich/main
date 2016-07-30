@@ -10,9 +10,9 @@ class dep
         odbc_longreadlen($r, 5120);
         while (odbc_fetch_row($r)) {
             $caption = odbc_result($r, 'caption');
-            $desc = odbc_result($r, '\"desc\"');
+            $desc = odbc_result($r, 'desc2');
             if ($desc != "") {
-                while (($chunk = odbc_result($r, '\"desc\"')) !== false) {
+                while (($chunk = odbc_result($r, 'desc2')) !== false) {
                     $desc .= $chunk;
                 }
             }
@@ -22,7 +22,7 @@ class dep
             while (odbc_fetch_row($r1)) {
                 $id = odbc_result($r1, "id");
                 $caption = odbc_result($r1, "caption");
-                $desc = odbc_result($r1, '\"desc\"');
+                $desc = odbc_result($r1, 'desc2');
                 $file = odbc_result($r1, "file");
                 if ($desc == "<br />" or $desc == "" and $file == "") {
                     echo "<script>";

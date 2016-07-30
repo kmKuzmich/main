@@ -26,6 +26,7 @@ if ($dep != "" and $dep != "0" and is_numeric($dep)) {
 //if ($dep != "" and $dep != "0") {
     $fn = $config->get_module_file($dep, 1);
 }
+//вот в этом месте вызывается dep.php 
 if ($fn != "") {
     if (file_exists("event/" . $fn . ".php")) {
         include 'event/' . $fn . '.php';

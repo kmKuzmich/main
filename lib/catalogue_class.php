@@ -945,13 +945,17 @@ class catalogue
 
     function getItemPrice2($item_id)
     {
-        session_start();
+        if (isset($_REQUEST[session_name()])) session_start();
+//        session_start();
         $odb = new odb;
         $slave = new slave;
-        session_start();
-        $client_id = $_SESSION["client"];
-//        $r = $odb->query_td("select getprice(id,'$client_id') from item where id='$item_id';");
-        $r = $odb->query_td("select getprice('$item_id','$client_id');");
+        if (empty($_SESSION["client"])) {
+            $client_id = 10000001; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+        } else {
+            $client_id = $_SESSION["client"];
+        }
+        //id=10000001
+        $r = $odb->query_td("select getprice(id,'$client_id') from item where id='$item_id';");
 //        $r = $odb->query_lider("select getprice(id,'$client_id') from item where id='$item_id';");
         odbc_fetch_row($r);
         $price = $slave->tomoney(odbc_result($r, 1));
@@ -1197,17 +1201,42 @@ class catalogue
 
 //            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
             if ($by_name == 0) {
-                //Ищем по полям Code или sCode  по "точному" совпадению art% art1%
-//                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
-                $where = "(scode LIKE '$art1%')";
-                $query = "select * from item where ($where) $where2 $exclude order by id asc;";
+                //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
+                // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
+                //
+
+                $where = "";
+                $to_tsquery = "";
+                $artn = explode(" ", strtolower($art1));
+
+                foreach ($artn as $artan) {
+                    $to_tsquery .= "& $artan:*";
+                }
+
+                if (!empty($artn)) {
+                    $where = " and  to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
+                    $to_tsquery = substr($to_tsquery, 2);
+                    $where .= $to_tsquery . "')";
+                }
+//                echo $where ;
+                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
+//-------
+                //Ищем по полям Code или sCode  по "точному" совпадению art% art1%
+//                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
+//--
+//                $where = "(scode LIKE '$art1%')";
+//                $query = "select * from item where ($where) $where2 $exclude order by id asc;";
+//                $r = $odb->query_td($query);
+//                $n = $odb->num_rows($r);
+
+//--------
 //нафига эта переменна не пойму, вроде нигде не использвется пока что убираю
                 $kol = $n;
 
                 /*                дальше отключаю для тестов с строки 1104 по 1163
-                
+
                                 if ($n == 0) {
                                     //Если по точному не нашли ищем по полям Code и sCode  по  совпадению спереди кода %art% кроме sCode art1 и art2
                                     $where = "(code LIKE '%$art%') or (code LIKE '$art1%') or (scode LIKE '%$art%') or (scode LIKE '$art1%')";
@@ -1236,7 +1265,7 @@ class catalogue
                                                   I.prod_id,
                                                   I.isImage
                                         from (select
-                                                    P.code as code,
+                                                    DISTINCT P.code as code,
                                                     P.brand_id as prod_id1
                                               from car.ProductLookup L
                                                 join car.Product P on P.id=L.product_id
@@ -1253,16 +1282,24 @@ class catalogue
 
                     //            Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
                     if (($n == 0) or ($by_name == 1)) {
-                        //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
-                        //$where="(sname LIKE '%".strtolower($art)."%') or (sname LIKE '%".strtolower($art1)."%') or (sname LIKE '%".strtolower($art2)."%')";
-                        //Разбираем $art в массив по пробелам - излишне потому что делали trim
-                        //$where="";$artn=explode(" ",$art); foreach($artn as $artan){ $where.=" and sname LIKE ('%$artan%')"; }
+                        //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
+                        // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
+                        //
                         $where = "";
-                        $artn = explode(" ", $artName);
+                        $to_tsquery = "";
+                        $artn = explode(" ", strtolower($artName));
+
                         foreach ($artn as $artan) {
-                            $where .= " and locate('$artan',sname)>0";
+                            $to_tsquery .= "& $artan:*";
                         }
-                        $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
+
+                        if (!empty($artn)) {
+                            $where = " and  to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
+                            $to_tsquery = substr($to_tsquery, 2);
+                            $where .= $to_tsquery . "')";
+                        }
+//                        echo $where ;
+                        $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
                         $r = $odb->query_td($query);
                         $n = $odb->num_rows($r);
 

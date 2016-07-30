@@ -124,8 +124,26 @@ class slave {
 			return $_POST["w"];
 		}
 	}
-	function get_conf(){ if ($_POST["conf"]==""){return $_GET["conf"];} if ($_POST["conf"]!=""){return $_POST["conf"];} }
-	function get_dep_up(){ if ($_POST["dep_up"]==""){return $_GET["dep_up"];} if ($_POST["dep_up"]!=""){return $_POST["dep_up"];} }
+
+	function get_conf()
+	{
+		if ($_POST["conf"] == "") {
+			return $_GET["conf"];
+		}
+		if ($_POST["conf"] != "") {
+			return $_POST["conf"];
+		}
+	}
+
+	function get_dep_up()
+	{
+		if ($_POST["dep_up"] == "") {
+			return $_GET["dep_up"];
+		}
+		if ($_POST["dep_up"] != "") {
+			return $_POST["dep_up"];
+		}
+	}
 
 	function get_dep_cur()
 	{
@@ -206,6 +224,9 @@ class slave {
 	function show_navigation($id, $nav_menu)
 	{
 		$odb = new odb;
+		if (empty($id)) {
+			$id = 5;
+		}
 		$r = $odb->query_td("select dep_up,caption,file from deps where id='$id';");
 		$n = $odb->num_rows(($r));
 		while (odbc_fetch_row($r)) {

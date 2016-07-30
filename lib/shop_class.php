@@ -882,7 +882,8 @@ class shop
                 $more = " ";
             }
             $r = $odb->query_td("update orders set author_send='$client', union_client='$client', address='$address_sent', more='$more', data_send='$date', time_send='$time', remip='$remip', payment='$payment', delivery='$delivery', status='16', phoneperson='$phonePerson', contactperson='$contactPerson' where id='$order_id';");
-            $odb->query_td("insert into orders_check (order_id,data) values ('$order_id','$date');");
+//            $odb->query_td("insert into orders_check (order_id,data) values ('$order_id','$date');");
+            $odb->query_td("insert into orders_check (order_id,status,data) values ('$order_id',1,date(now()));");
 
             $r = $odb->query_td("select * from orders where id='$order_id';");
             while (odbc_fetch_row($r)) {
