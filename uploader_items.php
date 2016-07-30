@@ -96,7 +96,7 @@ if (strpos($contentType, "multipart") !== false) {
 			@fclose($in);
 			@fclose($out);
 			require_once ("/lib/odbc_class.php");$odb=new odb;
-			$odb->query_td("insert into itemimages (item_id,file_name,istd) values ('$item_id','$fileName','0');");
+			$odb->query_td("insert into itemimages (id,item_id,file_name,istd) values ((select max(id)+1 from itemimages),'$item_id','$fileName','0');");
 			@unlink($_FILES['file']['tmp_name']);
 		} else
 			die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');

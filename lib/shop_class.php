@@ -32,8 +32,14 @@ class shop
 
     function showActionInfoByItem($item_id)
     {
-        session_start();
-        $client = $_SESSION["client"];
+//        session_start();
+//        $client = $_SESSION["client"];
+        if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+            $client = 0;
+        } else {
+            $client = $_SESSION["client"];
+        }        
         $er = 1;
         $odb = new odb;
         $list = "";
@@ -315,9 +321,9 @@ class shop
             if ($doc_id != "" && $doc_num != "") {
                 $odb->query_lider("insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','18');");
                 $odb->query_lider("update doc set opl=2 where id='$doc_id';");
-                $r1 = $odb->query_td("select max(id) as mid from orders;");
-                odbc_fetch_row($r1);
-                $id = odbc_result($r1, "mid") + 1;
+//                $r1 = $odb->query_td("select max(id) as mid from orders;");
+//                odbc_fetch_row($r1);
+//                $id = odbc_result($r1, "mid") + 1;
                 $date = date("Y-m-d");
                 $time = date("H:i:s");
                 if ($client == "") {
@@ -326,7 +332,9 @@ class shop
                 if ($client_user == "") {
                     $client_user = 0;
                 }
-                $odb->query_td("insert into orders (id,session_id,client,union_client,author,author_user,author_send,data,times,status,doc_id,doc_num) values ('$id','$session',$client,0,$client,$client_user,$client,'$date','$time','12','$doc_id','$doc_num');");
+//                $odb->query_td("insert into orders (id,session_id,client,union_client,author,author_user,author_send,data,times,status,doc_id,doc_num) values ('$id','$session',$client,0,$client,$client_user,$client,'$date','$time','12','$doc_id','$doc_num');");
+                $odb->query_td("insert into orders (id,session_id,client,union_client,author,author_user,author_send,data,times,status,doc_id,doc_num) 
+                                  values ((select max(id)+1 from orders),'$session',$client,0,$client,$client_user,$client,'$date','$time','12','$doc_id','$doc_num');");
                 $list .= "<option value='$id'>$doc_num</option>";
             }
         }
@@ -355,17 +363,28 @@ class shop
         $cat = new catalogue;
         session_start();
         $summ = round($kol * $price, 2);
+        if (empty($order_id)) {
+            echo "Внутрення ошибка не указан ORDER_ID обратитесь к менеджеру! <br>";
+            return;
+        };
+
+//        $query = "select max(id) as maxId from orders_str;";
+//        $r = $odb->query_td($query);
+//        $maxId = odbc_result($r, "maxId") + 1;
+
         $query = "select id from orders_str where item_id='$item_id' and order_id='$order_id' limit 1;";
         $r = $odb->query_td($query);
         $n = $odb->num_rows($r);
         if ($n == 0) {
             list($code, $name, $p, $p, $p) = $cat->getItemInfo($item_id);
-            $odb->query_td("insert into orders_str (order_id,item_id,code,name,quant,price,summ) values ('$order_id','$item_id','$code','$name','$kol','$price','$summ');");
+//            $odb->query_td("insert into orders_str (id,order_id,item_id,code,name,quant,price,summ) values ('$maxId','$order_id','$item_id','$code','$name','$kol','$price','$summ');");
+            $odb->query_td("insert into orders_str (id,order_id,item_id,code,name,quant,price,summ) values ((select max(id)+1 as maxId from orders_str),'$order_id','$item_id','$code','$name','$kol','$price','$summ');");
         }
         if ($n > 0) {
             $r = $odb->query_td($query);
             odbc_fetch_row($r);
-            $id = odbc_result($r, "id");
+            $id = odbc_result($r, id);
+//            if empty($id) {};
             $odb->query_td("update orders_str set quant='$kol', price='$price', summ='$summ' where id='$id';");
         }
         return;
@@ -394,14 +413,14 @@ class shop
 //        $n = $odb->num_rows($r);
         $i = 0;
 //        if ($n != 0) {
-            while (odbc_fetch_row($r)) {
-                $i++;
-                $order_id = odbc_result($r, "id");
-                $r1 = $odb->query_td("select SUM(summ) as summ from orders_str where order_id='$order_id';");
-                odbc_fetch_row($r1);
-                $sum = round(odbc_result($r1, "summ"), 2) + 0;
-                $summ += $sum;
-            }
+        while (odbc_fetch_row($r)) {
+            $i++;
+            $order_id = odbc_result($r, "id");
+            $r1 = $odb->query_td("select SUM(summ) as summ from orders_str where order_id='$order_id';");
+            odbc_fetch_row($r1);
+            $sum = round(odbc_result($r1, "summ"), 2) + 0;
+            $summ += $sum;
+        }
 //        } else {
 //            $summ = 0;
 //        };
@@ -1208,8 +1227,15 @@ class shop
     //----------------------------------------------
     function show_order_history($page)
     {
-        session_start();
-        $client = $_SESSION["client"];
+//        session_start();
+//        $client = $_SESSION["client"];
+        if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+            $client = 0; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+        } else {
+            $client = $_SESSION["client"];
+        }
+
         $odb = new odb;
         $slave = new slave;
         $dep = $slave->get_dep();
@@ -1488,8 +1514,15 @@ class shop
 //    Эта процедура показует ДОЛГИ и АВАНСЫ - документы для оплаты вызывается из docs.php
     function show_order_docs($page)
     {
-        session_start();
-        $client = $_SESSION["client"];
+//        session_start();
+//        $client = $_SESSION["client"];
+        if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+            $client = 10000001; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+        } else {
+            $client = $_SESSION["client"];
+        }
+
         $odb = new odb;
         $slave = new slave;
         $cat = new catalogue;

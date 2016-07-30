@@ -100,7 +100,7 @@ class client
     {
         $odb = new odb;
         $flink = $this->generateRandomString(64);
-        $odb->query_td("insert into SUBCONTO_FASTLINK (subconto_id,flink,ison) values ($client_id,'$flink',1);");
+        $odb->query_td("insert into SUBCONTO_FASTLINK (id,subconto_id,flink,ison) values ((select max(id)+1 from SUBCONTO_FASTLINK),$client_id,'$flink',1);");
         return $flink;
     }
 

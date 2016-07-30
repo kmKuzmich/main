@@ -945,15 +945,16 @@ class catalogue
 
     function getItemPrice2($item_id)
     {
-        if (isset($_REQUEST[session_name()])) session_start();
 //        session_start();
-        $odb = new odb;
-        $slave = new slave;
+        if (isset($_REQUEST[session_name()])) session_start();
         if (empty($_SESSION["client"])) {
             $client_id = 10000001; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
         } else {
             $client_id = $_SESSION["client"];
         }
+        $odb = new odb;
+        $slave = new slave;
+
         //id=10000001
         $r = $odb->query_td("select getprice(id,'$client_id') from item where id='$item_id';");
 //        $r = $odb->query_lider("select getprice(id,'$client_id') from item where id='$item_id';");
@@ -979,9 +980,15 @@ class catalogue
 
     function showActionBonus()
     {
+//        session_start();
+//        $client = $_SESSION["client"];
+        if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+            $client = 0; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+        } else {
+            $client = $_SESSION["client"];
+        }
         $odb = new odb;
-        session_start();
-        $client = $_SESSION["client"];
         $form = "";
         if ($client != "" and $client > 0) {
             $curdata = date("Y-m-d");
@@ -1005,6 +1012,15 @@ class catalogue
 
     function getActionBonusSumm($id, $client)
     {
+        if (empty($client) || $client == '' || $client == 0) {
+            return;
+        }
+//        if (isset($_REQUEST[session_name()])) session_start();
+//        if (empty($_SESSION["client"])) {
+//            $client = 0; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+//            return;
+//        }
+//        else {$client = $_SESSION["client"];}
         $bonus = 0;
         $bonus1 = 0;
         $odb = new odb;
@@ -1178,9 +1194,10 @@ class catalogue
             $art = trim($art);
             //удаляем кавычки и аппостроф ( и ещё раз избавляемся от пробелов нафига - отключил???)
 //            $art = str_replace(array('"', "'", '.'), "", trim($art));
-            $art = str_replace(array('"', "'", '.'), "", $art);
+//            непечатаемые символы ="chr(9),chr(10),chr(13),chr(10),chr(33),chr(35),chr(38),chr(94),chr(96),chr(126)";
+            $art = str_replace(array('"', "'", '.', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $art);
             //чистим для поиска по обрезаному наименованию.
-            $artName = str_replace(array('"', "'"), "", $artName);
+            $artName = str_replace(array('"', "'", chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $artName);
             //удаляем спец символы, и опять переводим в нижн регистр (но уже другим способом) и сохраняем в $art1 чтоб дальше можно было искать по оригиналу и не только
             $art1 = strtolower(str_replace(array('_', '-', '—', '+', '/', '.', ',', '\\', ' ', '"', '\''), "", trim($art)));
             //Эта текстовая переменная отвечает за то что нельзя показывать в прайсе 1134 - производитель Service и скрытые позиции в прайсе
@@ -1210,11 +1227,13 @@ class catalogue
                 $artn = explode(" ", strtolower($art1));
 
                 foreach ($artn as $artan) {
-                    $to_tsquery .= "& $artan:*";
+                    if (!empty($artan)) {
+                        $to_tsquery .= "& $artan:*";
+                    }
                 }
 
-                if (!empty($artn)) {
-                    $where = " and  to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
+                if (!empty($artn) | $artn != '') {
+                    $where = " and  to_tsvector('english',I.Code||' '||I.name) @@ to_tsquery('";
                     $to_tsquery = substr($to_tsquery, 2);
                     $where .= $to_tsquery . "')";
                 }
@@ -1290,7 +1309,9 @@ class catalogue
                         $artn = explode(" ", strtolower($artName));
 
                         foreach ($artn as $artan) {
-                            $to_tsquery .= "& $artan:*";
+                            if (!empty($artan)) {
+                                $to_tsquery .= "& $artan:*";
+                            }
                         }
 
                         if (!empty($artn)) {
@@ -2003,7 +2024,7 @@ class catalogue
         }
         list($caption, $code) = $this->getItemCaptionCode($item_id);
         $r = $odb->query_td("select * from itemimages where item_id='$item_id';");
-        $td_ex = 0;
+        $td_ex = 10;
         $list = "";
         while (odbc_fetch_row($r)) {
             $file_name = odbc_result($r, "file_name");
@@ -2042,7 +2063,7 @@ class catalogue
                         $fp = fopen('uploads/images/lider/' . $item_id . '_td.jpg', 'w');
                         fwrite($fp, $docImage);
                         fclose($fp);
-                        $odb->query_td("insert into itemimages (item_id,file_name,istd) values ('$item_id','$item_id" . "_td.jpg','1');");
+                        $odb->query_td("insert into itemimages (id,item_id,file_name,istd) values ((select max(id)+1 from itemimages),'$item_id','$item_id" . "_td.jpg','1');");
                         $list = "<img src='thumb.php?image=lider/$item_id" . "_td.jpg&size=100&height=$height' border=0 align='$align' $ihgt alt='$caption' title='$caption' class='$class'>";
                     }
                 }
@@ -2825,7 +2846,7 @@ class catalogue
                 }
             }
             $list .= "$td_ex";
-//		$td_ex=1;
+            $td_ex = 1;
             if ($td_ex == 0) {
                 $article_id = $this->getArticleId($code, $item_id);
                 $soap = new SoapClient(TecdocToCat, array('trace' => true,));
@@ -2851,7 +2872,7 @@ class catalogue
                             $fp = fopen('uploads/images/lider/' . $item_id . '_td.jpg', 'w');
                             fwrite($fp, $docImage);
                             fclose($fp);
-                            $odb->query_td("insert into itemimages (item_id,file_name,istd) values ('$item_id','$item_id" . "_td.jpg','1');");
+                            $odb->query_td("insert into itemimages (id,item_id,file_name,istd) values ((select max(id)+1 from itemimages)'$item_id','$item_id" . "_td.jpg','1');");
                             $list .= "<img src='thumb.php?image=lider/$item_id" . "_td.jpg&size=650&height=650' border=0 align='center' alt='$caption' title='$caption'><br />";
                             if (in_array($rem_ip, $this->remips)) {
                                 $list .= "<img src='theme/images/drop.png' style='cursor:pointer;' onclick='DropImg(\"$item_id\",\"$item_id" . "_td.jpg\");' border=0 align='center' alt='удалить' title='удалить'>";

@@ -34,7 +34,7 @@ class task {
 	function showShortTaskList($data){session_start();$client=$_SESSION["client"]; $odb=new odb;$slave=new slave;$list="";
 		if (strlen($data)==9){$data=substr($data,0,8)."0".substr($data,8,1);}
 		$task_item_htm=RD."/tpl/task_item.htm";$task_item="";if (file_exists("$task_item_htm")){ $task_item = file_get_contents($task_item_htm);}
-		$r=$odb->query_td("select * from tasks where client='$client' and data='$data' order by is_mailed asc limit 0,3;");
+		$r = $odb->query_td("select * from tasks where client='$client' and data='$data' order by is_mailed asc limit 3;");
 		while(odbc_fetch_row($r)){
 				$id=odbc_result($r,"id");$bold="";
 				$is_mailed=odbc_result($r,"is_mailed"); if ($is_mailed==0){$bold="font-weight:bold;";}
