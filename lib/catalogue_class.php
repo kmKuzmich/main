@@ -2846,6 +2846,8 @@ class catalogue
                 }
             }
             $list .= "$td_ex";
+
+//            далее поиск и автодобавление из TecDoc online отключаю $td_ex = 1
             $td_ex = 1;
             if ($td_ex == 0) {
                 $article_id = $this->getArticleId($code, $item_id);
@@ -2927,8 +2929,14 @@ class catalogue
 
     function showItemInfo($item_id)
     {
-        session_start();
-        $client = $_SESSION["client"];
+        if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+            $client = 0; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+        } else {
+            $client = $_SESSION["client"];
+        }
+//        session_start();
+//        $client = $_SESSION["client"];
         if ($client == "" or $client == 0) {
             $form_htm = RD . "/tpl/need_auth.htm";
             if (file_exists("$form_htm")) {
@@ -2945,32 +2953,36 @@ class catalogue
             list($item_producent, $item_td_producent, $item_producent_name) = $this->getItemProducentTd($item_id);
 
             list($article_id, $article_name) = $this->getArticleIdName($code, $item_id);
-            $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-            try {
-                $result = $soap->getAssignedArticlesByIds2Single(array(
-                    'provider' => PROVIDER_ID, 'lang' => 'ru', 'country' => 'ru',
-                    'modId' => '-1', 'manuId' => '-1',
-                    'linkingTargetType' => 'C', 'linkingTargetId' => '-1', 'attributs' => true,
-                    'priceDate' => Null, 'info' => true, 'prices' => false,
-                    'eanNumbers' => false, 'usageNumbers' => false, 'replacedByNumbers' => true, 'replacedNumbers' => true, 'mainArticles' => true, 'documents' => true,
-                    'oeNumbers' => '', 'normalAustauschPrice' => true, 'immediateAttributs' => true,
-                    'immediateInfo' => '', 'documentsData' => true, 'articleId' => $article_id, 'articleLinkId' => '',
-                ));
-                $result = $result->data->array[0]->articleAttributes->array;
-                $list = "";
-                $i = 0;
-                foreach ($result as $item) {
-                    $i += 1;
-                    $attrName = iconv("utf-8", "windows-1251", $item->attrName);
-                    $attrValue = iconv("utf-8", "windows-1251", $item->attrValue);
-                    $list .= "<tr>
+            //запрос в TecDoc Online отлючаю
+            $td = 0;
+            if ($td == 1) {
+                $soap = new SoapClient(TecdocToCat, array('trace' => true,));
+                try {
+                    $result = $soap->getAssignedArticlesByIds2Single(array(
+                        'provider' => PROVIDER_ID, 'lang' => 'ru', 'country' => 'ru',
+                        'modId' => '-1', 'manuId' => '-1',
+                        'linkingTargetType' => 'C', 'linkingTargetId' => '-1', 'attributs' => true,
+                        'priceDate' => Null, 'info' => true, 'prices' => false,
+                        'eanNumbers' => false, 'usageNumbers' => false, 'replacedByNumbers' => true, 'replacedNumbers' => true, 'mainArticles' => true, 'documents' => true,
+                        'oeNumbers' => '', 'normalAustauschPrice' => true, 'immediateAttributs' => true,
+                        'immediateInfo' => '', 'documentsData' => true, 'articleId' => $article_id, 'articleLinkId' => '',
+                    ));
+                    $result = $result->data->array[0]->articleAttributes->array;
+                    $list = "";
+                    $i = 0;
+                    foreach ($result as $item) {
+                        $i += 1;
+                        $attrName = iconv("utf-8", "windows-1251", $item->attrName);
+                        $attrValue = iconv("utf-8", "windows-1251", $item->attrValue);
+                        $list .= "<tr>
 					<td align='center'>$i</td>
 					<td>$attrName</td>
 					<td align='right'>$attrValue</td>
 					<td></td>
 				</tr>";
+                    }
+                } catch (SoapFault $e) {
                 }
-            } catch (SoapFault $e) {
             }
             $form = str_replace("{list}", $list, $form);
             $form = str_replace("{caption}", $caption, $form);
@@ -2978,7 +2990,9 @@ class catalogue
             $form = str_replace("{articleName}", $article_name, $form);
             $form = str_replace("{code}", $code, $form);
             $form = str_replace("{item_foto}", $this->getItemPhoto($item_id, 200), $form);
+
         }
+
         return $form;
     }
 
@@ -3111,6 +3125,9 @@ class catalogue
 
     function showAplicability($articleId)
     {
+//        Таблица применяемости пропала, надо загружать заново, да и нужна ли она, пока что отключаю
+        return " Извините, информация по данному артикулу отсутствует :( ";
+
         $odb = new odb;
         $list = "";
         $r = $odb->query_td("select * from tecdoc_aplicability where article_id='$articleId';");
@@ -3508,7 +3525,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             $where = " where (" . substr($where, 0, -3) . ")";
         }
         $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
-        $r = $odb->query_td("select * from item $where  $exclude order by code limit 1 offset 0;");
+        $r = $odb->query_td("select * from item $where  $exclude order by code limit 15 offset 0;");
         $kol = $n;
         $list = "";
         $flist = "";
@@ -3529,7 +3546,11 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             //$price_client=$this->getItemPrice($id,$valuta_id,$price,$discount_id);
             $price_client = $this->getItemPrice2($id);
             $isImage = odbc_result($r, "isImage");
-            $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
+            if ($isImage > 0) {
+                $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
+            } else {
+                $img = "";
+            }
             list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
             $quant_r_img = "";
             if ($quant_r > 0) {

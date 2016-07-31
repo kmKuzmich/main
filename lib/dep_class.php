@@ -11,11 +11,13 @@ class dep
         while (odbc_fetch_row($r)) {
             $caption = odbc_result($r, 'caption');
             $desc = odbc_result($r, 'desc2');
-            if ($desc != "") {
-                while (($chunk = odbc_result($r, 'desc2')) !== false) {
-                    $desc .= $chunk;
-                }
-            }
+//          Вот эта хрень в PG вызывает массу неприятностей типа, но после этого поламались такие вещи как в Личном кабинете "Доставка" в общем надо разбираться.
+//            Fatal error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 131862235 bytes) in C:\wamp\www\Avtolider-Shop1\lib\dep_class.php on line 16
+//            if ($desc != "") {
+//                while (($chunk = odbc_result($r, 'desc2')) !== false) {
+//                    $desc .= $chunk;
+//                }
+//            }
         }
         if ($desc == "<br />" or $desc == "") {
             $r1 = $odb->query_td("select * from deps where dep_up='$dep' and ison='1' and visible='1' limit 1 offset 0;");
