@@ -72,24 +72,15 @@ echo 'Привет, <b>' . $_SESSION['login'] . '</b> <a href="/triger/web.php?logout=
     </tr>
 
     <?php
-    //    while ($row = odbc_fetch_array($s)) {
-    while (odbc_fetch_row($s)) {
-
-        $i = odbc_result($s, 'IP');
+    while ($row = odbc_fetch_array($s)) {
+        $i = $row['ip'];
         echo '<tr>';
-        echo '		<td>' . odbc_result($s, 'CODE') . '</td>';
-        echo '		<td>' . $row['KLIENT'] . '</td>';
+        echo '		<td>' . $row['code'] . '</td>';
+        echo '		<td>' . $row['klient'] . '</td>';
         echo "		<td><a href='/triger/webdetails.php?ip=$i'>$i</a></td>";
-        echo '		<td align="center">' . $row['N'] . '</td>';
+        #echo '		<td>'.$row['IP'].'</td>';
+        echo '		<td align="center">' . $row['n'] . '</td>';
         echo '</tr>';
-//        $i = $row['IP'];
-//        echo '<tr>';
-//        echo '		<td>' . $row['CODE'] . '</td>';
-//        echo '		<td>' . $row['KLIENT'] . '</td>';
-//        echo "		<td><a href='/triger/webdetails.php?ip=$i'>$i</a></td>";
-//        #echo '		<td>'.$row['IP'].'</td>';
-//        echo '		<td align="center">' . $row['N'] . '</td>';
-//        echo '</tr>';
     }
     }
     ?>

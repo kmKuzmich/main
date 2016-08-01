@@ -74,14 +74,15 @@ echo 'Привет, <b>' .$_SESSION['login'].'</b> <a href="/triger/web.php?logout=1">
 
 <?php
 while($row = odbc_fetch_array($s))
+	while ($row = odbc_fetch_array($s))
 {
 	echo '<tr>';
-	echo '		<td>'.$row['CODE'].'</td>';
-	echo '		<td>'.$row['NAME'].'</td>';
-	echo '		<td>'.$row['SEARCH'].'</td>';
-	echo '		<td>' . $row['PROD_ID'] . '</td>';
-	echo '		<td>'.$row['IP'].'</td>';
-	echo '		<td>'.$row['TIME'].'</td>';
+	echo '		<td>' . $row['code'] . '</td>';
+	echo '		<td>' . $row['name'] . '</td>';
+	echo '		<td>' . $row['search'] . '</td>';
+	echo '		<td>' . $row['prod_id'] . '</td>';
+	echo '		<td>' . $row['ip'] . '</td>';
+	echo '		<td>' . $row['time'] . '</td>';
 	echo '</tr>';
 }
 }

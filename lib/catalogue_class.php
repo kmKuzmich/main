@@ -1195,11 +1195,11 @@ class catalogue
             //удаляем кавычки и аппостроф ( и ещё раз избавляемся от пробелов нафига - отключил???)
 //            $art = str_replace(array('"', "'", '.'), "", trim($art));
 //            непечатаемые символы ="chr(9),chr(10),chr(13),chr(10),chr(33),chr(35),chr(38),chr(94),chr(96),chr(126)";
-            $art = str_replace(array('"', "'", '.', ';', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $art);
+            $art = str_replace(array('"', "'", ';', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $art);
             //чистим для поиска по обрезаному наименованию.
             $artName = str_replace(array('"', "'", ';', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $artName);
             //удаляем спец символы, и опять переводим в нижн регистр (но уже другим способом) и сохраняем в $art1 чтоб дальше можно было искать по оригиналу и не только
-            $art1 = strtolower(str_replace(array('(', ')', '_', '—', '&', '/', '.', ',', '=', '\\', ' ', '"', '\''), "", trim($art)));
+            $art1 = strtolower(str_replace(array('(', ')', '_', '—', '&', '/', ',', '=', '\\', ' ', '"', '\''), "", trim($art)));
             //Эта текстовая переменная отвечает за то что нельзя показывать в прайсе 1134 - производитель Service и скрытые позиции в прайсе
 //            $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
             $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
