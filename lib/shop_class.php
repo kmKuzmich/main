@@ -232,12 +232,22 @@ class shop
     {
         $odb = new odb;
         $slave = new slave;
-        session_start();
-        $client = $_SESSION["client"];
-        $client_user = $_SESSION["client_user"];
+//        session_start();
+//        $client = $_SESSION["client"];
+
+        if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+            $client = 0;
+            $client_user = 0;
+        } else {
+            $client = $_SESSION["client"];
+            $client_user = $_SESSION["client_user"];
+        }
+
         if ($client == "") {
             $session = session_id();
         }
+
         $odb->query_lider("create variable @last_id integer ");
         $odb->query_lider("insert into Local(user_id) values(-1);");
         $odb->query_lider("SET OPTION DATE_ORDER = 'DMY';");
@@ -268,16 +278,25 @@ class shop
             $odb->query_td("insert into orders (id,session_id,client,union_client,author,author_user,author_send,data,times,status,doc_id,doc_num) values ('$id','$session',$client,0,$client,$client_user,$client,'$date','$time','12','$doc_id','$doc_num');");
             $answer = "ok";
         }
-        return $answer;
+        return $id;
     }
 
     function getOrderActiveId()
     {
         $odb = new odb;
         $slave = new slave;
-        session_start();
-        $client = $_SESSION["client"];
+//        session_start();
+//        $client = $_SESSION["client"];
+
+        if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+            $client = "";
+        } else {
+            $client = $_SESSION["client"];
+        }
+
         $session = session_id();
+
         if ($client != "") {
             $where = " or client='$client' ";
         }
@@ -364,8 +383,10 @@ class shop
         session_start();
         $summ = round($kol * $price, 2);
         if (empty($order_id)) {
-            echo "Внутрення ошибка не указан ORDER_ID обратитесь к менеджеру! <br>";
-            return;
+//            echo "Внутрення ошибка не указан ORDER_ID обратитесь к менеджеру! <br>";
+//            return;
+            $order_id = $this->getOrderActiveId();
+
         };
 
 //        $query = "select max(id) as maxId from orders_str;";

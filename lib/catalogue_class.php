@@ -1195,11 +1195,11 @@ class catalogue
             //удал€ем кавычки и аппостроф ( и ещЄ раз избавл€емс€ от пробелов нафига - отключил???)
 //            $art = str_replace(array('"', "'", '.'), "", trim($art));
 //            непечатаемые символы ="chr(9),chr(10),chr(13),chr(10),chr(33),chr(35),chr(38),chr(94),chr(96),chr(126)";
-            $art = str_replace(array('"', "'", '.', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $art);
+            $art = str_replace(array('"', "'", '.', ';', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $art);
             //чистим дл€ поиска по обрезаному наименованию.
-            $artName = str_replace(array('"', "'", chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $artName);
+            $artName = str_replace(array('"', "'", ';', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $artName);
             //удал€ем спец символы, и оп€ть переводим в нижн регистр (но уже другим способом) и сохран€ем в $art1 чтоб дальше можно было искать по оригиналу и не только
-            $art1 = strtolower(str_replace(array('_', '-', 'Ч', '+', '/', '.', ',', '\\', ' ', '"', '\''), "", trim($art)));
+            $art1 = strtolower(str_replace(array('(', ')', '_', 'Ч', '&', '/', '.', ',', '=', '\\', ' ', '"', '\''), "", trim($art)));
             //Ёта текстова€ переменна€ отвечает за то что нельз€ показывать в прайсе 1134 - производитель Service и скрытые позиции в прайсе
 //            $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
             $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
@@ -1225,6 +1225,7 @@ class catalogue
                 $where = "";
                 $to_tsquery = "";
                 $artn = explode(" ", strtolower($art1));
+//                echo $art1;
 
                 foreach ($artn as $artan) {
                     if (!empty($artan)) {
@@ -1430,8 +1431,16 @@ class catalogue
 //					$price_client=$this->getItemPrice($id,$valuta_id,$price,$discount_id);
                     $price_client = $this->getItemPrice2($id);
 
+//                    $isImage = odbc_result($r, "isImage");
+//                    $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='‘ото' title='‘ото'></a>";
+
                     $isImage = odbc_result($r, "isImage");
-                    $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='‘ото' title='‘ото'></a>";
+                    if ($isImage > 0) {
+                        $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='‘ото' title='‘ото'></a>";
+                    } else {
+                        $img = "";
+                    }
+
                     //наличие
                     list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
                     $quant_r_img = "";
@@ -1712,7 +1721,12 @@ class catalogue
                 //$price_client=$this->getItemPrice($id,$valuta_id,$price,$discount_id);
                 $price_client = $this->getItemPrice2($id);
                 $isImage = odbc_result($r, "isImage");
-                $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='‘ото' title='‘ото'></a>";
+                if ($isImage > 0) {
+                    $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='‘ото' title='‘ото'></a>";
+                } else {
+                    $img = "";
+                }
+
                 list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
                 $quant_r_img = "";
                 if ($quant_r > 0) {
@@ -3508,7 +3522,8 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 
     function showItemAnalog($item_id)
     {
-        session_start();
+//        session_start();
+        if (isset($_REQUEST[session_name()])) session_start();
         $odb = new odb;
         $slave = new slave;
         $dep = "23";
@@ -3599,9 +3614,9 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             }
         }
         $list = $flist . $list;
-        if ($i == 1) {
-            $list .= $this->getTecdocAnalogList($code);
-        }
+//        if ($i == 1) {
+//            $list .= $this->getTecdocAnalogList($code);
+//        }
         if ($i == 0) {
             $list .= "
 				<tr align='center' height='40' >

@@ -105,12 +105,26 @@ function roundNumber(num, dec) {
 	var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
 	return result;
 }
-function SaveModelBusket(model){
-	var order_id=document.getElementById("OrderActiveId")[document.getElementById("OrderActiveId").selectedIndex].value;
-	var price=document.getElementById("model_price").value;
-	var kol=document.getElementById("model_kol").value;
-	JsHttpRequest.query('content.php',{ 'w': 'SaveModelBusket', 'order_id':order_id,'model': model, 'count':kol,'price':price}, 
-	function (result, errors){ if (errors) {alert(errors);} if (result){ updateBusketInformer(); closeBusketForm();}}, true);
+function SaveModelBusket(model) {
+	var order_id = document.getElementById("OrderActiveId")[document.getElementById("OrderActiveId").selectedIndex].value;
+	var price = document.getElementById("model_price").value;
+	var kol = document.getElementById("model_kol").value;
+	JsHttpRequest.query('content.php', {
+			'w': 'SaveModelBusket',
+			'order_id': order_id,
+			'model': model,
+			'count': kol,
+			'price': price
+		},
+		function (result, errors) {
+			if (errors) {
+				alert(errors);
+			}
+			if (result) {
+				updateBusketInformer();
+				closeBusketForm();
+			}
+		}, true);
 }
 function plusOne(model){
 	var price=document.getElementById("model_price").value;

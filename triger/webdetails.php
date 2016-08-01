@@ -52,10 +52,10 @@ $s = $odb->query_td("select
                         tm as Time  
                     from websearch w 
                         left outer join subconto s on klient_id=s.id
-                    where tm>=trunc(sysdate,'dd-mm-yyyy')
+                    where tm>=date(now())
                           and nodeaddress like ('$ip')
                     order by 5 desc
-                    limit 0,200;");
+                    limit 200 offset 0;");
 echo "<h1>WebSearch за ".date('d-m-Y')." состоянием на <u>".date('H:i:s')."</u> по IP: ".$_POST['ip']."</h1>";
 echo 'Привет, <b>' .$_SESSION['login'].'</b> <a href="/triger/web.php?logout=1">Выйти</a><br><br>';
 ?>
