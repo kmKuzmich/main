@@ -975,7 +975,7 @@ class shop
             }
 
             $odb->query_lider("update doc set opl=0, subconto_id=$client, place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';");
-            $odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id' and n=0;");
+            $odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id';");
             $odb->query_lider("insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');");
 //			$odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address_sent','$more','".$this->get_table_caption("carrier",$delivery)."','$phonePerson','$contactPerson','".$this->get_table_caption("typepay",$payment)."');");
 
