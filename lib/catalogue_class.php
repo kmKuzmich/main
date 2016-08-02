@@ -1199,7 +1199,7 @@ class catalogue
             //чистим дл€ поиска по обрезаному наименованию.
             $artName = str_replace(array('"', "'", ';', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $artName);
             //удал€ем спец символы, и оп€ть переводим в нижн регистр (но уже другим способом) и сохран€ем в $art1 чтоб дальше можно было искать по оригиналу и не только
-            $art1 = strtolower(str_replace(array('(', ')', '_', 'Ч', '&', '/', ',', '=', '\\', ' ', '"', '\''), "", trim($art)));
+            $art1 = strtolower(str_replace(array('+', '-', '(', ')', '_', 'Ч', '&', '/', '.', ',', '=', '\\', ' ', '"', '\''), "", trim($art)));
             //Ёта текстова€ переменна€ отвечает за то что нельз€ показывать в прайсе 1134 - производитель Service и скрытые позиции в прайсе
 //            $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
             $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
@@ -1218,14 +1218,22 @@ class catalogue
 
 //            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
             if ($by_name == 0) {
+
+
+                //»щем по пол€м Code или sCode  по "точному" совпадению art% art1%
+//                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
+                $where = "(scode LIKE '$art1%' or scode LIKE '$art')";
+                $query = "select * from item where ($where) $where2 $exclude order by id asc;";
+                $r = $odb->query_td($query);
+                $n = $odb->num_rows($r);
+
                 //Ёто абсолютно новый поиск по индексам по коду и по наименованию по Ќј„јЋјћ —Ћќ¬! например не найдЄт P2064 если искать 2064,
                 // раньше в DB2 поиск ведЄтс€ по sName - это поле только в DB2,
                 //
-
+                if ($n == 0) {
                 $where = "";
                 $to_tsquery = "";
-                $artn = explode(" ", strtolower($art1));
-//                echo $art1;
+                    $artn = explode(" ", strtolower($art));
 
                 foreach ($artn as $artan) {
                     if (!empty($artan)) {
@@ -1242,14 +1250,8 @@ class catalogue
                 $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
+                }
 //-------
-                //»щем по пол€м Code или sCode  по "точному" совпадению art% art1%
-//                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
-//--
-//                $where = "(scode LIKE '$art1%')";
-//                $query = "select * from item where ($where) $where2 $exclude order by id asc;";
-//                $r = $odb->query_td($query);
-//                $n = $odb->num_rows($r);
 
 //--------
 //нафига эта переменна не пойму, вроде нигде не использветс€ пока что убираю
