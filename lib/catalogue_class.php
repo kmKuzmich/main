@@ -948,7 +948,7 @@ class catalogue
 //        session_start();
         if (isset($_REQUEST[session_name()])) session_start();
         if (empty($_SESSION["client"])) {
-            $client_id = 10000001; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+            $client_id = 0; //выводить скидку=0 потому что если есть 4 гр то клиент не видит что он не авторизирован //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
         } else {
             $client_id = $_SESSION["client"];
         }
@@ -1199,7 +1199,7 @@ class catalogue
             //чистим для поиска по обрезаному наименованию.
             $artName = str_replace(array('"', "'", ';', chr(9), chr(10), chr(13), chr(10), chr(33), chr(35), chr(38), chr(94), chr(96), chr(126)), "", $artName);
             //удаляем спец символы, и опять переводим в нижн регистр (но уже другим способом) и сохраняем в $art1 чтоб дальше можно было искать по оригиналу и не только
-            $art1 = strtolower(str_replace(array('+', '-', '(', ')', '_', '—', '&', '/', '.', ',', '=', '\\', ' ', '"', '\''), "", trim($art)));
+            $art1 = strtolower(str_replace(array('+', '-', '_', '—', '&', '/', '.', ',', '=', '\\', ' ', '"', '\''), "", trim($art))); //'(', ')',
             //Эта текстовая переменная отвечает за то что нельзя показывать в прайсе 1134 - производитель Service и скрытые позиции в прайсе
 //            $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
             $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
@@ -1437,9 +1437,10 @@ class catalogue
 //                    $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
 
                     $isImage = odbc_result($r, "isImage");
-                    if ($isImage > 0) {
+                    if (($isImage > 0) || (in_array($_SERVER['REMOTE_ADDR'], $this->remips))) {
                         $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
                     } else {
+                        $rem_ip = $_SERVER['REMOTE_ADDR'];
                         $img = "";
                     }
 
