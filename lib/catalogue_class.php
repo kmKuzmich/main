@@ -434,6 +434,7 @@ class catalogue
         if ($category == "") {
             $category = $this->getDefaultMasloCategory();
         }
+        //items_name таблица из базы MySQL отвечает за...
         $r = $db->query_lider("select * from items_name order by id asc;");
         $n = $db->num_rows($r);
         for ($i = 1; $i <= $n; $i++) {
@@ -449,6 +450,10 @@ class catalogue
         return $form;
     }
 
+    /**
+     * @return int|string
+     *  возвращает имя file категории масел по умолчанию например t1,t2,t3,t4 и т.д. описаны в методике загрузки каталога масел.
+     */
     function getDefaultMasloCategory()
     {
         $db = new db;
@@ -506,8 +511,10 @@ class catalogue
         $enable = array();
         $where = "";
         $enable2 = "";
-        foreach ($used_id as $use_id) {
-            $where .= " lider_id='$use_id' or";
+        if (is_array($used_id)) {
+            foreach ($used_id as $use_id) {
+                $where .= " lider_id='$use_id' or";
+            }
         }
         if ($where != "") {
             $where = " and (" . substr($where, 0, -3) . ")";
@@ -547,7 +554,8 @@ class catalogue
                 $value = $cn[$i];
                 $link = " onclick='setCategoryFilter(this,\"$category\",\"$col_name\",\"$value\")'";
                 $ich = "";
-                if (in_array($value, $checked)) {
+//                Проверяем, если массив $checked не пустой и строка активирована (checked) то назначить строке $ich значение checked
+                if ((is_array($checked)) && in_array($value, $checked)) {
                     $ich = " checked";
                 }
                 $dis = "";
