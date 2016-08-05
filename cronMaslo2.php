@@ -18,7 +18,7 @@ require_once(RD . "/lib/slave_class.php");
 $slave = new slave;
 require_once RD . '/excel/excel_reader2.php';
 
-
+//$r = $db->query_lider("select * from items_name  where file='t5' order by id asc;");
 $r = $db->query_lider("select * from items_name  order by id asc;");
 $n = $db->num_rows($r);
 for ($i = 1; $i <= $n; $i++) {
@@ -47,6 +47,7 @@ for ($i = 1; $i <= $n; $i++) {
                 }
                 $query = substr($query, 0, -1);
                 $db->query_lider("insert into `items_$file` values ($query);");
+                echo ($query) . "<br>";
             }
         }
     }
