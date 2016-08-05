@@ -1223,11 +1223,10 @@ class catalogue
             $odb = new odb;
 
             //Если был выбран поиск по коду и не по наименованию, то нам сюда. обычно поиск по коду по умолчанию, эта опция отключена уже в прайсе, раньше там был крыжик
+//                    $by_name=1;
 
 //            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
             if ($by_name == 0) {
-
-
                 //Ищем по полям Code или sCode  по "точному" совпадению art% art1%
 //                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
                 $where = "(scode LIKE '$art1%' or scode LIKE '$art')";
@@ -1239,25 +1238,25 @@ class catalogue
                 // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
                 //
                 if ($n == 0) {
-                $where = "";
-                $to_tsquery = "";
+                    $where = "";
+                    $to_tsquery = "";
                     $artn = explode(" ", strtolower($art));
 
-                foreach ($artn as $artan) {
-                    if (!empty($artan)) {
-                        $to_tsquery .= "& $artan:*";
+                    foreach ($artn as $artan) {
+                        if (!empty($artan)) {
+                            $to_tsquery .= "& $artan:*";
+                        }
                     }
-                }
 
-                if (!empty($artn) | $artn != '') {
-                    $where = " and  to_tsvector('english',I.Code||' '||I.name) @@ to_tsquery('";
-                    $to_tsquery = substr($to_tsquery, 2);
-                    $where .= $to_tsquery . "')";
-                }
+                    if (!empty($artn) | $artn != '') {
+                        $where = " and  to_tsvector('english',I.Code||' '||I.name) @@ to_tsquery('";
+                        $to_tsquery = substr($to_tsquery, 2);
+                        $where .= $to_tsquery . "')";
+                    }
 //                echo $where ;
-                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
-                $r = $odb->query_td($query);
-                $n = $odb->num_rows($r);
+                    $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
+                    $r = $odb->query_td($query);
+                    $n = $odb->num_rows($r);
                 }
 //-------
 
@@ -1309,34 +1308,34 @@ class catalogue
                     $n = $odb->num_rows($r);
                     $byTD = 1; //основной Признак что поиск проведён по TecDoc
 
+                }
+            }
+            //            Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
+            if (($n == 0) or ($by_name == 1)) {
+//                echo $by_name;
+                //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
+                // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
+                //
+                $where = "";
+                $to_tsquery = "";
+                $artn = explode(" ", strtolower($artName));
 
-                    //            Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
-                    if (($n == 0) or ($by_name == 1)) {
-                        //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
-                        // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
-                        //
-                        $where = "";
-                        $to_tsquery = "";
-                        $artn = explode(" ", strtolower($artName));
-
-                        foreach ($artn as $artan) {
-                            if (!empty($artan)) {
-                                $to_tsquery .= "& $artan:*";
-                            }
-                        }
-
-                        if (!empty($artn)) {
-                            $where = " and  to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
-                            $to_tsquery = substr($to_tsquery, 2);
-                            $where .= $to_tsquery . "')";
-                        }
-//                        echo $where ;
-                        $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
-                        $r = $odb->query_td($query);
-                        $n = $odb->num_rows($r);
-
+                foreach ($artn as $artan) {
+                    if (!empty($artan)) {
+                        $to_tsquery .= "& $artan:*";
                     }
                 }
+
+                if (!empty($artn)) {
+                    $where = " and  to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
+                    $to_tsquery = substr($to_tsquery, 2);
+                    $where .= $to_tsquery . "')";
+                }
+//                        echo $where ;
+                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
+                $r = $odb->query_td($query);
+                $n = $odb->num_rows($r);
+
             }
 
 
