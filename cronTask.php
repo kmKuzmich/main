@@ -91,18 +91,23 @@ while (odbc_fetch_row($r)) {
     $doc_id = odbc_result($r, "doc_id");
     $doc_num = odbc_result($r, "doc_num");
 
-//для всех заказов с статусом 1 в Lider
+//для всех заказов с статусом 1 в orders_check в Lider
     $r1 = $odb->query_lider("select * from doc where id='$doc_id';");
+    if (!$odb->num_rows($r1)) {
+        $odb->query_lider("Insert into doc (id,tm,kinddoc_id,num,opl,subconto_id) values($doc_id,$data_send,12,$doc_num,0,$client);");
+        $r1 = $odb->query_lider("select * from doc where id='$doc_id';");
+    };
     while (odbc_fetch_row($r1)) {
         $lid_opl = odbc_result($r1, "opl");
         $lid_subconto_id = odbc_result($r1, "subconto_id");
         $lid_sum1 = odbc_result($r1, "sum1");
         $lid_sum = odbc_result($r1, "sum");
         $lid_kinddoc_id = odbc_result($r1, "kinddoc_id");
+        echo $lid_sum . " и " . $lid_sum1 . " и " . $doc_num;
 //для которых sum (отп) или sum1(розн) = пусто
         if ($lid_sum == "" or $lid_sum1 == "") {
-            print "order_id=$order_id,doc_id=$doc_id; doc_num=$doc_num->($author_send,$address)<br>";
-            print "doc_id=$doc_id ($lid_opl,$lid_subconto_id,$lid_sum1,$lid_sum,$lid_kinddoc_id)<br><br>";
+//            print "order_id=$order_id,doc_id=$doc_id; doc_num=$doc_num->($author_send,$address)<br>";
+//            print "doc_id=$doc_id ($lid_opl,$lid_subconto_id,$lid_sum1,$lid_sum,$lid_kinddoc_id)<br><br>";
             //подсчитать их кол-во m
             $m += 1;
             //для таких заказов перечитать строки заказов
@@ -136,29 +141,30 @@ while (odbc_fetch_row($r)) {
                 $place_id = 23;
             }
             //для всех заявок с статусом 1 обновить в Lider документ, установить в нём признак оплаты=0  клиента сумма вид документа и прочую хрень
-            $odb->query_lider("update doc set opl=0, subconto_id='$author_send', place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', kinddoc_id=12 where id='$doc_id';");
+//            $odb->query_lider("update doc set opl=0, subconto_id='$author_send', place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', kinddoc_id=12 where id='$doc_id';");
+            $odb->query_lider("update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', kinddoc_id=12 where id='$doc_id';");
             //напечатать это
-            print "update doc set opl=0, subconto_id=$author_send, place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';";
+//            print "update doc set opl=0, subconto_id=$author_send, place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';";
 //    изменить текущий статус документа на следующий
-            $odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id' and n=0;");
-            print "update docstates set n=n+1 where doc_id='$doc_id' and n=0;";
+//            $odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id' and n=0;");
+            $odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id';");
+//            print "update docstates set n=n+1 where doc_id='$doc_id' and n=0;";
 //    установить статус 16 как текущий
             $odb->query_lider("insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');");
-            print "insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');";
+//            print "insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');";
 //        добавить докинфо
             $odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');");
-            print "insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');";
+//            print "insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');";
 //      добавить адрес доставки
             $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment');");
-            print "insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment');";
+//            print "insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment');";
+//изменить статус на 0
+            #$odb->query_td("update orders_check set status=0 where order_id='$order_id';");
+            echo "$order_id \n";
         }
     }
-//изменить статус на 0
-    $odb->query_td("update orders_check set status=0 where order_id='$order_id';");
-    echo "$order_id <br/>";
-
+    $odb->query_td("update orders_check oc set status=0 where oc.order_id='$order_id' and (select max(r.id) from orders o join docrow r on o.doc_id=r.doc_id where o.id=oc.order_id) is not null ;");
 }
 odbc_close_all();
-print "k=$k, m=$m";
-
+//sleep(10);
 ?>
