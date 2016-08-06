@@ -966,9 +966,9 @@ class shop
                     $errMsg = '';
                     $errMsg = odbc_errormsg($odb->db_lider);
                     $errMsgCln = '';
-                    if (!empty($errMsg) or $errMsg != '') {
+                    if ((!empty($errMsg) or $errMsg != '') & $errMsg != "w") {
                         $errMsgCln = " Извините :( во время отправки заявки произошла внутрення ошибка сайта <br>
-                        <span style='color:red;'>$errMsg,<br></span>
+                        <span style='color:red;'>$errMsg<br></span>
                         <h2>сайт будет отправлять Вашу заявку автоматически через каждые 5 минут, но Вам надо убедиться в размещении заявки, иначе товар может быть не отправлен!</h2>
                         обратитесь пожалуйста в тех.поддержку  +3 8 067 383 33 58 <br>
                         или к менеджерам +3 8 067 383 11 01";
