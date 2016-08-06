@@ -963,6 +963,7 @@ class shop
 					</tr>
 					<tr><td colspan='8' bgcolor='#282828' class='dotted' height='1'></td></tr>";
                     $odb->query_lider("insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_model');");
+                    
                 }
             }
             $orSumm = $slave->int_to_money($orSumm);

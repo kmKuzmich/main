@@ -107,7 +107,7 @@ while (odbc_fetch_row($r)) {
     $n = $odb->num_rows($r1);
     if (empty($n) or $n == '' or $n == 0) {
 //        $odb->query_lider("insert into doc (id,tm,kinddoc_id,num,opl,subconto_id) values($doc_id,$data_send,12,$doc_num,0,$client_id);");
-        $odb->query_lider("insert into doc (id,tm,kinddoc_id,num,opl,subconto_id) values($doc_id,$dataLider,12,$doc_num,0,$client_id);");
+        $odb->query_lider("insert into doc (id,tm,kinddoc_id,num,opl,subconto_id) values($doc_id,$data_send,12,$doc_num,0,$client);");
 //        echo $doc_id;
         $r1 = $odb->query_lider("select * from doc where id='$doc_id';");
         fwrite($fp, "ƒобавил doc.id в Lider \r\n");
@@ -178,7 +178,7 @@ while (odbc_fetch_row($r)) {
             fwrite($fp, "\r\n »нкремент счЄтчика состо€ний документа Lider.doc \r\n
             update docstates set n=n+1 where doc_id='$doc_id'
             \r\n");
-            
+
 //            print "update docstates set n=n+1 where doc_id='$doc_id' and n=0;";
 //    установить статус 16 как текущий
             $odb->query_lider("insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');");
@@ -188,18 +188,18 @@ while (odbc_fetch_row($r)) {
             fwrite($fp, "\r\n обновл€ю состо€ние документа 16-выданна€ web-за€вка Lider.DocStates \r\n
             insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16')
             \r\n");
+//            если docinfo нет то добавить иначе ничего
+            if (!($odb->query_lider("select * from docinfo where doc_id=$doc_id"))) {
+                $odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');");
 
-
-            $odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');");
-
-            fwrite($fp, "\r\n обновл€ю Lider.DocInfo \r\n
+                fwrite($fp, "\r\n обновл€ю Lider.DocInfo \r\n
             insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','\" . $shop->get_table_caption(\"carrier\", $delivery) . \"','$phoneperson','$contactperson','\" . $shop->get_table_caption(\"typepay\", $payment)
             \r\n");
-
+            }
 
 //            print "insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');";
 //      добавить адрес доставки
-            $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',(select max(n)+1 from adresdeliv where subconto_id=$client_id),'$address','$phoneperson','$contactperson','$more','$delivery','$payment');");
+            $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client',(select max(n)+1 from adresdeliv where subconto_id=$client),'$address','$phoneperson','$contactperson','$more','$delivery','$payment');");
 
             fwrite($fp, "\r\n обновл€ю јдрес доставки Lider.AdresDeliv\r\n
             \"insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment')
