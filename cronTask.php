@@ -113,12 +113,20 @@ while (odbc_fetch_row($r)) {
         fwrite($fp, "ƒобавил doc.id в Lider \r\n");
     };
     $r1 = $odb->query_lider("select * from doc where id='$doc_id';");
+//    если нет строк товара, то обновить строки товара
+    $rr = $odb->query_lider("select * from docrow where doc_id='$doc_id';");
+    $n = $odb->num_rows($rr);
+    if (empty($n) or $n == '' or $n == 0) {
+        $needUpdate = 1;
+    } else {
+        $needUpdate = 0;
+    };
 //    if (!odbc_fetch_row($r1)) {echo  "нихера не пон€л!<br>";}
 //else {
 //    fwrite($fp, "≈сть в Lider с doc.id $doc_id дл€ клиента с кодом $client \r\n");
 //    };
     fwrite($fp, "≈сть в Lider с doc.id $doc_id дл€ клиента с кодом $client \r\n");
-    while (odbc_fetch_row($r1)) {
+    while (odbc_fetch_row($r1) & $needUpdate) {
         $lid_opl = odbc_result($r1, "opl");
         $lid_subconto_id = odbc_result($r1, "subconto_id");
         $lid_sum1 = odbc_result($r1, "sum1");
@@ -128,7 +136,7 @@ while (odbc_fetch_row($r)) {
         fwrite($fp, "с суммой $lid_sum и розницей $lid_sum1 \r\n");
         //дл€ которых sum (отп) или sum1(розн) = пусто
         //    fwrite($fp, "ƒобавил doc.id в Lider\r\n");
-        if ($lid_sum == "" or $lid_sum1 == "") {
+        if ($lid_sum == "" or $lid_sum1 == "" or $needUpdate) {
 //            print "order_id=$order_id,doc_id=$doc_id; doc_num=$doc_num->($author_send,$address)<br>";
 //            print "doc_id=$doc_id ($lid_opl,$lid_subconto_id,$lid_sum1,$lid_sum,$lid_kinddoc_id)<br><br>";
             //подсчитать их кол-во m
@@ -215,8 +223,8 @@ while (odbc_fetch_row($r)) {
     }
     $odb->query_td("update orders_check oc set status=0 where oc.order_id='$order_id' and (select max(r.id) from orders o join docrow r on o.doc_id=r.doc_id where o.id=oc.order_id) is not null ;");
     echo "updated order_id $order_id <br>";
-
-    fwrite($fp, "\r\n обновл€ю order check если добавлено в docrow \r\n
+    $stat = odbc_result($odb->query_td("select status from orders_check where order_id = $order_id limit 1"), 1);
+    fwrite($fp, "\r\n обновл€ю order check если добавлено в docrow на статус $stat \r\n
 update orders_check oc set status=0 where oc.order_id='$order_id' and (select max(r.id) from orders o join docrow r on o.doc_id=r.doc_id where o.id=oc.order_id) is not null  \r\n");
 
 }

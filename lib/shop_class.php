@@ -39,7 +39,7 @@ class shop
             $client = 0;
         } else {
             $client = $_SESSION["client"];
-        }        
+        }
         $er = 1;
         $odb = new odb;
         $list = "";
@@ -963,7 +963,16 @@ class shop
 					</tr>
 					<tr><td colspan='8' bgcolor='#282828' class='dotted' height='1'></td></tr>";
                     $odb->query_lider("insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_model');");
-                    
+                    $errMsg = '';
+                    $errMsg = odbc_errormsg($odb->db_lider);
+                    $errMsgCln = '';
+                    if (!empty($errMsg) or $errMsg != '') {
+                        $errMsgCln = " Извините :( во время отправки заявки произошла внутрення ошибка сайта <br>
+                        <span style='color:red;'>$errMsg,<br></span>
+                        <h2>сайт будет отправлять Вашу заявку автоматически через каждые 5 минут, но Вам надо убедиться в размещении заявки, иначе товар может быть не отправлен!</h2>
+                        обратитесь пожалуйста в тех.поддержку  +3 8 067 383 33 58 <br>
+                        или к менеджерам +3 8 067 383 11 01";
+                    }
                 }
             }
             $orSumm = $slave->int_to_money($orSumm);
@@ -974,7 +983,6 @@ class shop
             if ($place_id == "" or $place_id == 0) {
                 $place_id = 23;
             }
-
             $odb->query_lider("update doc set opl=0, subconto_id=$client, place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';");
             $odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id';");
             $odb->query_lider("insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');");
@@ -1019,6 +1027,7 @@ class shop
             if (file_exists("$order_message_htm")) {
                 $order_message = file_get_contents($order_message_htm);
             }
+            $order_message = str_replace("{errMsg}", $errMsgCln, $order_message);
             $order_message = str_replace("{order_id}", $doc_num, $order_message);
 
             include_once RD . '/lib/sms_class.php';
@@ -1031,7 +1040,7 @@ class shop
                 $r = $odb->query_lider("select isnull( (select max(n) from adresdeliv where subconto_id='$client'),0);");
                 $nA = odbc_result($r, 1) + 1;
                 $odb->query_lider("update adresdeliv set n=$nA where subconto_id='$client' and n=1");
-                $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client',1,'$address_sent','$phonePerson','$contactPerson','$more','$delivery','$payment');");
+                $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client'$nA,'$address_sent','$phonePerson','$contactPerson','$more','$delivery','$payment');");
             }
         }
         return $order_message;
@@ -1173,8 +1182,17 @@ class shop
 						<td align='right'>$or_summ</td>
 					</tr>
 					<tr><td colspan='8' bgcolor='#282828' class='dotted' height='1'></td></tr>";
-//					$odb->query_td("insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model);");
                     $odb->query_lider("insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_item_id');");
+                    $errMsg = '';
+                    $errMsg = odbc_errormsg($odb->db_lider);
+                    $errMsgCln = '';
+                    if (!empty($errMsg) or $errMsg != '') {
+                        $errMsgCln = " Извините :( но во время отправки заявки произошла внутрення ошибка сайта <br>
+                        <span style='color:red;'> $errMsg,</span><br>
+                        сайт будет отправлять Вашу заявку автоматически через каждые 5 минут,<br> 
+                        но Вам надо убедиться в правильном размещении заявки, иначе товар может быть не отправлен!<br>
+                        обратитесь пожалуйста к админам +3 8 067 383 33 58 или менеджерам +3 8 067 383 11 01";
+                    }
                 }
             }
 
@@ -1235,6 +1253,7 @@ class shop
             if (file_exists("$order_message_htm")) {
                 $order_message = file_get_contents($order_message_htm);
             }
+            $order_message = str_replace("{errMsg}", $errMsgCln, $order_message);
             $order_message = str_replace("{order_id}", $doc_num, $order_message);
 
             include_once RD . '/lib/sms_class.php';
