@@ -972,6 +972,14 @@ class shop
                         <h2>сайт будет отправлять Вашу заявку автоматически через каждые 5 минут, но Вам надо убедиться в размещении заявки, иначе товар может быть не отправлен!</h2>
                         обратитесь пожалуйста в тех.поддержку  +3 8 067 383 33 58 <br>
                         или к менеджерам +3 8 067 383 11 01";
+                        $fp = fopen(RD . '/lib/odbc_errors/lider_insert.txt', 'a+');
+                        fwrite($fp, "\r\n -----
+дата : " . date('d/m/y H:i:s') . " : ошибка во время добавления строки заявки номер $order_id \r\n 
+insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)  \r\n
+$errMsg \r\n
+-------\r\n
+                        ");
+                        fclose($fp);
                     }
                 }
             }
@@ -1036,12 +1044,12 @@ class shop
 
             list($c, $c, $c, $c, $c, $SContPerson, $SPhonePerson, $SAddressPerson, $STypePay, $SCarrier, $SRemark) = $cl->get_order_form_data($client);
 //эта часть сохраняет инфо о доставке   - отключаю, всё равно не работает, да и не понадобилось - 
-            if ($SAddressPerson == "" or $SAddressPerson != $address_sent) {
-                $r = $odb->query_lider("select isnull( (select max(n) from adresdeliv where subconto_id='$client'),0);");
-                $nA = odbc_result($r, 1) + 1;
-                $odb->query_lider("update adresdeliv set n=$nA where subconto_id='$client' and n=1");
-                $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client'$nA,'$address_sent','$phonePerson','$contactPerson','$more','$delivery','$payment');");
-            }
+//            if ($SAddressPerson == "" or $SAddressPerson != $address_sent) {
+//                $r = $odb->query_lider("select isnull( (select max(n) from adresdeliv where subconto_id='$client'),0);");
+//                $nA = odbc_result($r, 1) + 1;
+//                $odb->query_lider("update adresdeliv set n=$nA where subconto_id='$client' and n=1");
+//                $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client'$nA,'$address_sent','$phonePerson','$contactPerson','$more','$delivery','$payment');");
+//            }
         }
         return $order_message;
     }

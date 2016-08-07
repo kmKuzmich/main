@@ -207,17 +207,20 @@ while (odbc_fetch_row($r)) {
 
 //            print "insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');";
 //      добавить адрес доставки
-            $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client',(select max(n)+1 from adresdeliv where subconto_id=$client),'$address','$phoneperson','$contactperson','$more','$delivery','$payment');");
-
-            fwrite($fp, "\r\n обновл€ю јдрес доставки Lider.AdresDeliv\r\n
-            \"insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment')
+//            если адресов с текущим нет то добавить адрес.
+            $ra = $odb->query_lider("select max(n) from adresdeliv where subconto_id=$client and adres=$address ");
+            $n = $odb->num_rows($ra);
+            if (empty($n) or $n = 0 or $n = '') {
+                $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client',(select max(n)+1 from adresdeliv where subconto_id=$client),'$address','$phoneperson','$contactperson','$more','$delivery','$payment');");
+                fwrite($fp, "\r\n новый адрес добавл€ю јдрес доставки Lider.AdresDeliv\r\n
+            insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment')
             \r\n");
-
+            }
 //            print "insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$author_send',1,'$address','$phoneperson','$contactperson','$more','$delivery','$payment');";
 //изменить статус на 0
 //            $odb->query_td("update orders_check set status=0 where order_id='$order_id';");
 ////    echo "$order_id <br/>";
-        } else {
+    } else {
             echo "не обновл€ю в Lider<br>";
         }
     }
