@@ -177,7 +177,7 @@ while (odbc_fetch_row($r)) {
             $odb->query_lider("update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$dataLider', kinddoc_id=12 where id='$doc_id';");
 //запись в лог
             fwrite($fp, "\r\n обновляю Lider.doc \r\n
-             update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$dateLider', kinddoc_id=12 where id='$doc_id'\r\n");
+             update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$dataLider', kinddoc_id=12 where id='$doc_id'\r\n");
             //напечатать это
 //            print "update doc set opl=0, subconto_id=$author_send, place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';";
 //    изменить текущий статус документа на следующий

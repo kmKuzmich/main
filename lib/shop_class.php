@@ -925,13 +925,10 @@ class shop
 //            $odb->query_td("insert into orders_check (order_id,data) values ('$order_id','$date');");
             $odb->query_td("insert into orders_check (order_id,status,data) values ('$order_id',1,date(now()));");
 
-//            $r = $odb->query_td("select * from orders where id='$order_id';");
-            $r = $odb->query_td("select k.code,k.name,* from orders O join subconto K on O.client=K.id where id='$order_id';");
+            $r = $odb->query_td("select * from orders where id='$order_id';");
             while (odbc_fetch_row($r)) {
-                $doc_id = odbc_result($r, "o.doc_id");
-                $doc_num = odbc_result($r, "o.doc_num");
-                $clientCode = odbc_result($r, k . code);
-                $clientName = odbc_result($r, k . name);
+                $doc_id = odbc_result($r, "doc_id");
+                $doc_num = odbc_result($r, "doc_num");
             }
 
             $odb->query_lider("create variable @last_id integer ");
@@ -977,23 +974,24 @@ class shop
                         или к менеджерам +3 8 067 383 11 01";
                         $fp = fopen(RD . '/lib/odbc_errors/lider_insert.txt', 'a+');
                         fwrite($fp, "\r\n -----
-дата : " . date('d/m/y H:i:s') . " : ошибка во время добавления строки заявки номер  $doc_num и id $order_id клиент $clientCode(id: $client) : $clientName \r\n 
+дата : " . date('d/m/y H:i:s') . " : ошибка во время добавления строки заявки номер  $doc_num и id $order_id \r\n 
 insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)  \r\n
 $errMsg \r\n
 -------\r\n
                         ");
                         fclose($fp);
-
-                        $fp1 = fopen(RD . '/lib/odbc_errors/ord_save_err.txt', 'a+');
-                        fwrite($fp1, "\r\n -----
-" . date('d/m/y H:i:s') . "; клиент $clientCode : $clientName; заявка номер : $doc_num (id:$order_id)  \r\n 
+                    } else {
+                        $errMsg = "Успешно отправлено!";
+                    };
+                    $fp1 = fopen(RD . '/lib/odbc_errors/ord_save_err.txt', 'a+');
+                    $fp1Row = "\r\n -----
+" . date('d/m/y H:i:s') . " клиент : заяка :  $doc_num (id=$order_id) \r\n 
+insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)  \r\n
 $errMsg \r\n
--------\r\n
-                        ");
-                        fclose($fp1);
+-------\r\n";
+                    fwrite($fp1, $fp1Row);
+                    fclose($fp1);
 
-
-                    }
                 }
             }
             $orSumm = $slave->int_to_money($orSumm);
