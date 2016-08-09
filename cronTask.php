@@ -106,8 +106,7 @@ while (odbc_fetch_row($r)) {
     $r1 = $odb->query_lider("select * from doc where id='$doc_id';");
     $n = $odb->num_rows($r1);
     if (empty($n) or $n == '' or $n == 0) {
-//        $odb->query_lider("insert into doc (id,tm,kinddoc_id,num,opl,subconto_id) values($doc_id,$data_send,12,$doc_num,0,$client_id);");
-        $odb->query_lider("insert into doc (id,tm,kinddoc_id,num,opl,subconto_id) values($doc_id,$data_send,12,$doc_num,0,$client);");
+        $odb->query_lider("insert into doc (id,tm,kinddoc_id,num,opl,subconto_id) values($doc_id,'$dataLider',12,$doc_num,0,$client);");
 //        echo $doc_id;
         $r1 = $odb->query_lider("select * from doc where id='$doc_id';");
         fwrite($fp, "Добавил doc.id в Lider \r\n");
@@ -164,7 +163,7 @@ while (odbc_fetch_row($r)) {
 
             $orSumm = $slave->int_to_money($orSumm);
             //выбрать отдел клиента
-            $r2 = $odb->query_td("select place_id from subconto where code='$client_id';");
+            $r2 = $odb->query_td("select place_id from subconto where id='$client';");
             while (odbc_fetch_row($r2)) {
                 $place_id = odbc_result($r2, "place_id");
             }
@@ -197,8 +196,11 @@ while (odbc_fetch_row($r)) {
             insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16')
             \r\n");
 //            если docinfo нет то добавить иначе ничего
-            if (!($odb->query_lider("select * from docinfo where doc_id=$doc_id"))) {
-                $odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');");
+            $ra = ($odb->query_lider("select * from docinfo where doc_id=$doc_id"));
+            $n = $odb->num_rows($ra);
+            if (empty($n) or $n == '' or $n == 0) {
+                $odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','
+" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');");
 
                 fwrite($fp, "\r\n обновляю Lider.DocInfo \r\n
             insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','\" . $shop->get_table_caption(\"carrier\", $delivery) . \"','$phoneperson','$contactperson','\" . $shop->get_table_caption(\"typepay\", $payment)
@@ -208,7 +210,7 @@ while (odbc_fetch_row($r)) {
 //            print "insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address','$more','" . $shop->get_table_caption("carrier", $delivery) . "','$phoneperson','$contactperson','" . $shop->get_table_caption("typepay", $payment) . "');";
 //      добавить адрес доставки
 //            если адресов с текущим нет то добавить адрес.
-            $ra = $odb->query_lider("select max(n) from adresdeliv where subconto_id=$client and adres=$address ");
+            $ra = $odb->query_lider("select max(n) from adresdeliv where subconto_id=$client and adres='$address'");
             $n = $odb->num_rows($ra);
             if (empty($n) or $n = 0 or $n = '') {
                 $odb->query_lider("insert into adresdeliv (subconto_id,n,adres,phone,contperson,remark,carrier_id,typepay_id) values ('$client',(select max(n)+1 from adresdeliv where subconto_id=$client),'$address','$phoneperson','$contactperson','$more','$delivery','$payment');");
@@ -221,7 +223,7 @@ while (odbc_fetch_row($r)) {
 //            $odb->query_td("update orders_check set status=0 where order_id='$order_id';");
 ////    echo "$order_id <br/>";
     } else {
-            echo "не обновляю в Lider<br>";
+            echo "не обновляю адрес в Lider<br>";
         }
     }
     $odb->query_td("update orders_check oc set status=0 where oc.order_id='$order_id' and (select max(r.id) from orders o join docrow r on o.doc_id=r.doc_id where o.id=oc.order_id) is not null ;");

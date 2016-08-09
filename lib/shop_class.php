@@ -925,10 +925,13 @@ class shop
 //            $odb->query_td("insert into orders_check (order_id,data) values ('$order_id','$date');");
             $odb->query_td("insert into orders_check (order_id,status,data) values ('$order_id',1,date(now()));");
 
-            $r = $odb->query_td("select * from orders where id='$order_id';");
+            $r = $odb->query_td("select * from orders o join subconto s on o.client=s.id where o.id='$order_id';");
             while (odbc_fetch_row($r)) {
                 $doc_id = odbc_result($r, "doc_id");
                 $doc_num = odbc_result($r, "doc_num");
+                $clientCode = odbc_result($r, "code");
+                $clientName = odbc_result($r, "name");
+
             }
 
             $odb->query_lider("create variable @last_id integer ");
@@ -976,18 +979,15 @@ class shop
                         fwrite($fp, "\r\n -----
 дата : " . date('d/m/y H:i:s') . " : ошибка во врем€ добавлени€ строки за€вки номер  $doc_num и id $order_id \r\n 
 insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)  \r\n
-$errMsg \r\n
+" . date('d/m/y H:i:s') . "$errMsg \r\n
 -------\r\n
                         ");
                         fclose($fp);
                     } else {
-                        $errMsg = "”спешно отправлено!";
+                        $errMsg = "строка за€вки успешно добавлена в обработку!";
                     };
                     $fp1 = fopen(RD . '/lib/odbc_errors/ord_save_err.txt', 'a+');
-                    $fp1Row = "\r\n -----
-" . date('d/m/y H:i:s') . " клиент : за€ка :  $doc_num (id=$order_id) \r\n 
-insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)  \r\n
-$errMsg \r\n
+                    $fp1Row = ">>>" . date('d/m/y H:i:s') . " клиент $clientCode:$clientName >> за€вка :  $doc_num (id=$order_id) \r\n insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)\r\n$errMsg\r\n
 -------\r\n";
                     fwrite($fp1, $fp1Row);
                     fclose($fp1);
