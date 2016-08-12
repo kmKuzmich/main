@@ -5,10 +5,14 @@
  * Date: 25.06.2016
  * Time: 10:51
  */
-
+$_COOKIE["PHPSESSID"] = "gmukkovk7u9d1kn69nkeksm306";
+//$_GET['sess_id']="gmukkovk7u9d1kn69nkeksm306";
 if ($_GET['sess_id']) {
-    session_name($_GET['sess_id']);
+    session_id($_GET['sess_id']);
 }
+//if ($_GET['sess_id']) {
+//    session_name($_GET['sess_id']);
+//}
 session_start();
 echo "Сессии <pre>";
 print_r($_SESSION);

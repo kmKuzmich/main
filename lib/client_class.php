@@ -698,10 +698,12 @@ class client
         session_start();
         $odb = new odb;
         $slave = new slave;
-        require_once(RD . " / recaptchalib . php");
+        require_once(RD . "/recaptchalib.php");
         $privatekey = "6LcepdkSAAAAABAOFjbEHh7rTcr1OqYqB7srixb - ";
         $resp = recaptcha_check_answer($privatekey, $_SERVER["REMOTE_ADDR"], $recaptcha_challenge_field, $recaptcha_response_field);
-        if (!$resp->is_valid) {
+        $res = 1;
+//        if (!$resp->is_valid) {
+        if ($res = 0) {
             // What happens when the CAPTCHA was entered incorrectly
             $err = 1;
             $answer = "Сработала защита от спама";
@@ -724,7 +726,7 @@ class client
             }
             if ($email != "" and $name != "" and $city != "" and $address != "" and $phone != "") {
                 $remip = $_SERVER['REMOTE_ADDR'];
-                $r = $odb->query_td("SELECT subconto . id FROM SUBCONTO inner join SUBCONTO_USERS on(subconto . id = subconto_users . SubConto_id) where subconto . email = '$email' or subconto_users . email = '$email' limit 1 offset 0;");
+                $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO inner join SUBCONTO_USERS on (subconto.id = subconto_users.SubConto_id) where subconto.email = '$email' or subconto_users.email = '$email' limit 1 offset 0;");
                 $n = $odb->num_rows($r);
                 if ($n > 0) {
                     $err = 1;
@@ -775,7 +777,7 @@ class client
                     $message = str_replace("{
         client_id}", $mid, $message);
 
-                    include_once RD . " / mail / sendmail .class.php";
+                    include_once RD . "/mail/sendmail.class.php";
                     $Mail = new sendmail();
                     $Mail->mail_to = "$name < $email>";
                     $Mail->subject = "Zakaz . avtolider - ua . com: Client registration";
@@ -862,7 +864,7 @@ class client
             $r = $odb->query_td("SELECT max(id) as mid FROM CITY_NEW;");
             odbc_fetch_row($r);
             $mid = odbc_result($r, "mid") + 1;
-            $odb->query_td("insert into `CITY_NEW` (ID,NAME,REGION_ID) values('$mid', '$caption', '$state');");
+            $odb->query_td("insert into CITY_NEW (ID,NAME,REGION_ID) values('$mid', '$caption', '$state');");
             return $mid;
         }
     }
@@ -923,16 +925,16 @@ class client
         $r = $odb->query_td("select email from subconto where email = '$email' limit 1 offset 0;");
         $n = $odb->num_rows($r);
         if ($n > 0) {
-            return array(1, " < span style = 'color:red;' > Email принадлежит другому пользователю </span > ");
+            return array(1, " <span style = 'color:red;'> Email принадлежит другому пользователю </span>");
         }
         if ($n == 0) {
 //            $r1 = $odb->query_td("select email from lider_subconto_users where email = '$email' limit 1 offset 0;");
 //            $n1 = $odb->num_rows($r1);
             if ($n > 0) {
-                return array(1, " < span style = 'color:red;' > Email принадлежит другому пользователю </span > ");
+                return array(1, " <span style = 'color:red;'> Email принадлежит другому пользователю </span>");
             }
             if ($n == 0) {
-                return array(0, "<span style = 'color:green;' > Доступен для регистрации </span > ");
+                return array(0, "<span style = 'color:green;'> Доступен для регистрации </span>");
             }
         }
     }

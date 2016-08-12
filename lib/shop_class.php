@@ -275,7 +275,8 @@ class shop
             if ($client_user == "") {
                 $client_user = 0;
             }
-            $odb->query_td("insert into orders (id,session_id,client,union_client,author,author_user,author_send,data,times,status,doc_id,doc_num) values ('$id','$session',$client,0,$client,$client_user,$client,'$date','$time','12','$doc_id','$doc_num');");
+            $odb->query_td("insert into orders (id,session_id,client,union_client,author,author_user,author_send,data,times,status,doc_id,doc_num)
+                                      values ('$id','$session',$client,0,$client,$client_user,$client,'$date','$time','12','$doc_id','$doc_num');");
             $answer = "ok";
         }
         return $id;
@@ -873,7 +874,8 @@ class shop
 
     function save_order_form()
     {
-        session_start();
+//        session_start();
+        if (isset($_REQUEST[session_name()])) session_start();
         $remip = $_SERVER['REMOTE_ADDR'];
         $slave = new slave;
         $kours = new kours;
@@ -905,6 +907,14 @@ class shop
             $contactPerson = $slave->qq($_POST["contactPerson"]);
             $phonePerson = $slave->qq($_POST["phone"]);
             $client = $_SESSION["client"];
+            if (empty($client) or $client = 0) {
+                echo "для отправки заявки, необходимо авторизироваться";
+                return;//$client = 10000001; //Выводить скидку по клиенту=Фирма ЛидерСервис-Клиент группа 4
+            } else {
+                $client = $_SESSION["client"];
+            }
+
+
             $payment = $slave->qq($_POST["payment"]);
             $delivery = $slave->qq($_POST["delivery"]);
             $more = $slave->qq($_POST["more"]);
@@ -921,16 +931,21 @@ class shop
             if ($more == "") {
                 $more = " ";
             }
-            $r = $odb->query_td("update orders set author_send='$client', union_client='$client', address='$address_sent', more='$more', data_send='$date', time_send='$time', remip='$remip', payment='$payment', delivery='$delivery', status='16', phoneperson='$phonePerson', contactperson='$contactPerson' where id='$order_id';");
+            $r = $odb->query_td("update orders set client='$client',author_send='$client', union_client='$client', address='$address_sent', more='$more', data_send='$date', time_send='$time', remip='$remip', payment='$payment', delivery='$delivery', status='16', phoneperson='$phonePerson', contactperson='$contactPerson' where id='$order_id';");
 //            $odb->query_td("insert into orders_check (order_id,data) values ('$order_id','$date');");
             $odb->query_td("insert into orders_check (order_id,status,data) values ('$order_id',1,date(now()));");
 
-            $r = $odb->query_td("select * from orders o join subconto s on o.client=s.id where o.id='$order_id';");
+            $r = $odb->query_td("
+                                select o.doc_id,o.doc_num,s.code,s.name,(case when client=0 then COALESCE(o.union_client,o.author_send)
+                                end )  client_id
+                                from orders o left outer join subconto s on s.id=o.client where o.id='$order_id';
+                                ");
             while (odbc_fetch_row($r)) {
                 $doc_id = odbc_result($r, "doc_id");
                 $doc_num = odbc_result($r, "doc_num");
                 $clientCode = odbc_result($r, "code");
                 $clientName = odbc_result($r, "name");
+//                $client=odbc_result($r,"client_id");
 
             }
 
@@ -987,7 +1002,7 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
                         $errMsg = "строка заявки успешно добавлена в обработку!";
                     };
                     $fp1 = fopen(RD . '/lib/odbc_errors/ord_save_err.txt', 'a+');
-                    $fp1Row = ">>>" . date('d/m/y H:i:s') . " клиент $clientCode:$clientName >> заявка :  $doc_num (id=$order_id) \r\n insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)\r\n$errMsg\r\n
+                    $fp1Row = ">>>" . date('d/m/y H:i:s') . " клиент $client : $clientCode:$clientName >> заявка :  $doc_num (id=$order_id) \r\n insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or_price,$or_price,$or_count,$or_model)\r\n$errMsg\r\n
 -------\r\n";
                     fwrite($fp1, $fp1Row);
                     fclose($fp1);
@@ -1002,7 +1017,7 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
             if ($place_id == "" or $place_id == 0) {
                 $place_id = 23;
             }
-            $odb->query_lider("update doc set opl=0, subconto_id=$client, place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';");
+            $odb->query_lider("update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';");
             $odb->query_lider("update docstates set n=n+1 where doc_id='$doc_id';");
             $odb->query_lider("insert into docstates (doc_id,n,tm,user_id,state_id) values ('$doc_id','0',now(),'-1','16');");
 //			$odb->query_lider("insert into docinfo (doc_id,tm,direction,remark,dremark,phone,contperson,typePay) values ('$doc_id',now(),'$address_sent','$more','".$this->get_table_caption("carrier",$delivery)."','$phonePerson','$contactPerson','".$this->get_table_caption("typepay",$payment)."');");

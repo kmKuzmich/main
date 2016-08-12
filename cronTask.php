@@ -157,7 +157,7 @@ while (odbc_fetch_row($r)) {
                     $orSumm += $or_summ;
                     //и все эти строки скопировать в Lider
                     $odb->query_lider("insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_model');");
-                    fwrite($fp, "\r\n вставил в Lider insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_model') \r\n");
+                    fwrite($fp, "\r\n >>" . date("Y-m-d H:i:s") . " вставил в Lider insert into docrow (doc_id,id,price,price1,quant,item_id) values ('$doc_id','$j','$or_price','$or_price','$or_count','$or_model') \r\n");
                 }
             }
 
@@ -175,8 +175,7 @@ while (odbc_fetch_row($r)) {
 //            $odb->query_lider("update doc set opl=0, subconto_id='$author_send', place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', kinddoc_id=12 where id='$doc_id';");
             $odb->query_lider("update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$dataLider', kinddoc_id=12 where id='$doc_id';");
 //запись в лог
-            fwrite($fp, "\r\n обновляю Lider.doc \r\n
-             update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$dataLider', kinddoc_id=12 where id='$doc_id'\r\n");
+            fwrite($fp, "\r\n обновляю Lider.doc \r\n >>" . date("Y-m-d H:i:s") . ">> update doc set opl=0, subconto_id='$client', place_id=$place_id, klient_id=$client, sum='$orSumm', sum1='$orSumm', day='$dataLider', kinddoc_id=12 where id='$doc_id'\r\n");
             //напечатать это
 //            print "update doc set opl=0, subconto_id=$author_send, place_id=$place_id, klient_id=$author_send, sum='$orSumm', sum1='$orSumm', day='$date', sday='$date', kinddoc_id=12 where id='$doc_id';";
 //    изменить текущий статус документа на следующий
@@ -229,7 +228,7 @@ while (odbc_fetch_row($r)) {
     $odb->query_td("update orders_check oc set status=0 where oc.order_id='$order_id' and (select max(r.id) from orders o join docrow r on o.doc_id=r.doc_id where o.id=oc.order_id) is not null ;");
     echo "updated order_id $order_id <br>";
     $stat = odbc_result($odb->query_td("select status from orders_check where order_id = $order_id limit 1"), 1);
-    fwrite($fp, "\r\n обновляю order check если добавлено в docrow на статус $stat \r\n
+    fwrite($fp, "\r\n >>" . date("Y-m-d H:i:s") . ">> обновляю order check если добавлено в docrow на статус $stat \r\n
 update orders_check oc set status=0 where oc.order_id='$order_id' and (select max(r.id) from orders o join docrow r on o.doc_id=r.doc_id where o.id=oc.order_id) is not null  \r\n");
 
 }
