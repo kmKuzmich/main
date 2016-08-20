@@ -309,6 +309,7 @@ class shop
         return $id;
     }
 
+//Эта функция возвращает список активных заявок в окне добавления строки в заявку
     function show_orders_active_list($st = 1)
     {
         $odb = new odb;
@@ -321,9 +322,11 @@ class shop
             $where = " or client='$client' ";
         }
         $list = "<select id='OrderActiveId' class='OrderActiveId'>";
-        $query = "select id,doc_id,doc_num from orders where (session_id='$session' $where) and status='12' order by id asc limit 3;";
+        $query = "select id,doc_id,doc_num from orders   where (session_id='$session' $where) and status='12' order by id asc limit 10;";
         $r = $odb->query_td($query);
         $n = $odb->num_rows($r);
+
+//Если активных заявок нет - то создать пустую заявку и показать
         if ($n == 0) {
             $odb->query_lider("create variable @last_id integer ");
             $odb->query_lider("insert into Local(user_id) values(-1);");
@@ -358,6 +361,7 @@ class shop
                 $list .= "<option value='$id'>$doc_num</option>";
             }
         }
+
         if ($n > 0) {
             $i = 0;
             $r = $odb->query_td($query);
@@ -436,11 +440,13 @@ class shop
         $i = 0;
 //        if ($n != 0) {
         while (odbc_fetch_row($r)) {
-            $i++;
             $order_id = odbc_result($r, "id");
             $r1 = $odb->query_td("select SUM(summ) as summ from orders_str where order_id='$order_id';");
             odbc_fetch_row($r1);
             $sum = round(odbc_result($r1, "summ"), 2) + 0;
+            if ($sum > 0) {
+                $i++;
+            };
             $summ += $sum;
         }
 //        } else {
@@ -569,9 +575,17 @@ class shop
                 $odb->query_td("update orders set client='$client' where session_id='$session';");
             }
         }
-        $r = $odb->query_td("select * from orders where status='12' and ($where) order by id desc  limit 3;");
+//        --sum(os.quant*os.price) as order_sum
+        $qr = "select o.id,o.doc_num,o.data,o.author,o.author_user,more_client,sum(os.summ) as order_sum
+              from orders o join orders_str os on o.id=os.order_id
+              where status='12'  and ($where)
+              group by o.id,o.doc_num,o.data,o.author,o.author_user,more_client 
+              order by id desc 
+              limit 9;";
+        //$r = $odb->query_td("select * from orders where status='12' and ($where) order by id desc  limit 3;");
+        $r = $odb->query_td($qr);
         $n = $odb->num_rows($r);
-        $r = $odb->query_td("select * from orders where status='12' and ($where) order by id desc  limit 3;");
+        $r = $odb->query_td($qr);
         $list = "";
         $need_reg_mes = "";
         $i = 0;
@@ -588,7 +602,8 @@ class shop
             }
 //            $order_status = $this->get_status_caption(odbc_result($r, "status"));
             $order_more_client = odbc_result($r, "more_client");
-            $order_sum = $this->getOrderSumm($order_id);
+            $order_sum = odbc_result($r, "order_sum");
+            //$order_sum = $this->getOrderSumm($order_id);
             $list .= "
 			<tr class='cont' align='center' onclick='showOrderStr(\"$order_id\");' style='cursor:pointer;'>
 				<td>Акт.заявка</td>
