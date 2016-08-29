@@ -727,10 +727,11 @@ class client
             if ($email != "" and $name != "" and $city != "" and $address != "" and $phone != "") {
                 $remip = $_SERVER['REMOTE_ADDR'];
                 $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO inner join SUBCONTO_USERS on (subconto.id = subconto_users.SubConto_id) where subconto.email = '$email' or subconto_users.email = '$email' limit 1 offset 0;");
+//                $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO left outer join SUBCONTO_USERS on (subconto.id = subconto_users.SubConto_id) where subconto.email = '$email' or subconto_users.email = '$email' limit 1 offset 0;");
                 $n = $odb->num_rows($r);
                 if ($n > 0) {
                     $err = 1;
-                    $answer = "Указаный вами EMAIL уже зарегистрирован в нашем интернет - магазине!!!";
+                    $answer = "Указаный вами EMAIL уже зарегистрирован в нашем интернет - магазине, воспользуйтесь восстановлением пароля кнопка - Забыли пароль";
                 }
                 if ($n == 0) {
 
@@ -746,44 +747,35 @@ class client
                     $code = odbc_result($r, "code") + 1;
                     $state_name = $this->get_table_caption("region_new", $state);
                     $city_name = $this->get_table_caption("city_new", $city);
-                    $odb->query_lider("INSERT INTO subconto(id, code, Name, email, pwd, country_id, region_id, city_id, Adres, phone, Remark, base_id, dateAdd, flag, place_id) VALUES('$mid', '$code', '$name', '$email', '$pass', '1', '100', '100', '$address', '$phone', '" . $this->get_table_caption("subconto_activity", $activity) . ", $state_name, $city_name', '1', '$date', '128', 23);"); //kuz 25-09-2014 // kuz 4-05-2015 flag=128 Это отметка онлайн(128)
+                    $odb->query_lider("INSERT INTO subconto(id, code, Name, email, pwd, country_id, region_id, city_id, Adres, phone, Remark, base_id, dateAdd, flag, place_id) 
+                                        VALUES('$mid', '$code', '$name', '$email', '$pass', '1', '100', '100', '$address', '$phone', '" . $this->get_table_caption("subconto_activity", $activity) . ", 
+                                        $state_name, $city_name', '1', '$date', '128', 23);"); //kuz 25-09-2014 // kuz 4-05-2015 flag=128 Это отметка онлайн(128)
                     $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '1');");
                     $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '13');");
 
-                    $message_htm = RD . " / tpl / message_registration . htm";
+                    $message_htm = RD . "/tpl/message_registration.htm";
                     if (file_exists("$message_htm")) {
                         $message = file_get_contents($message_htm);
                     }
-                    $message = str_replace("{
-        pass}", $pass, $message);
-                    $message = str_replace("{
-        email}", $email, $message);
-                    $message = str_replace("{
-        client_name}", $name, $message);
-                    $message = str_replace("{
-        state}", $this->get_table_caption("REGION_NEW", $state), $message);
-                    $message = str_replace("{
-        city}", $this->get_table_caption("CITY_NEW", $city), $message);
-                    $message = str_replace("{
-        address}", $address, $message);
-                    $message = str_replace("{
-        phone}", $phone, $message);
-                    $message = str_replace("{
-        activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
-                    $message = str_replace("{
-        remip}", $remip, $message);
-                    $message = str_replace("{
-        flink}", $this->getFastSubcontoAuth($mid), $message);
-                    $message = str_replace("{
-        client_id}", $mid, $message);
+                    $message = str_replace("{pass}", $pass, $message);
+                    $message = str_replace("{email}", $email, $message);
+                    $message = str_replace("{client_name}", $name, $message);
+                    $message = str_replace("{state}", $this->get_table_caption("REGION_NEW", $state), $message);
+                    $message = str_replace("{city}", $this->get_table_caption("CITY_NEW", $city), $message);
+                    $message = str_replace("{address}", $address, $message);
+                    $message = str_replace("{phone}", $phone, $message);
+                    $message = str_replace("{activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
+                    $message = str_replace("{remip}", $remip, $message);
+                    $message = str_replace("{flink}", $this->getFastSubcontoAuth($mid), $message);
+                    $message = str_replace("{client_id}", $mid, $message);
 
                     include_once RD . "/mail/sendmail.class.php";
                     $Mail = new sendmail();
                     $Mail->mail_to = "$name < $email>";
-                    $Mail->subject = "Zakaz . avtolider - ua . com: Client registration";
+                    $Mail->subject = "Zakaz.avtolider-ua.com: Client registration";
                     $Mail->message = $message;
                     $Mail->from_name = "Avtolider";
-                    $Mail->SendFromMail = "no - reply@avtolider - ua . com";
+                    $Mail->SendFromMail = "no-reply@avtolider-ua.com";
                     $Mail->Send();
                     $err = 0;
                     $answer = "Вы успешно зарегистрировались";

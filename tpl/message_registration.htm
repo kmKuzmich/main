@@ -1,79 +1,107 @@
 <style>
-.tbl_head {
- font-family: Arial; font-size: 13px; color: #000000; font-weight: bold; font-style: normal;
- background-color: #AAAAA9;
- border-color:#D9D9DA; border-style: solid;
- border-left-width: 0px;
- border-right-width: 1;
- border-top-width: 1;
- border-bottom-width: 1;
- text-align: center; vertical-align: top;
-}
+    .tbl_head {
+        font-family: Arial;
+        font-size: 13px;
+        color: #000000;
+        font-weight: bold;
+        font-style: normal;
+        background-color: #AAAAA9;
+        border-color: #D9D9DA;
+        border-style: solid;
+        border-left-width: 0px;
+        border-right-width: 1;
+        border-top-width: 1;
+        border-bottom-width: 1;
+        text-align: center;
+        vertical-align: top;
+    }
 </style>
 <style>
-table, td {font-family::Arial; }
+    table, td {
+        font-family:: Arial;
+    }
 </style>
-<table border="0" width="750"  cellpadding="1" cellspacing="5" id="busket">
-	<tr>
-    	<td width="350">&nbsp;</td>
-        <td><h2 style="margin:0px;">ООО "Автолидер"</h2>
-        <div>Украина, г.Хмельницкий,<br />Пр.Мира 107/1<br />
-(0382)78-50-10</div></td>
-    </tr>
-    <tr><td colspan="2" height="3" bgcolor="#999999"></td></tr>
+<table border="0" width="750" cellpadding="1" cellspacing="5" id="busket">
     <tr>
-    	<td height="50"><h2>Регистрация</h2></td>
-        <td><blockquote><blockquote>&nbsp;</blockquote></blockquote></td>
+        <td width="350">&nbsp;</td>
+        <td><h2 style="margin:0px;">ТзОВ "Автолідер"</h2>
+            <div>Україна, м.Хмельницький,<br/>Пр.Миру 103/1<br/>
+                +380382785010
+            </div>
+        </td>
     </tr>
-    <tr><td colspan="2" style="font-size:12px"><blockquote><em>
-	<ul>Вы получили это письмо, так как этот e-mail адрес был использован при регистрации на сайте. Если Вы не регистрировались на этом сайте, просто проигнорируйте это письмо и удалите его. Вы больше не получите такого письма.
-    </ul></em></blockquote>
-    </td></tr>
+    <tr>
+        <td colspan="2" height="3" bgcolor="#999999"></td>
+    </tr>
+    <tr>
+        <td height="50"><h2>Реєстрація</h2></td>
+    </tr>
+    <tr>
+        <td colspan="2" style="font-size:16px">
+            <em>Ви отримали цей лист, тому що Ваш e-mail було вказано при реєстрації в нашому інтернет-магазині.<br/>
+                Якщо Ви не реєструвались - проігноруйте цей лист та видаліть його.<br/>
+            </em>
+        </td>
+    </tr>
 </table>
-<table border="0" width="900"  cellpadding="1" cellspacing="5" id="busket">
-	<tr valign="top">
-		<td width="150"><strong>Email</strong>:</td>
-		<td>{email}</td>
-		<td rowspan="5" width="19"></td>
-		<td width="150"><strong>Область</strong>:</td>
-		<td>{state}</td>
-	</tr>
-   	<tr valign="top">
-		<td><strong>Пароль</strong>:</td>
-        <td>{pass}</td>
-		<td><strong>Город</strong>:</td>
-		<td>{city}</td>
-	</tr>
-	<tr valign="top">
-		<td><strong>Ф.И.О.</strong>:</td>
-		<td>{client_name}</td>
-		<td><strong>Адрес</strong>:</td>
-		<td>{address}</td>
-	</tr>
-	<tr>
-	    <td><strong>Телефон</strong>:</td>			
-		<td>{phone}</td>
-		<td>IP-адресс:</td>
-		<td>{remip}</td>
-	</tr>
-	<tr valign="top">
-		<td><strong>Вид деятельности</strong>:</td>
-    <td>{activity}</td>
-        <td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
+<table border="0" width="900" cellpadding="1" cellspacing="5" id="busket">
     <tr valign="top">
-		<td><strong>Ссылка для быстрой авторизации</strong>:</td>
-        <td colspan="4"><a href='http://www.zakaz.avtolider-ua.com/fauth.php?signup=auth_account&id={client_id}&code={flink}' target="_blank">http://www.zakaz.avtolider-ua.com/fauth.php?signup=auth_account&id={client_id}&code={flink}</a></td>
-	</tr>
+        <td width="150"><strong>Email</strong>:</td>
+        <td>{email}</td>
+        <td rowspan="5" width="19"></td>
+        <td width="150"><strong>Область</strong>:</td>
+        <td>{state}</td>
+    </tr>
+    <tr valign="top">
+        <td><strong>Пароль</strong>:</td>
+        <td>{pass}</td>
+        <td><strong>Місто</strong>:</td>
+        <td>{city}</td>
+    </tr>
+    <tr valign="top">
+        <td><strong>П.І.Б.</strong>:</td>
+        <td>{client_name}</td>
+        <td><strong>Адреса</strong>:</td>
+        <td>{address}</td>
+    </tr>
+    <tr>
+        <td><strong>Телефон</strong>:</td>
+        <td>{phone}</td>
+        <td><strong>IP-адресс:</strong></td>
+        <td>{remip}</td>
+    </tr>
+    <tr valign="top">
+        <td><strong>Вид діяльності</strong>:</td>
+        <td>{activity}</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr valign="top">
+        <td><strong>Лінк до швидкої авторизації</strong>:</td>
+        <td colspan="4"><a
+                href='http://www.zakaz.avtolider-ua.com/fauth.php?signup=auth_account&id={client_id}&code={flink}'
+                target="_blank">http://www.zakaz.avtolider-ua.com/fauth.php?signup=auth_account&id={client_id}&code={flink}</a>
+        </td>
+    </tr>
 </table>
-<table border="0" width="900"  cellpadding="1" cellspacing="5" id="busket">
-    <tr><td height="3" bgcolor="#999999"></td></tr>
-    <tr><td height="50">
-	Если у Вас возникли вопросы, будем рады на них ответить.<br />
-	-----<br />
-	С уважением,<br />
-	"Автолидер"<br />
-	<a href="http://www.zakaz.avtolider-ua.com">http://www.zakaz.avtolider-ua.com</a><br />
-    </td></tr>
+<table border="0" width="900" cellpadding="1" cellspacing="5" id="busket">
+    <tr>
+        <td height="3" bgcolor="#999999"></td>
+    </tr>
+    <tr>
+        <td height="50">
+            Є питаня стосовно замовлень? &nbsp<br/>
+            звоніть нам (+380382) 78 50 10 (багатоканальний) &nbsp<br/>
+            <img src="http://zakaz.avtolider-ua.com/tpl/ks_phone.png">(+38067) 383 33 12, 383 11 01, 383 34 77, 383 33
+            45 &nbsp<br/>
+            або за контактами вказаними на головній сторінці <a href="http://avtolider-ua.com">
+            http://avtolider-ua.com </a> в розділі <a
+                href="http://avtolider-ua.com/?dep=1&dep_up=0&dep_cur=6">Контакти</a>
+            &nbsp<br/>
+            -----<br/>
+            З Повагою,<br/>
+            "Автолідер"<br/>
+            <a href="http://www.zakaz.avtolider-ua.com">http://www.zakaz.avtolider-ua.com</a><br/>
+        </td>
+    </tr>
 </table>
