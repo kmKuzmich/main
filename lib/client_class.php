@@ -717,7 +717,7 @@ class client
             }
             if ($email == "" or $name == "" or $city == "" or $address == "" or $phone == "") {
                 $err = 1;
-                $answer = "Не заполнены обязательные поля!!!";
+                $answer = "Заповніть усі поля будь ласка!";
             }
             if ($email != "" and $name != "" and $city != "" and $address != "" and $phone != "") {
                 $remip = $_SERVER['REMOTE_ADDR'];
@@ -726,8 +726,9 @@ class client
                 $n = $odb->num_rows($r);
                 if ($n > 0) {
                     $err = 1;
-                    $answer = "Указаный вами EMAIL уже зарегистрирован в нашем интернет - магазине, воспользуйтесь восстановлением пароля кнопка - Забыли пароль";
+                    $answer = "Указаный вами EMAIL уже зарегистрирован в нашем интернет - магазине, воспользуйтесь восстановлением пароля - <a href=\"javascript:showForgetForm()\">Забыли пароль</a>";
                 }
+
                 if ($n == 0) {
 
                     include(RD . '/lib/pwd.gen.php');
@@ -742,9 +743,7 @@ class client
                     $code = odbc_result($r, "code") + 1;
                     $state_name = $this->get_table_caption("region_new", $state);
                     $city_name = $this->get_table_caption("city_new", $city);
-                    $odb->query_lider("INSERT INTO subconto(id, code, Name, email, pwd, country_id, region_id, city_id, Adres, phone, Remark, base_id, dateAdd, flag, place_id) 
-                                        VALUES('$mid', '$code', '$name', '$email', '$pass', '1', '100', '100', '$address', '$phone', '" . $this->get_table_caption("subconto_activity", $activity) . ", 
-                                        $state_name, $city_name', '1', '$date', '128', 23);"); //kuz 25-09-2014 // kuz 4-05-2015 flag=128 Это отметка онлайн(128)
+                    $odb->query_lider("INSERT INTO subconto(id, code, Name, email, pwd, country_id, region_id, city_id, Adres, phone, Remark, base_id, dateAdd, flag, place_id) VALUES('$mid', '$code', '$name', '$email', '$pass', '1', '100', '100', '$address', '$phone', '" . $this->get_table_caption("subconto_activity", $activity) . ",  $state_name, $city_name', '1', '$date', '128', 23);"); //kuz 25-09-2014 // kuz 4-05-2015 flag=128 Это отметка онлайн(128)
                     $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '1');");
                     $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '13');");
 
@@ -773,7 +772,7 @@ class client
                     $Mail->SendFromMail = "no-reply@avtolider-ua.com";
                     $Mail->Send();
                     $err = 0;
-                    $answer = "Вы успешно зарегистрировались";
+                    $answer = "Вітаємо Вас з успішною реєстрацією!";
                 }
             }
         }
