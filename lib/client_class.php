@@ -587,36 +587,31 @@ class client
             $id = odbc_result($r, "id");
             $Name = odbc_result($r, "Name");
             $pass = odbc_result($r, "pwd");
-            $message_htm = RD . " / tpl / message_pass_forgot . htm";
+            $message_htm = RD . "/tpl/message_pass_forgot.htm";
             if (file_exists("$message_htm")) {
                 $message = file_get_contents($message_htm);
             }
-            $message = str_replace("{
-        pass}", $pass, $message);
-            $message = str_replace("{
-        email}", $email, $message);
-            $message = str_replace("{
-        name}", $Name, $message);
-            $message = str_replace("{
-        client_id}", $id, $message);
-            $message = str_replace("{
-        flink}", $this->getFastSubcontoAuth($id), $message);
-            $message = str_replace("{
-        remip}", $_SERVER['REMOTE_ADDR'], $message);
+            $message = str_replace("{pass}", $pass, $message);
+            $message = str_replace("{email}", $email, $message);
+            $message = str_replace("{name}", $Name, $message);
+            $message = str_replace("{client_id}", $id, $message);
+            $message = str_replace("{flink}", $this->getFastSubcontoAuth($id), $message);
+            $message = str_replace("{remip}", $_SERVER['REMOTE_ADDR'], $message);
 
-            include_once RD . " / mail / sendmail .class.php";
+            include_once RD . "/mail/sendmail.class.php";
             $Mail = new sendmail();
             $Mail->mail_to = "$Name < $email>";
-            $Mail->subject = "Password recovery to zakaz . avtolider - ua . com";
+            $Mail->subject = "Password recovery to zakaz.avtolider-ua.com";
             $Mail->message = $message;
             $Mail->from_name = "Avtolider";
-            $Mail->SendFromMail = "no - reply@avtolider - ua . com";
+            $Mail->SendFromMail = "no-reply@avtolider-ua.com";
             $Mail->Send();
 
             $answer = "ok";
         }
         if ($answer == "") {
-            $answer = "Введенный адрес электронной почты не существует в системе";
+            $answer = "Данна адреса не існує в системі, спробуйте зарееєструватись ще раз або дзвоніть нам (+380382) 78 50 10 (багатоканальний)";
+//<img src=\"http://zakaz.avtolider-ua.com/tpl/ks_phone.png\">(+38067) 383 33 12, 383 11 01, 383 34 77, 383 33 45 &nbsp<br/> або за контактами вказаними на головній сторінці <a href=\"http://avtolider-ua.com\"> http://avtolider-ua.com </a> в розділі <ahref=\"http://avtolider-ua.com/?dep=1&dep_up=0&dep_cur=6\">Контакти</a>";
         }
         return $answer;
     }
@@ -726,8 +721,8 @@ class client
             }
             if ($email != "" and $name != "" and $city != "" and $address != "" and $phone != "") {
                 $remip = $_SERVER['REMOTE_ADDR'];
-                $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO inner join SUBCONTO_USERS on (subconto.id = subconto_users.SubConto_id) where subconto.email = '$email' or subconto_users.email = '$email' limit 1 offset 0;");
-//                $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO left outer join SUBCONTO_USERS on (subconto.id = subconto_users.SubConto_id) where subconto.email = '$email' or subconto_users.email = '$email' limit 1 offset 0;");
+//                $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO inner join SUBCONTO_USERS on (subconto.id = subconto_users.SubConto_id) where subconto.email = '$email' or subconto_users.email = '$email' limit 1 offset 0;");
+                $r = $odb->query_td("SELECT subconto.id FROM SUBCONTO left outer join SUBCONTO_USERS on (subconto.id = subconto_users.SubConto_id) where subconto.email = '$email' or subconto_users.email = '$email' limit 1 offset 0;");
                 $n = $odb->num_rows($r);
                 if ($n > 0) {
                     $err = 1;
@@ -811,40 +806,29 @@ class client
         $odb->query_lider("INSERT INTO subcontotypes(subconto_id, subcontotype_id) VALUES('$mid', '13');");
 
 
-        $message_htm = RD . " / tpl / message_registration . htm";
+        $message_htm = RD . "/tpl/message_registration.htm";
         if (file_exists("$message_htm")) {
             $message = file_get_contents($message_htm);
         }
-        $message = str_replace("{
-        pass}", $pass, $message);
-        $message = str_replace("{
-        email}", $email, $message);
-        $message = str_replace("{
-        client_name}", $name, $message);
-        $message = str_replace("{
-        state}", $this->get_table_caption("REGION_NEW", $state), $message);
-        $message = str_replace("{
-        city}", $this->get_table_caption("CITY_NEW", $city), $message);
-        $message = str_replace("{
-        address}", $address, $message);
-        $message = str_replace("{
-        phone}", $phone, $message);
-        $message = str_replace("{
-        activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
-        $message = str_replace("{
-        remip}", $_SERVER['REMOTE_ADDR'], $message);
-        $message = str_replace("{
-        flink}", $this->getFastSubcontoAuth($mid), $message);
-        $message = str_replace("{
-        client_id}", $mid, $message);
+        $message = str_replace("{pass}", $pass, $message);
+        $message = str_replace("{email}", $email, $message);
+        $message = str_replace("{client_name}", $name, $message);
+        $message = str_replace("{state}", $this->get_table_caption("REGION_NEW", $state), $message);
+        $message = str_replace("{city}", $this->get_table_caption("CITY_NEW", $city), $message);
+        $message = str_replace("{address}", $address, $message);
+        $message = str_replace("{phone}", $phone, $message);
+        $message = str_replace("{activity}", $this->get_table_caption("SUBCONTO_ACTIVITY", $activity), $message);
+        $message = str_replace("{remip}", $_SERVER['REMOTE_ADDR'], $message);
+        $message = str_replace("{flink}", $this->getFastSubcontoAuth($mid), $message);
+        $message = str_replace("{client_id}", $mid, $message);
 
-        include_once RD . " / mail / sendmail .class.php";
+        include_once RD . " /mail/sendmail.class.php";
         $Mail = new sendmail();
         $Mail->mail_to = "$name < $email>";
-        $Mail->subject = "Zakaz . avtolider - ua . com: Client registration";
+        $Mail->subject = "Zakaz.avtolider-ua.com: Client registration";
         $Mail->message = $message;
         $Mail->from_name = "Avtolider";
-        $Mail->SendFromMail = "no - reply@avtolider - ua . com";
+        $Mail->SendFromMail = "no-reply@avtolider-ua.com";
         $Mail->Send();
         return $mid;
     }
