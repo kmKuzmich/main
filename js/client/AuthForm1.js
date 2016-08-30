@@ -180,7 +180,7 @@ function SaveRegistration() {
         document.getElementById("RegError").innerHTML += "¬ведите ¬аш номер телефона<br>";
     }
     if (submit_email == 0) {
-        document.getElementById("RegError").innerHTML += "Email <" + email + "> введЄн некорректно, убедитесь что он не содержит скрытых (запрещЄнных) символов (попробуйте указать его вручную, а не через вставку и введЄн до конца наприрмер: mail@ukr.net)<br>";
+        document.getElementById("RegError").innerHTML += "Email <" + email + "> введЄн некорректно, убедитесь что он не содержит скрытых (запрещЄнных) символов (попробуйте указать его вручную, а не через вставку) и введЄн до конца наприрмер: mail@ukr.net)<br>";
     }
     if (submit_email == 1 && submit_name == 1 && submit_address == 1 && submit_phone == 1) {
         JsHttpRequest.query('content.php', {
