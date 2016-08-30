@@ -899,13 +899,13 @@ class client
         $r = $odb->query_td("select email from subconto where email = '$email' limit 1 offset 0;");
         $n = $odb->num_rows($r);
         if ($n > 0) {
-            return array(1, " <span style = 'color:red;'> Email принадлежит другому пользователю </span>");
+            return array(1, " <span style = 'color:red;'> Email '$email' принадлежит другому пользователю </span>");
         }
         if ($n == 0) {
 //            $r1 = $odb->query_td("select email from lider_subconto_users where email = '$email' limit 1 offset 0;");
 //            $n1 = $odb->num_rows($r1);
             if ($n > 0) {
-                return array(1, " <span style = 'color:red;'> Email принадлежит другому пользователю </span>");
+                return array(1, " <span style = 'color:red;'> Email '$email' принадлежит другому пользователю </span>");
             }
             if ($n == 0) {
                 return array(0, "<span style = 'color:green;'> Доступен для регистрации </span>");
