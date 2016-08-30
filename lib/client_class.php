@@ -611,7 +611,6 @@ class client
         }
         if ($answer == "") {
             $answer = "Данна адреса не існує в системі, спробуйте зарееєструватись ще раз або дзвоніть нам (+380382) 78 50 10 (багатоканальний)";
-//<img src=\"http://zakaz.avtolider-ua.com/tpl/ks_phone.png\">(+38067) 383 33 12, 383 11 01, 383 34 77, 383 33 45 &nbsp<br/> або за контактами вказаними на головній сторінці <a href=\"http://avtolider-ua.com\"> http://avtolider-ua.com </a> в розділі <ahref=\"http://avtolider-ua.com/?dep=1&dep_up=0&dep_cur=6\">Контакти</a>";
         }
         return $answer;
     }
