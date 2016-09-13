@@ -1254,7 +1254,7 @@ class catalogue
                         $where .= $to_tsquery . "')";
                     }
 //                echo $where ;
-                    $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
+                    $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 55;";
                     $r = $odb->query_td($query);
                     $n = $odb->num_rows($r);
                 }
@@ -1302,7 +1302,8 @@ class catalogue
                                         left outer join tdBrand B on B.brand_id=T.prod_id1
                                         left outer join Producent P on P.id=B.prod_id
                                         left outer join Item I on I.scode=T.code and I.prod_id=P.id
-                                        where I.id is not null;
+                                        where I.id is not null
+                                        limit 50;
                                         ";
                     $r = $odb->query_td($query);
                     $n = $odb->num_rows($r);
@@ -1332,7 +1333,7 @@ class catalogue
                     $where .= $to_tsquery . "')";
                 }
 //                        echo $where ;
-                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc;";
+                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 55;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
 
