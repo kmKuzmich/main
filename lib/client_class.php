@@ -794,7 +794,7 @@ class client
         $r = $odb->query_lider("SELECT max(id) as mid FROM subconto;");
         odbc_fetch_row($r);
         $mid = odbc_result($r, "mid") + 1;
-        $r = $odb->query_lider("SELECT max(code) as code FROM subconto;");
+        $r = $odb->query_lider("SELECT max(code) as code FROM klient;");
         odbc_fetch_row($r);
         $code = odbc_result($r, "code") + 1;
         $state_name = $this->get_table_caption("region_new", $state);

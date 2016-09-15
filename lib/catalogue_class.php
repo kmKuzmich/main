@@ -1303,7 +1303,7 @@ class catalogue
                                         left outer join Producent P on P.id=B.prod_id
                                         left outer join Item I on I.scode=T.code and I.prod_id=P.id
                                         where I.id is not null
-                                        limit 50;
+                                        limit 150;
                                         ";
                     $r = $odb->query_td($query);
                     $n = $odb->num_rows($r);
@@ -1333,7 +1333,7 @@ class catalogue
                     $where .= $to_tsquery . "')";
                 }
 //                        echo $where ;
-                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 55;";
+                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 155;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
 
