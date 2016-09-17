@@ -2526,7 +2526,7 @@ class catalogue
         if (file_exists("$form_htm")) {
             $block = file_get_contents($form_htm);
         }
-        $r = $odb->query_td("select * from catalogue_recomend order by id desc;");
+        $r = $odb->query_td("select * from catalogue_recomend order by id desc limit 100;");
         $list = "";
         while (odbc_fetch_row($r)) {
             $model = odbc_result($r, "model");
@@ -3300,7 +3300,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             break;
         }
         if ($td_ex == 0) {
-            $odb->query_td("insert into catalogue_recomend (model) values ('$item_id');");
+            $odb->query_td("insert into catalogue_recomend (model,id) values ('$item_id',(select (max(coalesce(id,0))+1) from catalogue_recomend))");
             $answer = "Товар добавлен в рекомендуемый!";
         }
         return $answer;
