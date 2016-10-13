@@ -65,24 +65,47 @@ having (isnull(sKm,0)>=1 or isnull(sExpr,0)>0)");
 
 // Этот запрос выбирает в #1 цены и выполняется в 3раза быстрее чем следующий 33сек vs 96сек, 
 // 20.04.2016 добавлена выборка из таблицы фиксированных цен PriceF
+// 13.10.2016 этот запрос учитывает фиксированные цены  PriceF и группу клиентскую
 
 $odb->query_lider("
 select I.id as item_id,
-     S.group_id,
-     GetPriceP(isnull(S.skid,0),isnull(S.profit,0),isnull(S.koef,0),
-       I.pricePro,I.aPricePro,
-        isnull( I.vpriceZak*V.kurs,I.priceZak,0),
-        I.priceZakV)  as priceA,
+        S.group_id,
+        GetPriceP(  isnull(S.skid,0), isnull(S.profit,0), isnull(S.koef,0), I.pricePro, I.aPricePro, isnull( I.vpriceZak*V.kurs,I.priceZak,0), I.priceZakV)  as priceA,
+        isnull((select L.price from PriceList as L join PriceListGroup as LK on LK.PriceList_id=L.PriceList_id  where L.item_id=I.id and LK.group_id=S.group_id ),0) as priceF,
+       (If PriceA>isnull(PriceF,0) then PriceA else PriceF endif) as price
+  into #1
+      from 
+       #s T  join Item I on I.id=T.item_id
+       join Discounts as S on S.discount_id=I.discount_id
+       join Valuta V on V.id=I.val_id
+      where 
+S.group_id in (180)");
+
+/*
+// 20.04.2016 добавлена выборка из таблицы фиксированных цен PriceF
+Этот запрос не учитывает группу скидок для фиксированных цен
+$odb->query_lider("
+select I.id as item_id,
+        S.group_id,
+        GetPriceP( isnull(S.skid,0),
+                isnull(S.profit,0),
+                isnull(S.koef,0),
+                I.pricePro,
+                I.aPricePro,
+                isnull( I.vpriceZak*V.kurs,I.priceZak,0),
+                I.priceZakV)  as priceA,
+        isnull((select L.price from PriceList as L join PriceListGroup as LK on LK.PriceList_id=L.PriceList_id  where L.item_id=I.id and LK.group_id=S.group_id ),0) as priceF,
         L.price as priceF,
-       (If PriceA>isnull(PriceF,0) then PriceA else PriceF endif) as price into #1
+        (If PriceA>isnull(PriceF,0) then PriceA else PriceF endif) as price into #1
       from #s T
-        left outer join Item I on I.id=T.item_id
-        left outer join Discounts as S on S.discount_id=I.discount_id
-        left outer join Valuta V on V.id=I.val_id
+        join Item I on I.id=T.item_id
+        join Discounts as S on S.discount_id=I.discount_id
+        join Valuta V on V.id=I.val_id
         left outer join PriceList as L on L.item_id=I.id
         left outer join PriceListGroup as LK on LK.PriceList_id=L.PriceList_id and LK.group_id=S.group_id
 		
       where S.group_id in (180)");
+*/
 
 
 /* Этот запрос выбирает в #1 цены и выполняется в 3раза дольше чем предыдущий 96сек vs 33сек
