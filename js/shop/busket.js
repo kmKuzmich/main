@@ -140,7 +140,9 @@ function minusOne(model){
 	var kol=document.getElementById("model_kol").value;
 	var summ=0;
 	kol--;
-	if (kol==0){kol=0;}
+	if (kol <= 1) {
+		kol = 1;
+	}
 	summ=roundNumber(price*kol,2);
 	document.getElementById("model_summ").innerHTML=summ;
 	document.getElementById("model_kol").value=kol;
@@ -163,7 +165,7 @@ function minusOneBusket(order_id,or_id){
 	var price=Number(document.getElementById("price"+or_id).value);
 	var kol=Number(document.getElementById("count"+or_id).innerHTML);
 	var summ=0; kol--;
-	if (kol>=0){
+	if (kol >= 1) {
 		summ=roundNumber(price*kol,2);
 		document.getElementById("count"+or_id).innerHTML=kol;
 		document.getElementById("summ"+or_id).value=summ;
