@@ -1326,9 +1326,8 @@ class catalogue
                         $to_tsquery .= "& $artan:*";
                     }
                 }
-
                 if (!empty($artn)) {
-                    $where = " and  to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
+                    $where = " and to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
                     $to_tsquery = substr($to_tsquery, 2);
                     $where .= $to_tsquery . "')";
                 }
@@ -1338,6 +1337,10 @@ class catalogue
                 $n = $odb->num_rows($r);
 
             }
+
+            /*
+             * 
+             */
 
 
             //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
