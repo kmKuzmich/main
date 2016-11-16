@@ -42,10 +42,10 @@ if (is_dir(RD . "/../uploads/images/lider/import")) {
                     $r1 = $odb->query_td("select max(id) as m_id from itemimages where item_id='$id' and istd=0;");
                     while (odbc_fetch_row($r1)) {
                         $max_id = odbc_result($r1, m_id);
-                        if ($max_id) {
+                        if ($max_id > 0) {
                             print " - ‘ото уже есть! id= $max_id";
                             $fex = 1;
-                            if (($rewrite == "1") & ($max_id)) {
+                            if ($rewrite == "1") {
                                 $odb->query_td("update itemimages set file_name='$image_name' where item_id=$id and id=$max_id");
                                 print " - ќбновл€ю последнее! ";
                                 rename(RD . "/../uploads/images/lider/import/$file", RD . "/../uploads/images/lider/$image_name");
