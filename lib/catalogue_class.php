@@ -1301,7 +1301,7 @@ class catalogue
                                               where scode=upper('$art1') ) T
                                         left outer join tdBrand B on B.brand_id=T.prod_id1
                                         left outer join Producent P on P.id=B.prod_id
-                                        left outer join Item I on I.scode=T.code and I.prod_id=P.id
+                                        left outer join Item I on upper(I.scode)=T.code and I.prod_id=P.id
                                         where I.id is not null
                                         limit 150;
                                         ";
