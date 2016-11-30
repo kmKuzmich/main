@@ -1744,7 +1744,7 @@ class catalogue
                 list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
                 $quant_r_img = "";
                 if ($quant_r > 0) {
-                    $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерв' title='Товар в резерв' align='middle' hspace='2'></a>";
+                    $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерве' title='Товар в резерве' align='middle' hspace='2'></a>";
                 }
                 $quant_p_img = "";
                 if ($quant_p > 0) {
@@ -1756,7 +1756,7 @@ class catalogue
                 if (($flag == 6) & ($quant > 0)) {
                     $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
                 }
-                if ($quant != "" or $quant_r != "" or $quant_p != "") {
+                if ($quant != "" or $quant1 != "" or $quant_r != "" or $quant_p != "") {
                     $add_busket = "<a href='javascript:show_busket_form(\"$id\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";
                     $dop_icon = "";
                     if ($dopsArr[$id] == 1) {
