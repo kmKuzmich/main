@@ -677,7 +677,7 @@ class catalogue
                     if ($flag == 7) {
                         $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='јкци€' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
                     }
-                    if (($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) {
+                    if ((($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) & ($quant > 0)) {
                         $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='—упер÷ена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
                     }
 
@@ -1283,7 +1283,7 @@ class catalogue
                             }
                 */
                 //               если результат =0 или поиск в техдоке и не по наименованию
-                if ((($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
+                if ((($n == 0) or ($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
                     $query = "select
                                                   I.id as id,
                                                   I.code,
@@ -1471,7 +1471,7 @@ class catalogue
                     if ($flag == 7) {
                         $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='јкци€' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
                     }
-                    if (($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) {
+                    if ((($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) & ($quant > 0)) {
                         $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='—упер÷ена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
                     }
 
@@ -1753,7 +1753,7 @@ class catalogue
                 if ($flag == 7) {
                     $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='јкци€' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
                 }
-                if ($flag == 6) {
+                if (($flag == 6) & ($quant > 0)) {
                     $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='—упер÷ена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
                 }
                 if ($quant != "" or $quant_r != "" or $quant_p != "") {
@@ -3758,7 +3758,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
             if ($flag == 7) {
                 $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='јкци€' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
             }
-            if ($flag == 6) {
+            if (($flag == 6) & ($quant > 0)) {
                 $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='—упер÷ена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
             }
             $list .= "
