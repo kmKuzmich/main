@@ -1770,7 +1770,7 @@ class catalogue
 							<td></td>
 							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
 							<td align='left'>$name</td>
-<!--							<td align='right'>$price</td>!-->
+							<td align='left'>$price</td>
 							<td align='right'>$price_client</td>
 							<td>$quant_p_img $quant_r_img <a href='javascript:showItemSklad(\"$id\")'>$quant</a></td>
 							<td><a href='javascript:showItemSklad(\"$id\")'>$quant1</a></td>
@@ -1786,7 +1786,7 @@ class catalogue
 							<td>$dop_icon</td>
 							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
 							<td align='left'>$name</td>
-<!--							<td align='right'>$price</td>!-->
+							<td align='left'>$price</td>
 							<td align='right'>$price_client</td>
 							<td>$quant_p_img $quant_r_img <a href='javascript:showItemSklad(\"$id\")'>$quant</a></td>
 							<td><a href='javascript:showItemSklad(\"$id\")' align='right'>$quant1</a></td>
@@ -1802,15 +1802,15 @@ class catalogue
             $list = "
 				<tr><td colspan=10 style='border-bottom:1px solid #8c8c8c; font-size:2px;' height=2>&nbsp;</td></tr>
 				<tr><td colspan=10>
-				<table width='90%' border=0 cellpadding=0 cellspacing=0 align='right'>
+				<table width='95%' border=0 cellpadding=0 cellspacing=0 align='right'>
 				<tr><td colspan=10 style='font-size:2px;' height=2>&nbsp;</td></tr>
 				<tr height='20'>
 					<td class='leftAnalog'></td>
 					<td class='Analog' width='25'></td>
 					<td class='Analog' width='100' align='center'><img src='/theme/images/analoArrow.png' border=0></td>
-					<td class='Analog' width='400'>Аналоги в наличии</td>
-					<!--<td class='Analog' width='60' align='right'>Цена</td>-->
-					<td class='Analog' width='80' align='right'>Цена2</td>
+					<td class='Analog' width='350'>Аналоги в наличии</td>
+					<td class='Analog' width='70' align='left'>Цена</td>
+					<td class='Analog' width='70' align='right'>Цена2</td>
 					<td class='Analog' width='80' align='right'>Склад</td>
 					<td class='Analog' width='80' align='right'>Экспр.</td>
 					<td class='Analog'>&nbsp;</td>
