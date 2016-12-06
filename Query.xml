@@ -1,0 +1,623 @@
+<?xml version="1.0" standalone="yes"  encoding="windows-1251"?>
+
+
+ <select id="showNews" resultType="list">
+    select id as "news_id",
+           to_char(coalesce(day,current_date),'dd-mm-yyyy') as "day",
+           caption "caption",
+           sDescr "sDescr",
+           image "image"
+     from News N
+     order by id desc
+     limit 10
+  </select>
+
+ <select id="showNewsW"  parameterType="news_id"  resultType="resultset">
+    select to_char(coalesce(day,current_date),'dd-mm-yyyy'),
+        caption,
+        sDescr,
+        image,
+        Descr
+    from dual
+       left outer join News N on N.id=${news_id}
+</select>
+
+ <select id="showAdvice" resultType="list">
+    select I.id "item_id",
+        cast(R.price as numeric(12,2)) as "price",
+        I.code "code",
+        I.Name ||' '|| coalesce(R.Remark,'') "sDescr",
+        'imgi/Image?item_id='||I.id "image"
+    from DocRow R
+        left outer join  Item I on I.id=R.item_id
+    where I.id is not null
+        and R.doc_id in (
+        select DS.doc_id
+        from DocStates DS
+        where DS.n=0 and state_id = 21
+        limit 10)
+    limit 10
+</select>
+
+<update  id="analogInit"  parameterType="item_id" >
+    select ListAnalog( cast( #{item_id} as integer) )
+</update>
+
+<select id="analogList" resultType="list" parameterType="isQ" >
+  select lev "lev",
+        I.code "code",
+        I.Name "name",
+        cast(I.pricePro as numeric(12,2)) "price1",
+        cast( GetPrice( I.id) as numeric(12,2)) "price",
+        case when GetQuant(I.id)>10 then '>10'
+            else GetQuant(I.id)||'' end as "q",
+        GetQuant(I.id,2) as "qR",
+        GetQuant(I.id,4) as "qI",
+        I.id as "item_id",
+        A.dop as "dop",
+        I.isImage "isImage",
+        case when I.flag in (1,2,3, 5,6,7)  and GetQuant(I.id)>0 then 1 else 0 end "isAction" 
+    from AnalogTemp A
+            left outer join Item I on A.item_id=I.id
+            left outer join Item I1 on A.item_id0=I1.id
+            left outer join Valuta V on V.id=I.val_id
+    where  lev!=0
+        and (#{isQ}=0
+            or coalesce(GetQuant(I.id),0)>0
+            or coalesce(GetQuant(I.id,4),0)>0 )
+       and not exists(select id from Producent P
+                       where P.id=I.prod_id and (P.flag &1)=1 )
+       and not exists(select id from Producent P
+                       where P.id=I1.prod_id and (P.flag & 1)=1 )
+    order by A.dop,A.lev,I.code
+</select>
+
+<select id="RequestInfo"  parameterType="doc_id" resultType="map" >
+        select max(D.num) "num",
+            to_char(max(D.day),'dd-mm-yyyy') "day", 
+            count(R.item_id) "n",
+            cast( sum(GetPrice(R.item_id)*R.quant) as numeric(12,2)) "sum"
+        from Doc1 D
+            left outer join DocRow1 R on R.doc_id=D.id
+        where D.id=cast(#{doc_id} as integer)
+        group by D.id
+</select>
+
+<update  id="webSearch"  parameterType="java.util.Map">
+    insert into webSearch(klient_id,nodeAddress,str,sstr,isCode,item_id,prod_id, prog_id )
+        values( cast( #{klient_id} as integer),#{adres},lower(#{search}),lower(REPLACE(#{search},' ','') ),#{isCode},
+          cast(#{item_id} as integer),cast(#{prod_id} as integer), 2)
+</update>
+
+<select id="priceListProd"  parameterType="java.util.Map" resultType="list" debug="true">
+   <if test="prod_id!=null" >
+    select P.id as "id", 
+           P.name as "name", 
+           P.description "descr", 
+           0 as "cnt"
+    from Producent P
+    where P.id = cast(#{prod_id} as smallint)
+   <else/>   
+    select I.prod_id "id", 
+           max(P.name) "name",
+           coalesce(max(P.description),min(I.name) ) "descr", 
+           count(*) "cnt"
+    from Item I 
+        left outer join Producent P on P.id=I.prod_id and coalesce( P.flag & 1,0)=0
+    where  P.id is not null 
+       and coalesce( I.sign & 2,0)=0
+                <if test="scode!=null">
+                    and I.scode like '${scode}%'
+                <elseif test="name!=null"/>
+           and  to_tsvector('english',I.code||' '||I.name) 
+            @@ to_tsquery('<foreach item="n" index="i" collection="name" separator = " &amp; ">${n}:*</foreach>')
+                <else/>
+                    and 1!=1
+                </if>
+                <if test="isQ">
+                        and GetQuant(I.id)>0
+                </if>
+                group by I.prod_id 
+          </if>
+        order by 2
+        limit 15
+</select>
+
+
+<select id="priceList"  parameterType="java.util.Map" resultType="list" >
+    select I.code as "code",
+            I.Name as "name",
+            I.price as "price",
+            I.price1 as "price1",
+            I.id "item_id",
+            case when I.flag in (1,2,3,5,6,7) and q>0 then 1 end "status",
+            case when q>10 then '>10'
+                 else q||'' end as "q",
+            qR as "qR",
+            qI as "qI",
+            case when qV>10 then '>10'
+                 else qV || '' end as "qV",
+            I.isImage "isImage",
+            I.prod_id as "prod_id"
+    from (select I.id,
+     I.code,
+     I.Name,
+    cast( GetPrice(I.id) as numeric(12,2))  as price,
+       cast(I.pricePro as numeric(12,2)) as price1,
+     (select sum(case
+          when S.kind=1 then S.quant
+          when S.kind=2  then -S.quant
+       end) 
+       from Store S
+           join placeSel PS on PS.place_id=S.SubConto_id
+       where S.kind in (1,2) and S.item_id=I.id 
+           and S.SubConto_id not in (select SubConto_id from SubContoTypes TS where TS.SubContoType_id=17)
+       )    
+       as q,
+     (select sum(case
+          when S.kind=1 then S.quant
+          when S.kind=2  then -S.quant
+       end) 
+       from Store S
+           join placeSel PS on PS.place_id=S.SubConto_id
+       where S.kind in (1,2) and S.item_id=I.id 
+           and S.SubConto_id in (select SubConto_id from SubContoTypes TS where TS.SubContoType_id=17)
+       )    
+       as qV,
+     (select sum(S.quant) 
+       from Store S
+           join placeSel PS on PS.place_id=S.SubConto_id
+       where S.kind in (2) and S.item_id=I.id 
+           and S.SubConto_id not in (select SubConto_id from SubContoTypes TS where TS.SubContoType_id=17)
+       )    
+       as qR,
+     (select sum(S.quant) 
+       from Store S
+           join placeSel PS on PS.place_id=S.SubConto_id
+       where S.kind in (4) and S.item_id=I.id 
+           and S.SubConto_id not in (select SubConto_id from SubContoTypes TS where TS.SubContoType_id=17)
+       )    
+       as qI,
+       I.isImage,
+       I.prod_id,
+       I.flag
+    from Item I
+         left outer join Valuta V on V.id=I.val_id
+     where 1=1
+        <if test="scode!=null">
+            and I.scode like '${scode}%'
+        <elseif test="name!=null"/>
+           and  to_tsvector('english',I.code||' '||I.name) 
+            @@ to_tsquery('<foreach item="n" index="i" collection="name" separator = " &amp; ">${n}:*</foreach>')
+        <else/>
+            and 1!=1
+        </if>
+        <if test="prod_id!=null">
+            and I.prod_id = cast(#{prod_id} as smallint)
+        </if>
+       ) I
+     where 1=1
+        <if test="isQ">
+                and (q>0 or qV>0)
+        </if>
+    <if test="code!=null ">
+        order by case when lower(I.code) like lower('${code}%') then 0 else 1 end
+    </if>
+    limit 21
+</select>
+
+<select id="priceListOld"  parameterType="java.util.Map" resultType="list" >
+                    <foreach item="n" index="i" collection="name">
+                        and I.name like lower('%${n}%')
+                    </foreach>
+    select I.code as "code",
+            I.Name as "name",
+            GetPrice(I.id) as "price",
+            cast(I.pricePro as numeric(12,2)) as "price1",
+            I.id "item_id",
+            case when I.flag in (1,2,3) then 1 end "status",
+            case when GetQuant(I.id)>10 then '>10'
+                 else GetQuant(I.id)||'' end as "q",
+            GetQuant(I.id,2) as "qR",
+            GetQuant(I.id,4) as "qI",
+            I.isImage "isImage",
+            I.prod_id as "prod_id"
+    from Item I
+    where I.id is not null
+    and coalesce( bitand(I.sign,2),0)=0
+    <if test="scode!=null">
+        and I.scode like lcase('${scode}%')
+    <elseif test="name!=null"/>
+        <foreach item="n" index="i" collection="name">
+            and sname like lcase('%${n}%')
+        </foreach>
+    <else/>
+        and 1!=1
+    </if>
+    <if test="prod_id!=null">
+            and I.prod_id = #{prod_id}
+    </if>
+    <if test="isQ">
+            and GetQuant(I.id)>0
+    </if>
+    <if test="code!=null">
+        order by case when lcase(I.code) like lcase('${code}%') then 0 else 1 end
+    </if>
+    limit 21
+</select>
+
+
+<select id="Request"  parameterType="doc_id" resultType="list">
+    select D.num as "num",
+        to_char(D.day,'dd-mm-yyyy') as "day",
+        R.item_id as "item_id",
+        I.code "code",
+        I.Name "name",
+        GetPrice(I.id) as "price",
+        cast(I.pricePro as numeric(12,2)) as "price1",
+        cast(R.quant as integer) "quant",
+        case when GetQ(I.id,1,0)>10 then '>10'
+            else GetQ(I.id,1,0)||'' end as "q",
+        GetQ(I.id,2,0) as "qR",
+        GetQ(I.id,4,0) as "qI",
+        GetQ(I.id,1,1) as "qV",
+        cast(R.quant*GetPrice(I.id) as numeric(12,2)) "sum",
+        D.KindDoc_id
+    from Doc1 D
+        left outer join Doc D1 on D1.id1=D.id and D1.KindDoc_id in (10,16,40)
+        left outer join DocRow1 R on R.doc_id=coalesce(D1.id,D.id)
+        left outer join Item I on I.id=R.item_id
+    where  D.id=cast(#{doc_id} as integer)
+</select>
+
+ <select id="DocKred" parameterType="klient_id" resultType="list" >
+  select *
+     from (select KD.Name "docName",
+    D.Num "num",
+    to_char(D.Day,'dd-mm-yyyy') "day",
+   case when D.sDay < current_date then 'style="color:red"' else '' end as "clr",
+   coalesce(to_char(D.sDay,'dd-mm-yyyy'),'') "sday",
+   cast(case
+        when coalesce(D.val_id,0)!=978 then
+           case when D.KindDoc_id in (3,27,20,28) then D.sum
+               else -D.sum end
+        end as numeric(12,2)) as "s",
+   cast(case
+          when coalesce(D.val_id,0)!=978 then
+            case when D.KindDoc_id in (3,27,20,28) then D.sum-coalesce(D.osum,0)
+            else -D.osum end
+        end as numeric(12,2)) as "os",
+  cast(case when coalesce(D.val_id,0)=978 then
+           case when D.KindDoc_id in (3,27,20,28) then D.vsum
+           else -D.vsum
+           end
+        end as numeric(12,2)) as "vs",
+   cast(case
+         when coalesce(D.val_id,0)=978 then
+          case when D.KindDoc_id in (3,27,20,28) then D.vsum-coalesce(D.vosum,0)
+          else -D.vosum
+          end
+         end as numeric(12,2)) as "vos",
+    D.id "doc_id",
+   D.SubConto_id
+ from DocOpen O
+        left outer join Doc D on D.id=O.doc_id
+        join KindDoc KD on KD.id=D.KindDoc_id
+  where O.SubConto_id=cast(${klient_id}  as numeric(12,2)) ) T
+  where "os"!=0 or "vos"!=0
+ order by "day","num"
+ </select>
+
+ <select id="Requests" parameterType="klient_id" resultType="list">
+  select to_char(D.Day,'dd-mm-yyyy') "day",
+     D.Num "num",
+     coalesce(cast(D.sum as numeric(12,2)) ||'','') "sum",
+     coalesce(D.Remark,'') "remark",
+     coalesce(DS.Name,'') "state",
+     D.id "doc_id"
+  from Doc D
+    left outer join DocStates DSS
+       on D.id=DSS.doc_id and DSS.n=0
+    left outer join DocState DS on DS.id=DSS.state_id
+   where D.SubConto_id=cast(#{klient_id} as integer)
+     and D.KindDoc_id=12
+   order by D.Day desc,D.Num desc
+   limit 20
+ </select>
+
+<select id="Document" parameterType="doc_id" resultType="list" >
+  select I.code "code",
+  I.Name "name",
+  cast(GetVSum(R.vprice,R.price,
+        (case when coalesce(D.val_id,0)=978 then 1 else 0 end) ) as numeric(12,2)) "price",
+  R.quant "quant",
+  coalesce(R.quant1,0) "quant1",
+  coalesce(R.Remark,'') "remark",
+  D.KindDoc_id as "KindDoc_id"
+ from Doc D
+   left outer join Doc D1 on D1.id1=D.id and D1.KindDoc_id in (10,16,40)
+   left outer join DocRow R on R.doc_id=coalesce(D1.id,D.id)
+   left outer join Item I on I.id=R.item_id
+ where  D.id=cast(#{doc_id} as integer)
+    and R.doc_id is not null
+</select>
+
+
+<select id="Login" parameterType="java.util.Map" resultType="resultset" >
+    select S.id "klient_id",
+        (select sum(D.Sum-coalesce(D.oSum,0))
+            from Doc as D join KindDocProperty as P
+                on D.KindDoc_id=P.KindDoc_id and P.Property_id=3
+            where D.SubConto_id=S.id and D.sDay < current_date + 1
+            and coalesce(D.opl,0)!=1  and coalesce(D.sum,0)!=0) as "dolgS",
+        (select max(D.id)
+        from Doc D
+            join DocStates DS
+            on DS.doc_id=D.id
+                and DS.state_id in (18) and n=0
+            where D.KindDoc_id=12
+                and D.opl=2
+                and D.SubConto_id=S.id) as "doc_id",
+          A.SubConto_id as "adr"
+        from SubConto S
+            left outer join AdresDeliv A on A.SubConto_id=S.id
+                   and A.carrier_id is not null
+                   and length(A.phone)>5
+                   and length(A.adres)>10
+        where lower(S.email)=lower(#{uid})
+        and lower(S.pwd)=lower(#{pwd})
+        limit 1
+</select>
+
+
+<select id="klientInfo" parameterType="klient_id" resultType="map" debug="true">
+  select S.code "code",
+        S.Name "name",
+        sd as "sd",
+        sdE as "sdE",
+        sDolg as "sDolg",
+        sDolgE as "sDolgE",
+        coalesce(K.sumKr,0) "sumKr",
+        coalesce(K.tmKr,0) "tmKr"
+  from SubConto S left outer join SubContoKred K on S.id=K.SubConto_id,
+           ( select
+                   cast(sum(case when coalesce(D.val_id,980)=980 then
+                         case when DP.Property_id=3
+                             then D.sum-coalesce(D.osum,0)
+                          else -D.osum end
+                         end) as numeric(12,2)) as sd,
+                   cast(sum( case when coalesce(D.val_id,980)=978 then
+                                case when DP.Property_id=3
+                                        then D.vsum-coalesce(D.vosum,0)
+                                      else -D.vosum end
+                         end) as numeric(12,2)) as sdE,
+
+                   cast(sum(case when  coalesce(D.val_id,980)=980 then
+                             case when D.sDay < current_date    and DP.Property_id=3
+                                 then D.sum-coalesce(D.osum,0)
+                                when DP.Property_id is null then  -D.osum end
+                             end) as numeric(12,2)) as sDolg,
+                   cast(sum(case when coalesce(D.val_id,980)=978 then
+                             case when D.sDay  < current_date and DP.Property_id=3
+                               then D.vsum-coalesce(D.vosum,0)
+                             when DP.Property_id is null then -D.vosum end
+                            end) as numeric(12,2)) as sDolgE
+          from DocOpen O
+              left outer join Doc D on D.id=O.doc_id
+              left outer join KindDocProperty DP on D.KindDoc_id=DP.KindDoc_id and DP.Property_id=3
+          where O.SubConto_id=cast( #{klient_id} as integer)
+      ) T
+      where S.id=cast( #{klient_id} as integer)
+</select>
+
+<select  id="addReqRow"  parameterType="java.util.Map" resultType="map">
+    select AddReqRow2( cast(#{doc_id} as integer), 
+                       cast(#{item_id} as integer), 
+                       cast(#{quant}  as integer) )
+</select>
+
+<select  id="addReqRowRes" parameterType="java.util.Map" resultType="map">
+    select id  as "doc_id"
+    from Doc1 D
+    where base_id=@base_id and KindDoc_id=12 and user_id=-1 and opl=2
+        and SubConto_id=(select klient_id from Local)
+        and exists(select * from DocStates DS where DS.doc_id=D.id and DS.n=0 and DS.state_id=18)
+    order by id desc
+    limit 1
+</select>
+
+<select id="reqEdit"   parameterType="java.util.Map" resultType="map" debug="true">
+    select I.code "code",
+        I.Name "name",
+        cast(I.pricePro as numeric(12,2)) "price1",
+        GetPrice(I.id) "price",
+        cast(coalesce(R.quant,1) as integer) "quant"
+    from Item I
+        left outer join DocRow1 R on R.doc_id=cast(#{doc_id} as integer) and I.id=R.item_id
+    where I.id=cast(#{item_id} as integer)
+    limit 1
+</select>
+
+<select id="itemQuant" parameterType="item_id" resultType="list" debug="true">
+select max(S.SubConto_id) post_id,
+      max(case
+        when P.code=54 then 'Львов'
+        when P.code in (35,56) then coalesce(P.Remark,'Киев доставка +1 день, под заказ, без возврата!')
+        when P.code = 60 then coalesce(P.Remark,'БОШ-5 г.Киев доставка до 5 раб.дней')
+        when P.code = 59 then coalesce(P.Remark,'БОШ-2 г.Киев доставка до 14 раб.дней')
+        else 'Хмельницкий'
+          end) as "placeName",
+        cast( max(I.pricePro) as numeric(12,2))  as "price1",
+        min(case
+            when P.code in (54,35,56,59,60) then 1
+             else 0
+             end) as "isSel",
+        case when sum(q)>10 then '>10'
+             else sum(q)||'' end as "q",
+         case when sum(qR)>10 then '>10'
+             else sum(qR)||'' end "qR",
+         case when sum(qI)>10 then '>10'
+             else sum(qI)||'' end "qI"
+  from (select S.SubConto_id,
+               S.inc_id,
+               S.item_id,
+                cast( sum(case
+                    when S.kind=1 then S.quant
+                    when S.kind=2 then -S.quant
+                end) as numeric(12,2)) as q,
+                cast( sum(case
+                        when S.kind=2 then S.quant end) as numeric(12,2)) as qR,
+                cast( sum(case
+                        when S.kind=4 then S.quant end) as numeric(12,2)) as qI
+        from Store S
+        where S.kind in (1,2,4)
+            and S.item_id= cast(#{item_id} as integer)
+            and S.SubConto_id in (select place_id from placeSel)
+        group by S.SubConto_id,S.inc_id,S.item_id) S
+            join Place P on S.SubConto_id=P.id
+            left outer join Doc D on S.inc_id=D.id
+            left outer join SubConto Ps on D.SubConto_id1=Ps.id
+            left outer join Item I on S.item_id=I.id
+  group by (case
+        when P.code=54 then 'Львов'
+        when P.code in (35,56) then coalesce(P.Remark,'Киев доставка +1 день, под заказ, без возврата!')
+        when P.code = 60 then coalesce(P.Remark,'БОШ-5 г.Киев доставка до 5 раб.дней')
+        when P.code = 59 then coalesce(P.Remark,'БОШ-2 г.Киев доставка до 14 раб.дней')
+              else 'Хмельницкий'
+              end)
+</select>
+
+<select  id="lostPassword" parameterType="email" resultType="list">
+select coalesce((select Value from GlobalVar where name='@mailHost'),
+                                            'avtolider-ua.com')  as "host",
+        coalesce( (select Value from GlobalVar where name='@mailFrom'),
+                                            'AKuzichkin@avtolider-ua.com')  as "from",
+        S.Name as "name",
+        S.pwd as "pwd"
+from SubConto S
+where S.email=#{email}
+  and S.pwd is not null
+</select>
+<select id="mailSetting" resultType="map">
+    select
+        coalesce((select Value from GlobalVar where name='@mailHost'),
+                    'avtolider-ua.com')  "host",
+        coalesce((select Value from GlobalVar where name='@mailFrom'),
+                    'AKuzichkin@avtolider-ua.com') as "from"
+    from dual
+</select>
+
+
+<update id="copyRequest">
+    begin atomic
+        update Doc D
+        set D.SubConto_id=T.SubConto_id,
+            D.day=now(),
+            D.user_id=T.user_id,
+            D.KindDoc_id=T.KindDoc_id,
+            D.num=T.num,
+            D.base_id=T.base_id,
+            D.Remark=T.Remark,
+            D.opl=0,
+            D.list_id=23,
+            D.place_id=(select place_id from SubConto S where S.id=T.SubConto_id)
+        from Doc D join #d T on D.id=T.id;
+
+        insert into Doc(id,SubConto_id,day,user_id,KindDoc_id,num,base_id,opl,Remark,place_id)
+        select        id,SubConto_id,now(),user_id,KindDoc_id,num,base_id,0,Remark,
+            (select place_id from SubConto S where S.id=T.SubConto_id)
+        from #d T
+        where not exists(select * from Doc D where D.id=T.id);
+
+        delete from DocStates
+        where doc_id in (select id from #d)
+            and n=0;
+
+        insert into DocStates(doc_id,n,tm,state_id,user_id)
+        select id,0,now(),16,-1
+        from #d
+        where not exists(select * from DocStates DS where DS.doc_id=#d.id and DS.n=0);
+
+        insert into DocStates(doc_id,n,tm,state_id,user_id)
+        select doc_id,1+n,tm,state_id,user_id
+        from #ds
+        where not exists(select * from DocStates DS where DS.doc_id=#ds.doc_id and DS.n=#ds.n+1);
+
+        update DocRow R
+        set R.item_id=T.item_id,
+            R.price=T.price,
+            R.price1=T.price1,
+            R.vprice=T.vprice,
+            R.vprice1=T.vprice1,
+            R.quant=T.quant
+        from DocRow R join #r T on R.doc_id=T.doc_id and R.id=T.id;
+
+        insert into DocRow(doc_id,id,item_id, price, price1,vprice,vprice1,quant)
+        select doc_id,id,item_id, price, price1,vprice,vprice1,quant
+        from #r
+        where not exists(select * from DocRow R where R.doc_id=#r.doc_id and R.id=#r.id);
+    end
+</update>
+
+<select id="RequestMail"  parameterType="doc_id" resultType="resultset">
+    select mailHost "mailHost",
+        mailFrom||','||K.email as "mailTo",
+        mailFrom as "mailFrom",
+    KD.Name||' № '||D.Num as "docName",
+    K.code "code",
+    K.Name "name",
+    coalesce(D.Remark,'') as "Remark",
+    '\n № пп \t Код \t К-во \t Цена \t Наименование\n' "header",
+    row_number() over(order by R.id)||'\t'||I.code||'\t'||R.quant||'\t'||
+    cast(GetPrice(R.item_id) as numeric(12,2))||'\t'||I.Name as "row",
+    '\n\t\t\tВсего :\t'||(select sum(R.quant*GetPrice(R.item_id)) as allSum
+        from DocRow1 R where R.doc_id=D.id) as "footer"
+    from Doc1 D
+        left outer join KindDoc KD on KD.id=D.KindDoc_id
+        left outer join SubConto K on D.SubConto_id=K.id
+        left outer join DocRow1 R on R.doc_id=D.id
+        left outer join Item I on I.id=R.item_id,
+       (select Value as mailHost from GlobalVar where name='@mailHost') MH,
+       (select Value as mailFrom from GlobalVar where name='@mailFrom') MF
+    where D.id=${doc_id}
+        and mailHost>'' and strpos('@',mailFrom)>0
+    order by R.id
+</select>
+
+<select  id="AdresDeliv" parameterType="klient_id" resultType="resultset">
+   select
+       n,
+       S.code,
+       S.name,
+       S.email,
+       A.Adres,
+       A.Phone,
+       A.contPerson,
+       A.Remark,
+       A.carrier_id,
+       A.typePay_id,
+    to_char( GetCarrierTm(A.carrier_id),'dd-mm-yyyy hh:mm') "dt"
+   from SubConto S
+      left outer join AdresDeliv A on A.SubConto_id=S.id
+      left outer join Carrier C on C.id=A.carrier_id
+   where S.id=cast(#{klient_id} as integer)
+   limit 1
+</select>
+
+<select  id="Carrier" resultType="list">
+  select id "id",
+        Name "name",
+     to_char( GetCarrierTm(id),'dd-mm-yyyy hh:mm')  "dt"
+  from Carrier
+ union all select 0,'',''       
+  order by 2
+</select>
+
+<select  id="TypePay" resultType="list">
+  select id "id",
+        Name "name"
+  from TypePay
+ union all select 0,''
+  order by 2
+</select>
+
