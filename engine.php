@@ -55,6 +55,16 @@ if ($_REQUEST["w"] == "setMessageAnswer") {
 }
 
 
+
+if ($_REQUEST["w"] == "showAkbRange") {
+    list($content, $filters) = $cat->catalogue_akb_find( $_REQUEST["cols"], $_REQUEST["vals"], $_REQUEST["page"]);
+    $GLOBALS['_RESULT'] = array("content" => $content, 'filters' => $filters);
+}
+if ($_REQUEST["w"] == "showAkbItemInfo") {$GLOBALS['_RESULT'] = array("content" => $cat->showAkbItemInfo($_REQUEST["item_id"]));}
+if ($_REQUEST["w"] == "show_busket_akb_form") {$GLOBALS['_RESULT'] = array("content" => $shop->show_busket_akb_form($_REQUEST["model"]));}
+
+
+
 if ($_REQUEST["w"] == "showMasloCategory") {
     $GLOBALS['_RESULT'] = array("content" => $cat->show_maslo_category_filter($_REQUEST["category"]));
 }

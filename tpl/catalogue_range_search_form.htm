@@ -21,17 +21,17 @@
         <!-- <li><input type="checkbox" id="by_sklad" name="by_sklad" value="1">  - поиск по наличию !-->
         <input type="hidden" id="by_sklad" name="by_sklad" value="1">
         <li style="margin-top:2px;">
-            <input type="checkbox" id="by_name" name="by_name" hidden="" value="1"> <label for="by_name">поиск по
-            наименованию</label>
+            <input type="checkbox" id="by_name" name="by_name" hidden="" value="1"> <label for="by_name">поиск по наименованию</label>
     </ul>
 
-    <a href="?dep=23&dep_up=0&dep_cur=3&w=maslo"> <img src="/images/lineykamasel.png"></a>
-    <input type="button" class="bsearch" value="Подбор масел и автохимии"
-           onclick="location.href='?dep=23&dep_up=0&dep_cur=3&w=maslo'" style="width:98%; margin-top:15px;">
+    <a href="?dep=23&dep_up=0&dep_cur=3&w=maslo"> <img src="images/lineykamasel.png"></a>
+    <input type="button" class="bsearch" value="Подбор масел и автохимии" onclick="location.href='?dep=23&dep_up=0&dep_cur=3&w=maslo'" style="width:98%; margin-top:15px;"><br>
+	<a href="?dep=23&dep_up=0&dep_cur=3&w=akb"> <img src="images/lineykaakb.png"></a>
+    <input type="button" class="bsearch" value="Подбор АКБ" onclick="location.href='?dep=23&dep_up=0&dep_cur=3&w=akb'" style="width:98%; margin-top:15px;">
 </div>
-<!--
-<div id="search_art">
-<h3 align="center" style="color:#000; margin:5;">ПОДБОР ЗАПЧАСТЕЙ<br /> ПО АВТОМОБИЛЮ</h3>
+
+<div id="search_art"><br>
+<h3 align="center" style="color:#000; margin:5; margin-top:20px;"><br>ПОДБОР ЗАПЧАСТЕЙ<br /> ПО АВТОМОБИЛЮ</h3>
 <div style="height:18px; margin-top:5px;">Производитель:</div>
 <span id="manufacture_place">{manufacture}</span>
 <div style="height:18px; margin-top:5px;">Модель:</div>
@@ -40,9 +40,8 @@
 <span id="modification_place">{modification}</span><br />
 <input type="button" id="tecsearch" name="search" class="bsearch" value="Начать подбор" onclick="loadTecGroupsList()" style="width:120px; margin-top:10px;">
 </div>
-!-->
+
 <br/><br/><br/>
 <div id="search_art">
 {actionBonus}
 </div>
-

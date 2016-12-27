@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="windows-1251">
+    <title>Основной шаблон HTML-страницы</title>
+</head>
+<body>
+    <div class="messageBox" style="width:350px; height:250px;">
+    <strong>Персональне повідомлення ({data}):</strong>
+    <div style="min-height:20px; font-weight:bold; height:auto;">{subject}</div>
+    <div style="min-height:100px;">{message}</div>
+    <div class="mbuttons">
+        <input type="button" class="bsearch" value="Прочитано" onclick="setMessageStatus('{id}',28);" style="width:100px; margin-left:50px;" />
+        <input type="button" class="bsearch" value="Не интерестно" onclick="setMessageStatus('{id}',30);" style="width:120px; margin-left:50px; background-color:#b0b0b0;" />
+    </div>
+    <div style="margin-top:40px; padding-top:20px; width:500px; border-top:2px solid #b0b0b0;">
+    <div class="caption"><strong>Написать ответ:</strong></div>
+    <div>
+    <textarea style="width:400px; height:40px; float:left;" id="messageAnswerId"></textarea>
+    <input type="button" class="bsearch" value="Ответить" onclick="setMessageAnswer('{id}');" style="width:90px; height:35px; margin-left:10px;" />
+    </div>
+    </div>
+    </div>
+
+</body>
+</html>

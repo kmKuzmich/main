@@ -1,11 +1,7 @@
 <?php
-
-class odb
-{
+class odb{
     var $query = '';
-
-    function query_lider($query)
-    {
+    function query_lider($query){
         if (!$this->db_lider) {
             $this->connect_lider();
         }
@@ -17,9 +13,7 @@ class odb
         }
         return $this->r_lider;
     }
-
-    function connect_lider($try = 0)
-    {
+    function connect_lider($try = 0){
         $this->auth_lider_param();
         $this->db_lider = odbc_pconnect($this->source_lider, $this->username_lider, $this->password_lider);
         if (!$this->db_lider) {
@@ -29,16 +23,12 @@ class odb
             }
         }
     }
-
-    function auth_lider_param()
-    {
+    function auth_lider_param(){
         $this->source_lider = 'Lider';
         $this->username_lider = 'dba';
         $this->password_lider = 'sql';
     }
-
-    function query_td($query)
-    {
+    function query_td($query){
         $this->connect_td();
         if (!$this->db_td) {
             $this->connect_td();
@@ -59,8 +49,7 @@ class odb
     /**
      * @function connect_td() иниициализация соединения PG
      */
-    function connect_td()
-    {
+    function connect_td(){
         $this->auth_td_param();
         //* This condition checks if connection is already established, to init some additional tables such as AnalogTemp, and other variables in PostGres
         if (!$this->db_td) {
@@ -70,13 +59,10 @@ class odb
         }
 
     }
-
-
     /**
      *Инициализация обязательных таблиц для работы с базой в  PG
      */
-    function query_init()
-    {
+    function query_init(){
         /**проверяем существует ли таблица - возможно соединение уже установлено, и таблицы и переменные созданы
          * встроенная функция PG = ifTableExists возвращает 't' если таблица существует иначе 'f'
          */

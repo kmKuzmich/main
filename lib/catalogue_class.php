@@ -1,36 +1,14 @@
 <?php
 
-class catalogue
-{
+class catalogue{
     public $remips = array('78.152.169.139', '192.168.0.241', '192.168.0.240', '192.168.0.23', '192.168.0.22', '192.168.0.25', '192.168.0.39', '192.168.0.40', '192.168.0.41', '192.168.0.177', '192.168.0.175');
-
-    function get_view_type()
-    {
-        if ($_POST["view_type"] == "") {
-            return $_GET["view_type"];
-        }
-        if ($_POST["view_type"] != "") {
-            return $_POST["view_type"];
-        }
+    function get_view_type(){
+        if ($_POST["view_type"] == "") {return $_GET["view_type"];}
+        if ($_POST["view_type"] != "") {return $_POST["view_type"];}
     }
-
-    function get_order_by()
-    {
-        if ($_POST["order_by"] == "") {
-            return $_GET["order_by"];
-        }
-        if ($_POST["order_by"] != "") {
-            return $_POST["order_by"];
-        }
-    }
-
-    function show_brand_list()
-    {
-        $db = new db;
-        $slave = new slave;
-        $dep = "23";
-        $r = $db->query_lider("select * from catalogue where visible='1' order by caption_ru,id asc;");
-        $n = $db->num_rows($r);
+    function get_order_by(){if ($_POST["order_by"] == "") {return $_GET["order_by"];}if ($_POST["order_by"] != "") {return $_POST["order_by"];}}
+    function show_brand_list(){$db = new db; $slave = new slave; $dep = "23";
+        $r = $db->query_lider("select * from catalogue where visible='1' order by caption_ru,id asc;");$n = $db->num_rows($r);
         $list = "<div style='margin-left:2px;'>";
         for ($i = 1; $i <= $n; $i++) {
             $id = $db->result($r, $i - 1, "id");
@@ -40,18 +18,9 @@ class catalogue
         $list .= "</div>";
         return $list;
     }
-
-    function showBrandInfo($id)
-    {
-        $db = new db;
-        $slave = new slave;
-        $dep = "23";
-        $form_htm = RD . "/tpl/catalogue_brand_info.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
-        $r = $db->query_lider("select * from catalogue where id='$id' limit 1;");
-        $n = $db->num_rows($r);
+    function showBrandInfo($id){$db = new db;$slave = new slave;$dep = "23";
+        $form_htm = RD . "/tpl/catalogue_brand_info.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
+        $r = $db->query_lider("select * from catalogue where id='$id' limit 1;");$n = $db->num_rows($r);
         if ($n == 1) {
             $id = $db->result($r, 0, "id");
             $caption = $db->result($r, 0, "caption_ru");
@@ -70,23 +39,15 @@ class catalogue
         }
         return $form;
     }
-
-    function show_sto_form()
-    {
-        $form_htm = RD . "/tpl/catalogue_sto_form.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
+    function show_sto_form(){
+        $form_htm = RD . "/tpl/catalogue_sto_form.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
         $form = str_replace("{sto_producent}", $this->show_sto_producent(0), $form);
         $form = str_replace("{sto_category}", $this->show_sto_category(0), $form);
         $form = str_replace("{sto_otype}", $this->show_sto_otype(0, 0), $form);
         return $form;
     }
 
-    function show_sto_producent($producent = 0)
-    {
-        $odb = new odb;
-        $slave = new slave;
+    function show_sto_producent($producent = 0){$odb = new odb;$slave = new slave;
         $menu .= "<select name='sto_producent' id='sto_producent' size=1 class='tec' onchange='loadStoCategory(this[this.selectedIndex].value);'><option value='0'> --- выберете производителя ---  </option>";
         $r = $odb->query_td("select * from sto_producent where ison='1' order by id asc");
         while (odbc_fetch_row($r)) {
@@ -158,188 +119,59 @@ class catalogue
         return $form;
     }
 
-    function show_tecdoc_manufacture($manuf)
-    {
-        $slave = new slave;
-        $odb = new odb;
-        if ($manuf == "") {
-            $manuf = $_GET["manufacture"];
+    function show_tecdoc_manufacture($manuf){ $slave = new slave; $db_td = new db_ltd;
+        if ($manuf == "") { $manuf = $_GET["manufacture"]; } if ($manuf == "") { $manuf = 0; }
+        $menu .= "<select name='manufacture' id='manufacture' size=1 class='tec' onchange='loadTecModelList(this[this.selectedIndex].value,0);'><option value='0'> -- Выберете из списка --</option>";
+        $r = $db_td->query("SELECT * FROM cat_alt_manufacturer where isVisible='1' and isDeleted='0';");$n=$db_td->num_rows($r);
+        for ($i=1;$i<=$n;$i++) { 
+            $id = $db_td->result($r, $i-1,"id_mfa");
+            $caption = $db_td->result($r, $i-1,"name");
+            if ($manuf == $id) {$menu .= "<option value='$id' selected='selected'>$caption</option>";}
+            if ($manuf != $id) {$menu .= "<option value='$id'>$caption</option>";}
         }
-        if ($manuf == "") {
-            $manuf = 0;
+        $menu.="</select>";
+        return $menu;
+    }
+    function decodeLan($caption){
+        $caption = str_replace("Л", "E", $caption);
+        return $caption;
+    }
+    function loadTecModelList($manufacture, $mdl){$slave = new slave; $db_td = new db_ltd;
+        $menu = "<select name='model' id='model' size=1 class='tec' onchange='loadTecModificationList($manufacture,this[this.selectedIndex].value,0);'><option value='0'> -- Выберете из списка --</option>";
+        $r = $db_td->query("SELECT * FROM cat_alt_models where id_mfa='$manufacture' and isVisible='1' and isDeleted='0' order by name asc;");$n=$db_td->num_rows($r);
+        for ($i=1;$i<=$n;$i++) { 
+            $id = $db_td->result($r, $i-1,"id_mod");
+			$caption = $db_td->result($r, $i-1,"name");
+            $year_from = $db_td->result($r, $i-1,"datestart");
+            $year_to = $db_td->result($r, $i-1,"dateend");
+            if ($mdl == $id) {$menu .= "<option value='$id' selected='selected'>$caption ($year_from - $year_to)</option>";}
+            if ($mdl != $id) {$menu .= "<option value='$id'>$caption ($year_from - $year_to)</option>";}
         }
-        $menu .= "<select name='manufacture' id='manufacture' size=1 class='tec' onchange='loadTecModelList(this[this.selectedIndex].value,0);'>";
-        $f = fopen(RD . "/lib/tecdoc_journal/manufacture.txt", 'r');
-        $data = '';
-        $curData = date("Y-m-d");
-        while (!feof($f)) {
-            $data = fread($f, 2048);
-        }
-        fclose($f);
-        if ($data != $curData) {
-            $odb->query_td("delete from tecdoc_manufacture;");
-            $f = fopen(RD . "/lib/tecdoc_journal/manufacture.txt", 'w');
-            fwrite($f, $curData, strlen($curData));
-            fclose($f);
-        }
-        $r = $odb->query_td("select * from tecdoc_manufacture;");
-        $i = 0;
-        while (odbc_fetch_row($r)) {
-            $i += 1;
-            $id = odbc_result($r, "id");
-            $caption = odbc_result($r, "caption");
-            if ($manuf == $id) {
-                $menu .= "<option value='$id' selected='selected'>$caption</option>";
-            }
-            if ($manuf != $id) {
-                $menu .= "<option value='$id'>$caption</option>";
-            }
-        }
-        if ($i == 0) {
-            $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-            try {
-                $result = $soap->getVehicleManufacturers3(array(
-                    'provider' => PROVIDER_ID, 'lang' => 'ru', 'country' => 'RU', 'carType' => 1, 'countriesCarSelection' => 'RU', 'countryGroupFlag' => false, 'evalFavor' => false,
-                ));
-                $result = $result->data->array;
-
-                foreach ($result as $item) {
-                    $id = $item->manuId;
-                    $caption = $this->decodeLan(iconv("utf-8", "windows-1251", $item->manuName));
-
-                    $odb->query_td("insert into tecdoc_manufacture (id,caption) values ($id,'$caption');");
-
-                    if ($manuf == $id) {
-                        $menu .= "<option value='$id' selected='selected'>$caption</option>";
-                    }
-                    if ($manuf != $id) {
-                        $menu .= "<option value='$id'>$caption</option>";
-                    }
-                }
-
-            } catch (SoapFault $e) {
-            }
-        }
+        $menu.="</select>";
+        return $menu;
+    }
+    function tecdoc_data_split($data){
+        return substr($data, 0, 4) . "/" . substr($data, 4, 2);
+    }
+    function loadTecModificationList($manufacture, $model, $mdf){$slave = new slave; $db_td = new db_ltd;
+		$menu = "<select name='modification' id='modification' size=1 class='tec'><option value='0'> -- Выберете из списка --</option>";
+        $r = $db_td->query("SELECT * FROM `cat_alt_types` WHERE id_mod='$model' and id_mfa='$manufacture' and isVisible='1' and isDeleted='0' order by name asc;");$n=$db_td->num_rows($r);
+        for ($i=1;$i<=$n;$i++) { 
+            $id = $db_td->result($r, $i-1,"id_typ");
+			$caption = $db_td->result($r, $i-1,"name");
+            $powerHpFrom = $db_td->result($r, $i-1,"KwHp");
+            $fuel = $db_td->result($r, $i-1,"fuel");
+			$engines= $db_td->result($r, $i-1,"Engines");
+			
+			if ($mdf == $id) {$menu .= "<option value='$id' selected='selected'>$caption $fuel ($powerHpFrom л.с.) $engines</option>";}
+			if ($mdf != $id) {$menu .= "<option value='$id'>$caption  $fuel ($powerHpFrom л.с.) $engines</option>";}
+		}
         $menu .= "</select>";
         return $menu;
     }
 
-    function decodeLan($caption)
-    {
-        $caption = str_replace("Л", "E", $caption);
-        return $caption;
-    }
-
-    function loadTecModelList($manufacture, $mdl)
-    {
-        $slave = new slave;
-        $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-        try {
-            $result = $soap->getVehicleModels3(array(
-                'provider' => PROVIDER_ID, 'lang' => 'ru', 'country' => 'RU', 'carType' => 1, 'countriesCarSelection' => 'RU', 'countryGroupFlag' => false, 'evalFavor' => false,
-                'favouredList' => 1, 'manuId' => $manufacture,
-            ));
-            $result = $result->data->array;
-            if ($mdl == "") {
-                $mdl = $_GET["model"];
-            }
-            if ($mdl == "") {
-                $mdl = 0;
-            }
-            $menu = "<select name='model' id='model' size=1 class='tec' onchange='loadTecModificationList($manufacture,this[this.selectedIndex].value,0);'>";
-            foreach ($result as $item) {
-                $id = $item->modelId;
-                $caption = iconv("utf-8", "windows-1251", $item->modelname);
-                $year_from = $this->tecdoc_data_split($item->yearOfConstrFrom);
-                $year_to = $this->tecdoc_data_split($item->yearOfConstrTo);
-                if ($mdl == $id) {
-                    $menu .= "<option value='$id' selected='selected'>$caption ($year_from - $year_to)</option>";
-                }
-                if ($mdl != $id) {
-                    $menu .= "<option value='$id'>$caption ($year_from - $year_to)</option>";
-                }
-            }
-            $menu .= "</select>";
-        } catch (SoapFault $e) {
-        }
-        return $menu;
-    }
-
-    function tecdoc_data_split($data)
-    {
-        return substr($data, 0, 4) . "/" . substr($data, 4, 2);
-    }
-
-    function loadTecModificationList($manufacture, $model, $mdf)
-    {
-        $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-        try {
-            $result = $soap->getVehicleSimplifiedSelection3(array(
-                'provider' => PROVIDER_ID,
-                'modId' => $model,
-                'manuId' => $manufacture,
-                'linked' => false,
-                'lang' => 'ru',
-                'favouredList' => 0,
-                'countryGroupFlag' => false,
-                'countriesCarSelection' => 'ru',
-                'countriesUserSetting' => 'ru',
-                'carType' => 1,
-
-            ));
-            $is_empty = $result->data->empty;
-            if ($is_empty == true) {
-                $result = $soap->getVehicleSimplifiedSelection3(array(
-                    'provider' => PROVIDER_ID,
-                    'modId' => $model,
-                    'manuId' => $manufacture,
-                    'linked' => false,
-                    'lang' => 'ru',
-                    'favouredList' => 1,
-                    'countryGroupFlag' => false,
-                    'countriesCarSelection' => 'ru',
-                    'countriesUserSetting' => 'ru',
-                    'carType' => 1,));
-            }
-            $result = $result->data->array;
-            if ($mdf == "") {
-                $mdf = $_GET["modification"];
-            }
-            if ($mdf == "") {
-                $mdf = 0;
-            }
-            $menu = "<select name='modification' id='modification' size=1 class='tec'>";
-            foreach ($result as $item) {
-                $id = $item->carDetails->carId;
-                $caption = iconv("utf-8", "windows-1251", $item->carDetails->carName);
-                $powerHpFrom = iconv("utf-8", "windows-1251", $item->carDetails->powerHpFrom);
-                $motor = $item->motorCodes->array[0]->motorCode;
-                if ($mdf == $id) {
-                    $menu .= "<option value='$id' selected='selected'>$caption ($powerHpFrom л.с.) $motor</option>";
-                }
-                if ($mdf != $id) {
-                    $menu .= "<option value='$id'>$caption ($powerHpFrom л.с.) $motor</option>";
-                }
-            }
-            $menu .= "</select>";
-        } catch (SoapFault $e) {
-        }
-        return $menu;
-    }
-
-    function show_range()
-    {
-        session_start();
-        $dep = "23";
-        require_once(RD . "/lib/news_class.php");
-        $news = new news;
-        $slave = new slave;
-        $dep = $slave->get_dep();
-        $w = $slave->get_w();
-        $form_htm = RD . "/tpl/catalogue_range.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
+    function show_range(){session_start();$dep = "23"; require_once(RD . "/lib/news_class.php");$news = new news; $slave = new slave; $dep = $slave->get_dep(); $w = $slave->get_w();
+		$form_htm = RD . "/tpl/catalogue_range.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
 
 
         if ($dep == 24 or $dep == 23) {
@@ -369,6 +201,11 @@ class catalogue
             list($maslo_range, $filters) = $this->catalogue_maslo_find($_REQUEST["category"], $_REQUEST["cols"], $_REQUEST["vals"], $_REQUEST["page"]);
             $form = str_replace("{range_list}", $maslo_range, $form);
         }
+		if ($w == "akb") {
+            $form = str_replace("{range_search_form}", $this->show_akb_search_form(), $form);
+            list($akb_range, $filters) = $this->catalogue_akb_find($_REQUEST["category"], $_REQUEST["cols"], $_REQUEST["vals"], $_REQUEST["page"]);
+            $form = str_replace("{range_list}", $akb_range, $form);
+        }
 
         $form = str_replace("{range_search_form}", $this->show_range_search_form(), $form);
         $w = $slave->get_w();
@@ -395,45 +232,260 @@ class catalogue
             }
         }
         if ($w == "") {
-            if (($_GET["manufacture"] == "" and $_GET["model"] == "" and $_GET["modification"] == "") and ($_GET["category"] == "")) {
+            if (($_REQUEST["manufacture"] == "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "") and ($_REQUEST["category"] == "")) {
                 $form = str_replace("{range_list}", $this->catalogue_art_find($_POST["art"], $_POST["by_code"], $_POST["by_sklad"], $_POST["by_name"], $_POST["by_producent"]), $form);
             }
-            if (($_GET["manufacture"] == "" and $_GET["model"] == "" and $_GET["modification"] == "") and ($_GET["category"] != "")) {
+            if (($_REQUEST["manufacture"] == "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "") and ($_REQUEST["category"] != "")) {
                 $form = str_replace("{range_list}", $this->catalogue_sto_items($_POST["producent"], $_POST["category"], $_POST["otype"]), $form);
             }
-            if ($_GET["manufacture"] != "" and $_GET["model"] != "" and $_GET["modification"] != "") {
-                $form = str_replace("{range_list}", $this->loadTecGroupsList($_GET["manufacture"], $_GET["model"], $_GET["modification"]), $form);
+            if ($_REQUEST["manufacture"] != "" and $_REQUEST["model"] != "" and $_REQUEST["modification"] != "") {
+                $form = str_replace("{range_list}", $this->loadTecGroupsList($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"]), $form);
             }
         }
         $form = str_replace("{bottom_side}", $news->show_range_news(), $form);
         $form = str_replace("{recomend_list}", $this->showRecomendList(""), $form);
         return $form;
     }
-
-    function show_maslo_search_form()
-    {
-        $form_htm = RD . "/tpl/catalogue_maslo_search_form.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
+	
+	function show_akb_search_form(){
+        $form_htm = RD . "/tpl/catalogue_akb_search_form.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
+        $form = str_replace("{filters}", $this->show_akb_filters("", "", "", ""), $form);
+        return $form;
+    }
+	
+	function show_akb_filters($cols, $vals, $used_id){$db = new db;$form = ""; 
+        $r = $db->query_lider("select * from items_akb_param where 1 order by lenta,id asc;"); $n = $db->num_rows($r);
+        $colums = array();
+        for ($i = 1; $i <= $n; $i++) {
+            $col_name = $db->result($r, $i - 1, "col_name");
+            array_push($colums, $col_name);
         }
+        $form .= $this->show_akb_filter_items($cols, $vals, $used_id, $colums);
+        return $form;
+    }
+	
+	function show_akb_filter_items($cols, $vals, $used_id, $colums){$db = new db;$form = "";
+        if ($cols != "") {$checked = array();$cols2 = array();
+            foreach ($cols as $col) {
+                if ($col != "") {
+                    array_push($cols2, $col);
+                    foreach ($vals as $val) {
+                        if ($val != "") {
+                            $vval = explode("=", $val);
+                            if ($val == ($col . "=" . $vval[1])) {
+                                array_push($checked, $vval[1]);
+                            }
+                        }
+                    }
+                }
+            }
+            $cols = $cols2;
+        }
+        $enable = array();
+        $where = "";$enable2 = "";
+        if (is_array($used_id)) {
+            foreach ($used_id as $use_id) {$where .= " lider_id='$use_id' or";}
+        }
+        if ($where != "") { $where = " and (" . substr($where, 0, -3) . ")"; }
+        foreach ($colums as $colum) {
+            $r = $db->query_lider("select `$colum` from `items_akb` where 1 $where;"); $n = $db->num_rows($r);
+            for ($i = 1; $i <= $n; $i++) {
+                $vl = $db->result($r, $i - 1, "$colum");
+                if ((!in_array($vl, $enable)) && $vl != "") {
+                    array_push($enable, $vl);
+                    $enable2 .= "$vl,";
+                }
+            }
+        }
+        $r1 = $db->query_lider("select * from items_akb_param where 1 order by lenta,id asc;");$n1 = $db->num_rows($r1);
+        for ($j = 1; $j <= $n1; $j++) {
+            $col_name = $db->result($r1, $j - 1, "col_name");
+            $col_caption = $db->result($r1, $j - 1, "col_caption");
+            $form .= "<div style='height:18px; margin-top:10px; text-transform:uppercase; line-height:11px;'>$col_caption:</div>"; $cn = array();
+            $r = $db->query_lider("select `$col_name` from `items_akb` group by `$col_name` order by `$col_name` asc;"); $n = $db->num_rows($r);$k = 0;
+            for ($i = 1; $i <= $n; $i++) {
+                $value = $db->result($r,$i-1,"$col_name");
+                if ($value != "") {$k += 1;$cn[$k] = $value;}
+            }
+            array_multisort($cn, SORT_NUMERIC, SORT_ASC, $cn, SORT_STRING, SORT_ASC);
+            for ($i = 0; $i <= $k - 1; $i++) {
+                $value = $cn[$i];
+                $link = " onclick='setAkbFilter(this,\"$col_name\",\"$value\")'";
+                $ich = "";
+//                Проверяем, если массив $checked не пустой и строка активирована (checked) то назначить строке $ich значение checked
+                if ((is_array($checked)) && in_array($value, $checked)) {$ich = " checked";}
+                $dis = "";
+                if (!in_array($value, $enable) && (count($cols) > 1 || $j > 1)) {$dis = " disabled";$link = "";}
+                $form .= "<input type='checkbox' id='fil$i" . "_$col_name' value='$value' hidden  $ich $dis $link><label for='fil$i" . "_$col_name'><span $link>$value</span></label><br>";
+            }
 
+        }
+        $form .= "<div style='height:18px; margin-top:10px; text-transform:uppercase; line-height:11px;'>&nbsp;</div>";
+        return $form;
+    }
+	
+	 function catalogue_akb_find($cols, $vals, $page){session_start(); $db = new db; $odb = new odb; $slave = new slave; $dep = "23";
+        if ($cols != "") {$where = "";
+            foreach ($cols as $col) {
+                if ($col != "") {
+                    $where2 = " and (";
+                    foreach ($vals as $val) {
+                        if ($val != "") {
+                            $vval = explode("=", $val);
+                            if ($val == ($col . "=" . $vval[1])) {
+                                $where2 .= " `$col` = '$vval[1]' or";
+                            }
+                        }
+                    }
+                    if ((substr($where2, -3, 3)) == " or") {
+                        $where2 = substr($where2, 0, -3) . ")";
+                    }
+                    if ($where2 == " and (") {
+                        $where2 = "";
+                    }
+                    $where .= $where2;
+                }
+            }
+        }
+        $form_htm = RD . "/tpl/catalogue_akb_items_list.htm";if (file_exists("$form_htm")) { $form = file_get_contents($form_htm);}
+        if ($where == "") { $where = " and 1";}
+        list($navigation, $limit) = $this->catalogue_akb_page_navigation($where, $page);
+        if ($where != "") {
+            $r = $db->query_lider("select lider_id from `items_akb` where 1 $where $limit;"); $n = $db->num_rows($r); $where_lider = "";
+            if ($n > 0) {
+                for ($i = 1; $i <= $n; $i++) {
+                    $lider_id = $db->result($r, $i - 1, "lider_id");
+                    $where_lider .= " id='$lider_id' or";
+                }
+                $where_lider = substr($where_lider, 0, -3);
+            }
+        }
+        $form = str_replace("{navigation}", $navigation, $form);
+        $exclude = " prod_id not in (1134)";
+        $used_id = array();
+        if ($where_lider != "") {
+            $query = "select * from item where $exclude and ($where_lider);";
+            $r = $odb->query_td($query);$list = "";  $kt = -1; $k = 0;  $i = 0;
+            while (odbc_fetch_row($r)) {
+                $prm = 0;
+                $price1 = "";
+                $i++;
+                $icon_flag = "";
+                $id = odbc_result($r, "id");
+                //наличие
+                list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
+                if ($quant != "") {
+                    array_push($used_id, $id);
+
+                    $code = odbc_result($r, "code");
+                    $scode = odbc_result($r, "scode");
+                    $name = odbc_result($r, "name");
+                    $name = wordwrap($name, 45, '&shy;', true);
+                    $flag = odbc_result($r, "flag");
+                    $help = odbc_result($r, "help");
+
+                    $prod_id = odbc_result($r, "prod_id");
+                    $proda[$i] = $prod_id;
+                    $valuta_id = odbc_result($r, "val_id");
+                    $discount_id = odbc_result($r, "discount_id");
+                    $price = $slave->tomoney(odbc_result($r, "pricePro"));
+                    //Цена клиента
+                    //					$price_client=$this->getItemPrice($id,$valuta_id,$price,$discount_id);
+                    $price_client = $this->getItemPrice2($id);
+
+                    $isImage = odbc_result($r, "isImage");
+                    $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
+
+                    $quant_r_img = "";
+                    if ($quant_r > 0) {
+                        $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерв' title='Товар в резерв' align='middle' hspace='2'></a>";
+                    }
+                    $quant_p_img = "";
+                    if ($quant_p > 0) {
+                        $quant_p_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_prihod_icon.png' border='0' alt='Товар в приходе' title='Товар в приходе' align='middle' hspace='2'></a>";
+                    }
+                    $add_busket = "";//if ($price>0 and $quant!=""){$add_busket="<a href='javascript:show_busket_form(\"$id\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";}
+                    $add_busket = "<a href='javascript:show_busket_akb_form(\"$id\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";
+                    if ($flag == 7) {
+                        $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='Акция' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
+                    }
+                    if ((($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) & ($quant > 0)) {
+                        $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
+                    }
+
+                    $k++;
+                    $list .= "<tr><td colspan=10 style='border-bottom:1px solid #8c8c8c; font-size:2px;' height=2>&nbsp;</td></tr>
+					<tr align='center' id='ri$id' height='25'>
+						<td>$icon_flag</td>
+						<td>$code</td>
+						<td align='left'><a href='javascript:showAkbItemInfo(\"$id\");'>$name</a></td>
+						<td align='right'>$price</td>
+						<td align='right'>$price_client</td>
+						<td>$quant_p_img $quant_r_img <a href='javascript:showItemSklad(\"$id\")'>$quant</a></td>
+						<td><a href='javascript:showItemSklad(\"$id\")'>$quant1</a></td>
+						<td>$img</td>
+						<td><a href='javascript:showItemAnalog(\"$id\")'><img src='theme/images/analog_icon.jpg' border='0' alt='Аналоги' title='Аналоги'></a></td>
+						<td>$add_busket</td>
+					</tr>
+				";
+                }
+            }
+        }
+        if ($i == 0) {
+            $list .= "
+			<tr align='center' height='40' >
+				<td colspan=20><h3>Уточните поиск</h3></td>
+			</tr>
+			<tr><td colspan=10 style='border-bottom:1px solid #58585a; font-size:2px;' height=2>&nbsp;</td></tr>";
+        }
+        $form = str_replace("{items_list}", $list, $form);
+        return array($form, $this->show_akb_filters($cols, $vals, $used_id));
+    }
+	function catalogue_akb_page_navigation($where, $page) {$db = new db;$slave = new slave;$kpp = 100;
+        if ($page == "") {  $page = $_GET["page"]; if ($page == "") { $page = "1"; } }
+        $cur_page = $page;
+        $limit = " limit $kpp offset 0";
+        if ($where != "") {
+            $r = $db->query_lider("select count(lider_id) as kol from `items_akb` where 1 $where;"); $kol = $db->result($r, 0, "kol");
+            $kol_p = ceil($kol / $kpp);
+            if ($kol_p > 1) {
+                if ($kol_p <= 10) {
+                    for ($i = 1; $i <= $kol_p; $i++) {
+                        if ($i != $cur_page) {$menu .= "<div class='navb'><a href='#mspage=$i' onClick='setAkbFilter(\"\",\"\",\"\",\"$i\")'>$i</a></div>";}
+                        if ($i == $cur_page) {$menu .= "<div class='nvds'>$i</div>";}
+                    }
+                }
+                if ($kol_p > 10) {
+                    $start = $cur_page - 5;$end = $cur_page + 5;
+                    if ($start < 1) {$end = $end - $start;$start = 1;}
+                    if ($end > $cur_page + 5) {$end = $cur_page + 5;}
+                    if ($end < 10) {$end = 10;}
+                    if ($end > $kol_p) {$end = $kol_p;}
+                    for ($i = $start; $i <= $end; $i++) {
+                        if ($i != $cur_page) {$menu .= "<div class='navb'><a href='#fpage=$i' onClick='setAkbFilter(\"\",\"\",\"\",\"$i\")'>$i</a></div>";}
+                        if ($i == $cur_page) {$menu .= "<div class='nvds'>$i</div>";}
+                    }
+                }
+                $menu = "<div class='navb' style='width:30px;'><a href='#mspage=all' onClick='setAkbFilter(\"\",\"\",\"\",\"all\")'>Все</a></div>" . $menu;
+            }
+            $pg = $page;if ($pg == "") {$pg = "0";}
+            $pg -= 1;
+            if ($pg < 0) {$pg = 0;}
+            $lmt = $kpp * $pg;
+            if ($page == "all") {$limit = " limit $kol";}
+            if ($page != "all") {$limit = " limit $kpp offset $lmt";}
+        }
+        return array($menu, $limit);
+    }
+	
+    function show_maslo_search_form(){
+        $form_htm = RD . "/tpl/catalogue_maslo_search_form.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
         $form = str_replace("{category_filter}", $this->show_maslo_category_filter(""), $form);
         $form = str_replace("{filters}", $this->show_maslo_filters("", "", "", ""), $form);
-//		$form=str_replace("{search_example}",$this->getRandomItem(),$form);
-//		$form=str_replace("{manufacture}",$this->show_tecdoc_manufacture($_GET["manufacture"]),$form);
-//		$form=str_replace("{model}",$this->loadTecModelList($_GET["manufacture"],""),$form);
-//		$form=str_replace("{modification}",$this->loadTecModificationList($_GET["manufacture"],$_GET["model"],""),$form);
-//		$form=str_replace("{actionBonus}",$this->showActionBonus(),$form);
         return $form;
     }
 
-    function show_maslo_category_filter($category)
-    {
-        $db = new db;
-        $form = "";
-        if ($category == "") {
-            $category = $this->getDefaultMasloCategory();
-        }
+    function show_maslo_category_filter($category){$db = new db;$form = "";if ($category == "") {$category = $this->getDefaultMasloCategory();}
         //items_name таблица из базы MySQL отвечает за...
         $r = $db->query_lider("select * from items_name order by id asc;");
         $n = $db->num_rows($r);
@@ -454,27 +506,14 @@ class catalogue
      * @return int|string
      *  возвращает имя file категории масел по умолчанию например t1,t2,t3,t4 и т.д. описаны в методике загрузки каталога масел.
      */
-    function getDefaultMasloCategory()
-    {
-        $db = new db;
-        $cat = 0;
-        $r = $db->query_lider("select file from items_name where def='1' order by id asc limit 1;");
-        $n = $db->num_rows($r);
-        if ($n == 1) {
-            $cat = $db->result($r, 0, "file");
-        }
+    function getDefaultMasloCategory(){ $db = new db;   $cat = 0;
+        $r = $db->query_lider("select file from items_name where def='1' order by id asc limit 1;");$n = $db->num_rows($r);
+        if ($n == 1) { $cat = $db->result($r, 0, "file");}
         return $cat;
     }
 
-    function show_maslo_filters($category, $cols, $vals, $used_id)
-    {
-        $db = new db;
-        $form = "";
-        if ($category == "") {
-            $category = $this->getDefaultMasloCategory();
-        }
-        $r = $db->query_lider("select * from items_param where t_name='$category' order by lenta,id asc;");
-        $n = $db->num_rows($r);
+    function show_maslo_filters($category, $cols, $vals, $used_id){$db = new db;$form = ""; if ($category == "") {$category = $this->getDefaultMasloCategory();}
+        $r = $db->query_lider("select * from items_param where t_name='$category' order by lenta,id asc;"); $n = $db->num_rows($r);
         $colums = array();
         for ($i = 1; $i <= $n; $i++) {
             $col_name = $db->result($r, $i - 1, "col_name");
@@ -484,14 +523,8 @@ class catalogue
         return $form;
     }
 
-    function show_maslo_filter_items($category, $cols, $vals, $used_id, $colums)
-    {
-        $db = new db;
-        $form = "";
-
-        if ($cols != "") {
-            $checked = array();
-            $cols2 = array();
+    function show_maslo_filter_items($category, $cols, $vals, $used_id, $colums){$db = new db;$form = "";
+        if ($cols != "") {$checked = array();$cols2 = array();
             foreach ($cols as $col) {
                 if ($col != "") {
                     array_push($cols2, $col);
@@ -507,21 +540,14 @@ class catalogue
             }
             $cols = $cols2;
         }
-
         $enable = array();
-        $where = "";
-        $enable2 = "";
+        $where = "";$enable2 = "";
         if (is_array($used_id)) {
-            foreach ($used_id as $use_id) {
-                $where .= " lider_id='$use_id' or";
-            }
+            foreach ($used_id as $use_id) {$where .= " lider_id='$use_id' or";}
         }
-        if ($where != "") {
-            $where = " and (" . substr($where, 0, -3) . ")";
-        }
+        if ($where != "") { $where = " and (" . substr($where, 0, -3) . ")"; }
         foreach ($colums as $colum) {
-            $r = $db->query_lider("select `$colum` from `items_$category` where 1 $where;");
-            $n = $db->num_rows($r);
+            $r = $db->query_lider("select `$colum` from `items_$category` where 1 $where;"); $n = $db->num_rows($r);
             for ($i = 1; $i <= $n; $i++) {
                 $vl = $db->result($r, $i - 1, "$colum");
                 if ((!in_array($vl, $enable)) && $vl != "") {
@@ -530,17 +556,13 @@ class catalogue
                 }
             }
         }
-        $r1 = $db->query_lider("select * from items_param where t_name='$category' order by lenta,id asc;");
-        $n1 = $db->num_rows($r1);
+        $r1 = $db->query_lider("select * from items_param where t_name='$category' order by lenta,id asc;");$n1 = $db->num_rows($r1);
         for ($j = 1; $j <= $n1; $j++) {
             $col_name = $db->result($r1, $j - 1, "col_name");
             $col_caption = $db->result($r1, $j - 1, "col_caption");
             $form .= "<div style='height:18px; margin-top:10px; text-transform:uppercase; line-height:11px;'>$col_caption:</div>";
-
-
             $cn = array();
-            $r = $db->query_lider("select `$col_name` from `items_$category` group by `$col_name` order by `$col_name` asc;");
-            $n = $db->num_rows($r);
+            $r = $db->query_lider("select `$col_name` from `items_$category` group by `$col_name` order by `$col_name` asc;"); $n = $db->num_rows($r);
             $k = 0;
             for ($i = 1; $i <= $n; $i++) {
                 $value = $db->result($r, $i - 1, "$col_name");
@@ -571,16 +593,8 @@ class catalogue
         return $form;
     }
 
-    function catalogue_maslo_find($category, $cols, $vals, $page)
-    {
-        session_start();
-        $db = new db;
-        $odb = new odb;
-        $slave = new slave;
-        $dep = "23";
-        if ($category == "") {
-            $category = $this->getDefaultMasloCategory();
-        }
+    function catalogue_maslo_find($category, $cols, $vals, $page){session_start(); $db = new db; $odb = new odb; $slave = new slave; $dep = "23";
+        if ($category == "") {$category = $this->getDefaultMasloCategory();}
         if ($cols != "") {
             $where = "";
             foreach ($cols as $col) {
@@ -604,17 +618,11 @@ class catalogue
                 }
             }
         }
-        $form_htm = RD . "/tpl/catalogue_maslo_items_list.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
-        if ($where == "") {
-            $where = " and 1";
-        }
+        $form_htm = RD . "/tpl/catalogue_maslo_items_list.htm";if (file_exists("$form_htm")) { $form = file_get_contents($form_htm);}
+        if ($where == "") { $where = " and 1";}
         list($navigation, $limit) = $this->catalogue_maslo_page_navigation($category, $where, $page);
         if ($where != "") {
-            $r = $db->query_lider("select lider_id from `items_$category` where 1 $where $limit;");
-            $n = $db->num_rows($r);
+            $r = $db->query_lider("select lider_id from `items_$category` where 1 $where $limit;"); $n = $db->num_rows($r);
             $where_lider = "";
             if ($n > 0) {
                 for ($i = 1; $i <= $n; $i++) {
@@ -630,10 +638,7 @@ class catalogue
         if ($where_lider != "") {
             $query = "select * from item where $exclude and ($where_lider);";
             $r = $odb->query_td($query);
-            $list = "";
-            $kt = -1;
-            $k = 0;
-            $i = 0;
+            $list = "";  $kt = -1; $k = 0;  $i = 0;
             while (odbc_fetch_row($r)) {
                 $prm = 0;
                 $price1 = "";
@@ -710,17 +715,8 @@ class catalogue
         return array($form, $this->show_maslo_filters($category, $cols, $vals, $used_id));
     }
 
-    function catalogue_maslo_page_navigation($category, $where, $page)
-    {
-        $db = new db;
-        $slave = new slave;
-        $kpp = 100;
-        if ($page == "") {
-            $page = $_GET["page"];
-            if ($page == "") {
-                $page = "1";
-            }
-        }
+    function catalogue_maslo_page_navigation($category, $where, $page) {$db = new db;$slave = new slave;$kpp = 100;
+        if ($page == "") {  $page = $_GET["page"]; if ($page == "") { $page = "1"; } }
         $cur_page = $page;
         $limit = " limit $kpp offset 0";
         if ($where != "") {
@@ -730,12 +726,8 @@ class catalogue
             if ($kol_p > 1) {
                 if ($kol_p <= 10) {
                     for ($i = 1; $i <= $kol_p; $i++) {
-                        if ($i != $cur_page) {
-                            $menu .= "<div class='navb'><a href='#mspage=$i' onClick='setCategoryFilter(\"\",\"$category\",\"\",\"\",\"$i\")'>$i</a></div>";
-                        }
-                        if ($i == $cur_page) {
-                            $menu .= "<div class='nvds'>$i</div>";
-                        }
+                        if ($i != $cur_page) {$menu .= "<div class='navb'><a href='#mspage=$i' onClick='setCategoryFilter(\"\",\"$category\",\"\",\"\",\"$i\")'>$i</a></div>";}
+                        if ($i == $cur_page) {$menu .= "<div class='nvds'>$i</div>";}
                     }
                 }
                 if ($kol_p > 10) {
@@ -979,9 +971,9 @@ class catalogue
             $form = file_get_contents($form_htm);
         }
 //		$form=str_replace("{search_example}",$this->getRandomItem(),$form);
-//		$form=str_replace("{manufacture}",$this->show_tecdoc_manufacture($_GET["manufacture"]),$form);
-//		$form=str_replace("{model}",$this->loadTecModelList($_GET["manufacture"],""),$form);
-//		$form=str_replace("{modification}",$this->loadTecModificationList($_GET["manufacture"],$_GET["model"],""),$form);
+		$form=str_replace("{manufacture}",$this->show_tecdoc_manufacture($_REQUEST["manufacture"]),$form);
+		$form=str_replace("{model}",$this->loadTecModelList($_REQUEST["manufacture"],$_REQUEST["model"]),$form);
+		$form=str_replace("{modification}",$this->loadTecModificationList($_REQUEST["manufacture"],$_REQUEST["model"],$_REQUEST["modification"]),$form);
         $form = str_replace("{actionBonus}", $this->showActionBonus(), $form);
         return $form;
     }
@@ -1164,36 +1156,16 @@ class catalogue
         return $form;
     }
 
-    function catalogue_art_find($art, $by_code, $by_sklad, $by_name, $by_producent)
-    {
+    function catalogue_art_find($art, $by_code, $by_sklad, $by_name, $by_producent) {
 //@todo добавить этот признак в переменную метода и в обработку скрипта
 //@todo в поиске должна быть сортировка по совпадению, боле точные результаты должны быть первыми например '207 045' по HP
         $byTD = 0; //основной Признак что поиск проведён по TecDoc
-        session_start();
-        $odb = new odb;
-        $slave = new slave;
-        $clnt = new client;
-        $dep = "23";
-        $client_id = $_SESSION["client"];
-        if ($art == "") {
-            $art = $this->get_art();
-        }
-        if ($by_code == "") {
-            $by_code = 0;
-        }
-        if ($by_sklad == "") {
-            $by_sklad = 0;
-        }
-        if ($by_name == "") {
-            $by_name = 0;
-        }
-        $form_htm = RD . "/tpl/catalogue_items_list.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
+        session_start(); $odb = new odb; $slave = new slave; $clnt = new client;  $dep = "23"; $client_id = $_SESSION["client"];
+        if ($art == "") { $art = $this->get_art(); }if ($by_code == "") { $by_code = 0; }if ($by_sklad == "") {$by_sklad = 0;}if ($by_name == "") {$by_name = 0;}
+        $form_htm = RD . "/tpl/catalogue_items_list.htm"; if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
         if (strlen($art) > 2 and $art != "Поиск запчастей") {
             //запоминаем первоначальный поиск чтоб потом по нему потом поискатьпо наименованию
-            $artName = mb_convert_case($art, MB_CASE_LOWER, "CP1251");;
+            $artName = mb_convert_case($art, MB_CASE_LOWER, "CP1251");
             //избавляемся от лишних пробелов в искомой строке (отключил , чуть ниже избавимся)
 //            $art = trim($art);
             //приводим в нижний регистр в кодировке win-1251
@@ -1219,9 +1191,6 @@ class catalogue
                 //print "$by_producent";
                 $this->saveArtSearch($art, $by_name, $by_producent, $byTD);
             }
-
-            $odb = new odb;
-
             //Если был выбран поиск по коду и не по наименованию, то нам сюда. обычно поиск по коду по умолчанию, эта опция отключена уже в прайсе, раньше там был крыжик
 //                    $by_name=1;
 
@@ -1231,8 +1200,7 @@ class catalogue
 //                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
                 $where = "(scode LIKE '$art1%' or scode LIKE '$art')";
                 $query = "select * from item where ($where) $where2 $exclude order by id asc;";
-                $r = $odb->query_td($query);
-                $n = $odb->num_rows($r);
+                $r = $odb->query_td($query); $n = $odb->num_rows($r);
 
                 //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
                 // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
@@ -1546,36 +1514,14 @@ class catalogue
         return $form;
     }
 
-    function get_art()
-    {
-        if ($_POST["art"] == "") {
-            return $_GET["art"];
-        }
-        if ($_POST["art"] != "") {
-            return $_POST["art"];
-        }
-    }
-
-    function saveArtSearch($art, $by_name, $by_producent, $byTD)
-    {
+    function get_art() { return $_REQUEST["art"];}
+    function saveArtSearch($art, $by_name, $by_producent, $byTD){
         //пока нет таблицы history_search и websearch тупо вываливаемся, когда появятся будем пробовать в них записывать.
         //return;
 
-        session_start();
-        $odb = new odb;
-        $client = $_SESSION["client"];
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $remip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $remip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $remip = $_SERVER['REMOTE_ADDR'];
-        }
-        if ($by_name == 1) {
-            $by_code = 0;
-        } else {
-            $by_code = 1;
-        }
+        session_start();$odb = new odb;$client = $_SESSION["client"];
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {$remip = $_SERVER['HTTP_CLIENT_IP'];} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {$remip = $_SERVER['HTTP_X_FORWARDED_FOR'];} else {$remip = $_SERVER['REMOTE_ADDR'];}
+        if ($by_name == 1) {$by_code = 0;} else { $by_code = 1; }
         $data = date("Y-m-d H:i:s");
         $client = $client + 0;
         $by_producent = $by_producent + 0;
@@ -1648,12 +1594,10 @@ class catalogue
         }
     }
 
-    function saveToFileWS($q)
-    {
+    function saveToFileWS($q){
         $fp = fopen(RD . '/lib/odbc_errors/websearch.txt', 'a+');
         fwrite($fp, $q . ": PG-> Time =" . date("Y-m-d H:i:s") . "\r\n");
         fclose($fp);
-
     }
 
 //    function showProducentTabs($proda)
@@ -1823,12 +1767,7 @@ class catalogue
         return $list;
     }
 
-    function createAnalogList($item_id, $kolItems, $step)
-    {
-        $odb = new odb;
-        $i = 0;
-        $itemsArr = array();
-        $dopsArr = array();
+    function createAnalogList($item_id, $kolItems, $step) { $odb = new odb; $i = 0; $itemsArr = array(); $dopsArr = array();
         $odb->query_td("select listanalog($item_id);");
         $r = $odb->query_td("select * from analogtemp order by lev,item_id asc;");
         while (odbc_fetch_row($r)) {
@@ -1847,10 +1786,7 @@ class catalogue
      * @param $proda - массив производителей
      * @return string - форма вывода "табов" производителей
      */
-    function showProducentList($proda)
-    {
-        $odb = new odb;
-        $where = "";
+    function showProducentList($proda) { $odb = new odb; $where = "";
         if ($proda != "") {
 //            из массива производителей $proda - создаём строку запроса типа "id=1 or id=2...."
             foreach ($proda as $prod_id) {
@@ -1874,43 +1810,19 @@ class catalogue
         return $list;
     }
 
-    function catalogue_sto_items($producent = 0, $category = 0, $otype = 0)
-    {
-        session_start();
-        $odb = new odb;
-        $slave = new slave;
-        $dep = "23";
-        if ($producent == 0) {
-            $producent = $_GET["producent"];
-        }
-        if ($category == 0) {
-            $category = $_GET["category"];
-        }
-        if ($otype == 0) {
-            $otype = $_GET["otype"];
-        }
-        $form_htm = RD . "/tpl/catalogue_sto_items_list.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
+    function catalogue_sto_items($producent = 0, $category = 0, $otype = 0) {session_start();$odb = new odb;$slave = new slave;$dep = "23";
+        if ($producent == 0) {$producent = $_REQUEST["producent"];}if ($category == 0) {$category = $_REQUEST["category"]; } if ($otype == 0) {$otype = $_REQUEST["otype"];}
+        $form_htm = RD . "/tpl/catalogue_sto_items_list.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
         $form = str_replace("{sto_producent}", $this->showStoProducent($producent), $form);
         $form = str_replace("{sto_category}", $this->showStoCategory($producent, $category), $form);
         $form = str_replace("{sto_otype}", $this->showStoOtype($category, $otype), $form);
 
         $where = "";
-        if ($producent != 0) {
-            $where .= " and producent='$producent'";
-        }
-        if ($category != 0) {
-            $where .= " and category='$category'";
-        }
-        if ($otype != 0) {
-            $where .= " and otype='$otype'";
-        }
+        if ($producent != 0) { $where .= " and producent='$producent'"; }
+        if ($category != 0) { $where .= " and category='$category'"; }
+        if ($otype != 0) { $where .= " and otype='$otype'"; }
 
-        $r = $odb->query_td("select * from sto_items where ison='1' $where order by id asc limit 20");
-        $list = "";
-        $i = 0;
+        $r = $odb->query_td("select * from sto_items where ison='1' $where order by id asc limit 20"); $list = "";  $i = 0;
         while (odbc_fetch_row($r)) {
             $i++;
             $id = odbc_result($r, "id");
@@ -1949,41 +1861,27 @@ class catalogue
         return $form;
     }
 
-    function showStoProducent($producent = 0)
-    {
-        $odb = new odb;
-        $slave = new slave;
+    function showStoProducent($producent = 0){$odb = new odb;$slave = new slave;
         $menu .= "<select name='sto_producent' id='sto_producent' size=1 class='tecFilter' onchange='loadStoProducentFilter(this[this.selectedIndex].value);'><option value='0'> --- выберете производителя ---  </option>";
         $r = $odb->query_td("select * from sto_producent where ison='1' order by id asc");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
             $name = odbc_result($r, "name");
-            if ($producent == $id) {
-                $menu .= "<option value='$id' selected='selected'>$name</option>";
-            }
-            if ($producent != $id) {
-                $menu .= "<option value='$id'>$name</option>";
-            }
+            if ($producent == $id) {$menu .= "<option value='$id' selected='selected'>$name</option>";}
+            if ($producent != $id) {$menu .= "<option value='$id'>$name</option>";}
         }
         $menu .= "</select>";
         return $menu;
     }
 
-    function showStoCategory($producent = 0, $category = 0)
-    {
-        $odb = new odb;
-        $slave = new slave;
+    function showStoCategory($producent = 0, $category = 0){ $odb = new odb;$slave = new slave;
         $menu .= "<select name='sto_category' id='sto_category' size=1 class='tecFilter' onchange='loadStoCategoryFilter(\"$producent\",this[this.selectedIndex].value);'><option value='0'> --- выберете категорию оборудование ---  </option>";
         $r = $odb->query_td("select * from sto_category where producent='$producent' and ison='1' order by id asc");
         while (odbc_fetch_row($r)) {
             $id = odbc_result($r, "id");
             $name = odbc_result($r, "name");
-            if ($category == $id) {
-                $menu .= "<option value='$id' selected='selected'>$name</option>";
-            }
-            if ($category != $id) {
-                $menu .= "<option value='$id'>$name</option>";
-            }
+            if ($category == $id) {$menu .= "<option value='$id' selected='selected'>$name</option>";}
+            if ($category != $id) {$menu .= "<option value='$id'>$name</option>";}
         }
         $menu .= "</select>";
         return $menu;
@@ -2373,11 +2271,7 @@ class catalogue
         return $form;
     }
 
-    function getSkladName($id)
-    {
-        session_start();
-        $odb = new odb;
-        $name = "";
+    function getSkladName($id){session_start();$odb = new odb;$name = "";
         $r = $odb->query_td("SELECT Name,remark FROM subconto WHERE id = '$id' limit 1 offset 0;");
         while (odbc_fetch_row($r)) {
             $name = odbc_result($r, "Name");
@@ -2386,43 +2280,59 @@ class catalogue
         return array($name, $remark);
     }
 
-    function loadTecGroupsList($manufacture, $model, $modification)
-    {
-        $slave = new slave;
-        include(RD . "/lib/dhtmlgoodies_tree.class.php");
-        $form_htm = RD . "/tpl/catalogue_tecdoc_groups.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
-        $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-        try {
-            $result = $soap->getLinkedChildNodesAllLinkingTarget(array(
-                'provider' => PROVIDER_ID,
-                'parentNodeId' => '',
-                'linkingTargetType' => 'C',
-                'linkingTargetId' => $modification,
-                'lang' => 'ru',
-                'country' => 'ru',
-                'childNodes' => true,
-            ));
-            $result = $result->data->array;
-            $tree = new dhtmlgoodies_tree();
-            foreach ($result as $item) {
-                $id = $item->assemblyGroupNodeId;
-                $caption = iconv("utf-8", "windows-1251", $item->assemblyGroupName);
-                $child = $item->hasChilds;
-                $parrent = $item->parentNodeId;
-                if ($parrent == "") {
-                    $parrent = 0;
-                }
-                $tree->addToArray($id, $caption, $parrent, "#groups=$id/$model/$modification/$manufacture", "", $child, "");
-            }
-            $tree->writeCSS();
-            $tree->writeJavascript();
-            $menu = $tree->drawTree();
-            $form = str_replace("{menu}", $menu, $form);
-        } catch (SoapFault $e) {
-        }
+/*
+SELECT G.Sort, G.ID_grp,G.Standard,G.Name,G.Intended, tart.*, G.*, SG.*, TR.* FROM  cat_alt_manufacturer mfa 
+			JOIN cat_alt_models mdl ON mfa.id_mfa=mdl.id_mfa
+			JOIN cat_alt_types typ ON typ.id_mfa=mfa.id_mfa AND typ.id_mod=mdl.id_mod
+			JOIN cat_alt_link_typ_eng TypsEng ON TypsEng.ID_typ=typ.id_typ AND TypsEng.id_mfa=mfa.id_mfa
+			JOIN cat_alt_link_art_mod lart ON lart.ID_mfa=mfa.id_mfa AND lart.ID_mod=mdl.ID_mod	
+			JOIN cat_alt_link_typ_art tart ON tart.ID_art=lart.ID_art AND tart.ID_typ=typ.ID_typ
+			JOIN cat_alt_groups G ON    G.ID_grp=tart.ID_grp
+			JOIN cat_alt_link_str_grp SG ON    SG.ID_grp=G.ID_grp
+			JOIN cat_alt_tree TR ON  TR.ID_tree=SG.ID_tree
+			
+			WHERE mfa.id_mfa='$manufacture' AND mdl.id_mod='$model' AND typ.id_typ='$modification' AND TR.`ID_parent`>0 
+			GROUP BY G.ID_grp,G.Name,G.Intended,G.Standard,G.Sort,TR.`ID_tree`,TR.`ID_parent` ORDER BY 1
+
+*/
+
+
+    function loadTecGroupsList($manufacture, $model, $modification){$slave = new slave; $db_td = new db_ltd; $level=$_REQUEST["lvl"]; $parent_id=$_REQUEST["prnt"];
+        $form_htm = RD."/tpl/catalogue_tecdoc_groups.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}$list="";
+		
+		if ($parent_id==""){$parent_id="10001";}if ($level==""){$level="1";}
+		
+        $r = $db_td->query("SELECT TR.*, SG.*
+			FROM cat_alt_tree TR
+			INNER JOIN cat_alt_link_str_grp SG ON TR.`ID_tree`=SG.`ID_tree`
+			INNER JOIN cat_alt_link_typ_art tart ON tart.`ID_grp`=SG.`ID_grp`
+			
+			WHERE tart.`ID_typ`='$modification'  AND TR.`ID_parent`>0 AND TR.`Level`='$level' and TR.`ID_parent`='$parent_id'
+			
+			GROUP BY TR.`ID_tree`,TR.`Sort`
+			
+			ORDER BY 1;");$n=$db_td->num_rows($r);
+			
+			print "n=$n";
+			
+        for ($i=1;$i<=$n;$i++) { 
+            $sort = $db_td->result($r, $i-1,"sort");
+			$id_grp = $db_td->result($r, $i-1,"id_grp");
+			$id_tree = $db_td->result($r, $i-1,"id_tree");
+			$caption = $db_td->result($r, $i-1,"name");
+			$child = $db_td->result($r, $i-1,"Childs");
+			$id_parent= $db_td->result($r, $i-1,"id_parent");
+			
+			$new_level=$level;
+			if ($child>0){$new_level=$level+1;
+	            $list.="<li><a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+			}if ($child<=0){
+				$list.="<li><a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+			}
+			
+		}
+        $form = str_replace("{menu}", $list, $form);
+		
         $manufacture_caption = $this->get_manufacture_caption($manufacture);
         $model_caption = $this->get_tecmodel_caption($manufacture, $model);
         $modification_caption = $this->get_modification_caption($manufacture, $model, $modification);
@@ -2430,107 +2340,29 @@ class catalogue
         return $form;
     }
 
-    function get_manufacture_caption($manufacture)
-    {
-        $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-        try {
-            $result = $soap->getVehicleManufacturers3(array(
-                'provider' => PROVIDER_ID, 'lang' => 'en', 'country' => 'RU', 'carType' => 1, 'countriesCarSelection' => 'RU', 'countryGroupFlag' => false, 'evalFavor' => false,
-            ));
-            $result = $result->data->array;
-            $scaption = "";
-            foreach ($result as $item) {
-                $id = $item->manuId;
-                $caption = $this->decodeLan(iconv("utf-8", "windows-1251", $item->manuName));
-                if ($manufacture == $id) {
-                    $scaption = $caption;
-                    break;
-                }
-            }
-        } catch (SoapFault $e) {
-        }
-        return $scaption;
-    }
-
-    function get_tecmodel_caption($manufacture, $model)
-    {
-        $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-        try {
-            $result = $soap->getVehicleModels3(array(
-                'provider' => PROVIDER_ID, 'lang' => 'ru', 'country' => 'RU', 'carType' => 1, 'countriesCarSelection' => 'RU', 'countryGroupFlag' => false, 'evalFavor' => false,
-                'favouredList' => 1, 'manuId' => $manufacture,
-            ));
-            $result = $result->data->array;
-            $caption = "";
-            foreach ($result as $item) {
-                $id = $item->modelId;
-                if ($model == $id) {
-                    $caption = iconv("utf-8", "windows-1251", $item->modelname);
-                    $year_from = $this->tecdoc_data_split($item->yearOfConstrFrom);
-                    $year_to = $this->tecdoc_data_split($item->yearOfConstrTo);
-                    $caption = "$caption ($year_from - $year_to)";
-                    break;
-                }
-            }
-        } catch (SoapFault $e) {
-        }
+    function get_manufacture_caption($manufacture){$db_td = new db_ltd;$caption="";
+		$r = $db_td->query("SELECT Name FROM  cat_alt_manufacturer WHERE id_mfa='$manufacture' limit 0,1;");$n=$db_td->num_rows($r);
+		if ($n==1){$caption=$db_td->result($r,0,"name");}
         return $caption;
     }
 
-    function get_modification_caption($manufacture, $model, $modification)
-    {
-        $soap = new SoapClient(TecdocToCat, array('trace' => true,));
-        try {
-            $result = $soap->getVehicleSimplifiedSelection3(array(
-                'provider' => PROVIDER_ID,
-                'modId' => $model,
-                'manuId' => $manufacture,
-                'linked' => false,
-                'lang' => 'ru',
-                'favouredList' => 0,
-                'countryGroupFlag' => false,
-                'countriesCarSelection' => 'ru',
-                'countriesUserSetting' => 'ru',
-                'carType' => 1,
-
-            ));
-            $result = $result->data->array;
-            foreach ($result as $item) {
-                $id = $item->carDetails->carId;
-                $caption = iconv("utf-8", "windows-1251", $item->carDetails->carName);
-                $powerHpFrom = iconv("utf-8", "windows-1251", $item->carDetails->powerHpFrom);
-                if ($modification == $id) {
-                    $caption .= " ($powerHpFrom л.с.)";
-                    break;
-                }
-            }
-        } catch (SoapFault $e) {
-        }
+    function get_tecmodel_caption($manufacture, $model){$db_td = new db_ltd;$caption="";
+		$r = $db_td->query("SELECT * FROM  cat_alt_models WHERE id_mod='$model' and id_mfa='$manufacture' limit 0,1;");$n=$db_td->num_rows($r);
+		if ($n==1){$caption=$db_td->result($r,0,"name")." (".$db_td->result($r, 0,"datestart")." - ".$db_td->result($r, 0,"dateend").")";}
         return $caption;
     }
 
-    function showRecomendList($place)
-    {
-        session_start();
-        $odb = new odb;
-        $slave = new slave;
-        $dep = "23";
-        if ($place == "") {
-            $form_htm = RD . "/tpl/recomend_side.htm";
-        }
-        if ($place == "news") {
-            $form_htm = RD . "/tpl/bottom_slide.htm";
-        }
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
+    function get_modification_caption($manufacture, $model, $modification){$db_td = new db_ltd;$caption="";
+		$r = $db_td->query("SELECT * FROM `cat_alt_types` WHERE id_mod='$model' and id_mfa='$manufacture' and id_typ='$modification' limit 0,1;");$n=$db_td->num_rows($r);
+		if ($n==1){$caption=$db_td->result($r,0,"name")." ".$db_td->result($r, 0,"fuel")." (".$db_td->result($r, 0,"KwHp")." л.с.) ".$db_td->result($r, 0,"Engines");}
+        return $caption;
+    }
 
-        $form_htm = RD . "/tpl/recomend_item.htm";
-        if (file_exists("$form_htm")) {
-            $block = file_get_contents($form_htm);
-        }
-        $r = $odb->query_td("select * from catalogue_recomend order by id desc limit 100;");
-        $list = "";
+    function showRecomendList($place){ session_start(); $odb = new odb; $slave = new slave; $dep = "23";
+        if ($place == "") {$form_htm = RD . "/tpl/recomend_side.htm";}if ($place == "news") {$form_htm = RD . "/tpl/bottom_slide.htm";}if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
+        $form_htm = RD . "/tpl/recomend_item.htm";if (file_exists("$form_htm")) {$block = file_get_contents($form_htm);}
+		
+        $r = $odb->query_td("select * from catalogue_recomend order by id desc limit 100;"); $list = "";
         while (odbc_fetch_row($r)) {
             $model = odbc_result($r, "model");
             $list .= "<li>$block</li>";
@@ -3373,11 +3205,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
         return $list;
 
     }
-
-    function showMasloItemInfo($category, $item_id)
-    {
-        session_start();
-        $client = $_SESSION["client"];
+	function showAkbItemInfo($item_id){session_start(); $client = $_SESSION["client"];
         /*		if ($client=="" or $client==0){
 			$form_htm=RD."/tpl/need_auth.htm"; if (file_exists("$form_htm")){ $form = file_get_contents($form_htm);}
 		}
@@ -3385,10 +3213,33 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 		*/
         {
             $odb = new odb;
-            $form_htm = RD . "/tpl/catalogue_maslo_items_info.htm";
-            if (file_exists("$form_htm")) {
-                $form = file_get_contents($form_htm);
-            }
+            $form_htm = RD . "/tpl/catalogue_akb_items_info.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
+            list($caption, $code) = $this->getItemCaptionCode($item_id);
+            list($item_producent, $item_td_producent, $item_producent_name) = $this->getItemProducentTd($item_id);
+            list($article_id, $article_name) = $this->getArticleIdName($code, $item_id);
+            $form = str_replace("{list}", $list, $form);
+            $form = str_replace("{caption}", $caption, $form);
+            $form = str_replace("{articleId}", $article_id, $form);
+            $form = str_replace("{articleName}", $this->showAkbCaption($item_id), $form);
+            $form = str_replace("{code}", $code, $form);
+            $form = str_replace("{item_foto}", $this->getItemPhoto($item_id, 200), $form);
+        }
+        return $form;
+    }
+	function showAkbCaption($lider_id){$db = new db; $caption = "";
+        $r = $db->query_lider("select caption from `items_akb` where `lider_id`='$lider_id' limit 1 offset 0;");$n = $db->num_rows($r);
+        if ($n == 1) {$caption = $db->result($r, 0, "caption"); }
+        return $caption;
+    }
+    function showMasloItemInfo($category, $item_id){session_start(); $client = $_SESSION["client"];
+        /*		if ($client=="" or $client==0){
+			$form_htm=RD."/tpl/need_auth.htm"; if (file_exists("$form_htm")){ $form = file_get_contents($form_htm);}
+		}
+		if ($client!="" and $client!=0)
+		*/
+        {
+            $odb = new odb;
+            $form_htm = RD . "/tpl/catalogue_maslo_items_info.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
             list($caption, $code) = $this->getItemCaptionCode($item_id);
             list($item_producent, $item_td_producent, $item_producent_name) = $this->getItemProducentTd($item_id);
             list($article_id, $article_name) = $this->getArticleIdName($code, $item_id);

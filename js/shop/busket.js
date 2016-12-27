@@ -94,6 +94,17 @@ function show_busket_maslo_form(model,category) {
 		}}, true);
 	}
 }
+function show_busket_akb_form(model) {
+	if (model==''){ alert("¬нутренн€€ ошибка сайта"); }
+	if (model!=''){ startLoading();
+		JsHttpRequest.query('content.php',{ 'w': 'show_busket_akb_form', 'model': model}, 
+		function (result, errors){ if (errors) {alert(errors);} if (result){ 
+			document.getElementById("BusketInfo").innerHTML=result["content"];
+			showBusketForm();
+			updateBusketInformer();stopLoading();
+		}}, true);
+	}
+}
 function dropModel(model){
 	var model=document.getElementById("model").value;
 	JsHttpRequest.query('content.php',{ 'w': 'dropModel', 'model': model}, 
