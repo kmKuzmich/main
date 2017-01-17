@@ -106,16 +106,11 @@ class catalogue{
         return $menu;
     }
 
-    function show_mp_tecdoc()
-    {
-        $form_htm = RD . "/tpl/catalogue_tecdoc_search_form.htm";
-        if (file_exists("$form_htm")) {
-            $form = file_get_contents($form_htm);
-        }
+    function show_mp_tecdoc() {
+        $form_htm = RD . "/tpl/catalogue_tecdoc_search_form.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
         $form = str_replace("{manufacture}", $this->show_tecdoc_manufacture(""), $form);
         $form = str_replace("{model}", $this->loadTecModelList($_GET["manufacture"], ""), $form);
         $form = str_replace("{modification}", $this->loadTecModificationList($_GET["manufacture"], $_GET["model"], ""), $form);
-
         return $form;
     }
 
@@ -132,10 +127,7 @@ class catalogue{
         $menu.="</select>";
         return $menu;
     }
-    function decodeLan($caption){
-        $caption = str_replace("Л", "E", $caption);
-        return $caption;
-    }
+    function decodeLan($caption){ $caption = str_replace("Л", "E", $caption); return $caption;}
     function loadTecModelList($manufacture, $mdl){$slave = new slave; $db_td = new db_ltd;
         $menu = "<select name='model' id='model' size=1 class='tec' onchange='loadTecModificationList($manufacture,this[this.selectedIndex].value,0);'><option value='0'> -- Выберете из списка --</option>";
         $r = $db_td->query("SELECT * FROM cat_alt_models where id_mfa='$manufacture' and isVisible='1' and isDeleted='0' order by name asc;");$n=$db_td->num_rows($r);
@@ -241,6 +233,9 @@ class catalogue{
             if ($_REQUEST["manufacture"] != "" and $_REQUEST["model"] != "" and $_REQUEST["modification"] != "") {
                 $form = str_replace("{range_list}", $this->loadTecGroupsList($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"]), $form);
             }
+        }
+		if ($w == "tdfind") {
+             $form = str_replace("{range_list}", $this->catalogue_art_td_find($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"],$_REQUEST["lvl"],$_REQUEST["prnt"]), $form);
         }
         $form = str_replace("{bottom_side}", $news->show_range_news(), $form);
         $form = str_replace("{recomend_list}", $this->showRecomendList(""), $form);
@@ -1036,18 +1031,9 @@ class catalogue{
         return $bonus;
     }
 
-    function create_sto_item()
-    {
-        session_start();
-        $odb = new odb;
-        $slave = new slave;
-        $dep = "23";
-        $rem_ip = $_SERVER['REMOTE_ADDR'];
+    function create_sto_item(){session_start();$odb = new odb; $rem_ip = $_SERVER['REMOTE_ADDR'];
         if (in_array($rem_ip, $this->remips)) {
-            $form_htm = RD . "/tpl/catalogue_sto_item_form.htm";
-            if (file_exists("$form_htm")) {
-                $form = file_get_contents($form_htm);
-            }
+            $form_htm = RD . "/tpl/catalogue_sto_item_form.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
             $form = str_replace("{action}", "Добавление", $form);
             $form = str_replace("{w}", "add_sto_item", $form);
             $form = str_replace("{producent_form}", $this->show_sto_producent(0), $form);
@@ -1057,13 +1043,7 @@ class catalogue{
         return $form;
     }
 
-    function add_sto_item()
-    {
-        session_start();
-        $odb = new odb;
-        $slave = new slave;
-        $dep = "23";
-        $rem_ip = $_SERVER['REMOTE_ADDR'];
+    function add_sto_item(){session_start();$odb = new odb; $rem_ip = $_SERVER['REMOTE_ADDR'];
         if (in_array($rem_ip, $this->remips)) {
             if (is_uploaded_file($_FILES["items_file"]['tmp_name'])) {
                 chmod($_FILES["items_file"]['tmp_name'], 0755);
@@ -1080,10 +1060,7 @@ class catalogue{
                 require_once RD . '/excel/excel_reader2.php';
                 $data = new Spreadsheet_Excel_Reader($file_path, true, "CP1251");
                 $rows = $data->rowcount($sheet);
-                if ($rows == 0) {
-                    $rows = $data->rowcount(0);
-                    $sheet = 0;
-                }
+                if ($rows == 0) {$rows = $data->rowcount(0);$sheet = 0;}
                 if ($rows > 0) {
                     $odb->query_td("truncate table sto_producent;");
                     $odb->query_td("truncate table sto_category;");
@@ -1123,11 +1100,7 @@ class catalogue{
                     }
                 }
             }
-
-            $form_htm = RD . "/tpl/save_message.htm";
-            if (file_exists("$form_htm")) {
-                $form = file_get_contents($form_htm);
-            }
+            $form_htm = RD . "/tpl/save_message.htm";if (file_exists("$form_htm")) { $form = file_get_contents($form_htm);}
             $form = str_replace("{message}", "Информация об оборудовании успешно добавлена", $form);
             $form = str_replace("{back_caption}", "", $form);
             $form = str_replace("{back_url}", "", $form);
@@ -1135,26 +1108,126 @@ class catalogue{
         return $form;
     }
 
-    function drop_sto_item($id)
-    {
-        session_start();
-        $odb = new odb;
-        $slave = new slave;
-        $dep = "23";
-        $rem_ip = $_SERVER['REMOTE_ADDR'];
+    function drop_sto_item($id){session_start();$odb = new odb; $rem_ip = $_SERVER['REMOTE_ADDR'];
         if (in_array($rem_ip, $this->remips)) {
             $odb->query_td("update sto_items set ison='0' where id='$id';");
-
-            $form_htm = RD . "/tpl/save_message.htm";
-            if (file_exists("$form_htm")) {
-                $form = file_get_contents($form_htm);
-            }
+            $form_htm = RD . "/tpl/save_message.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
             $form = str_replace("{message}", "Информация об оборудовании успешно удалена", $form);
             $form = str_replace("{back_caption}", "", $form);
             $form = str_replace("{back_url}", "", $form);
         }
         return $form;
     }
+	
+	function catalogue_art_td_find($manufacture, $model, $modification, $lvl, $prnt) {$slave = new slave;$db_td = new db_ltd;$odb = new odb; 
+		
+        $r = $db_td->query("SELECT lta.ID_art FROM cat_alt_link_typ_art lta JOIN cat_alt_link_str_grp sg ON lta.`ID_grp`=sg.`ID_grp` WHERE sg.`ID_tree`='$prnt' AND lta.`ID_typ`='$modification' GROUP BY lta.`ID_art` ORDER BY 1;"); $n = $db_td->num_rows($r); $art_ids="1";$art_cross="";
+//        print "SELECT  FROM cat_alt_link_typ_art lta JOIN cat_alt_link_str_grp sg ON lta.`ID_grp`=sg.`ID_grp` WHERE sg.`ID_tree`='$prnt' AND lta.`ID_typ`='$modification' GROUP BY lta.`ID_art` ORDER BY 1;n=$n";
+        for ($i = 1; $i <= $n; $i++) {
+            $ID_art = $db_td->result($r, $i - 1, "ID_art");
+			$art_ids.=",$ID_art";
+        }
+//		print "$art_ids";
+		$r = $db_td->query("SELECT cr.ID_cross FROM cat_alt_crossing cr  WHERE cr.`ID_art` in ($art_ids) GROUP BY cr.`ID_cross` ORDER BY 1;"); $n = $db_td->num_rows($r);
+//		print "<br>n_cross=$n";
+		for ($i = 1; $i <= $n; $i++) {
+            $ID_cross = $db_td->result($r, $i - 1, "ID_cross");
+			$art_cross.=",$ID_cross";
+        }
+//		print "$art_cross";
+		
+		$r = $db_td->query("SELECT al.item_id FROM cat_alt_articles AS art  LEFT OUTER JOIN al_search AS al ON (art.Search = al.al_search AND art.ID_sup = al.td_brand_id )
+		WHERE art.ID_art IN ( $art_ids $art_cross );");$n=$db_td->num_rows($r);$arr_itm_id="0";
+		for ($i = 1; $i <= $n; $i++) {
+            $item_id= $db_td->result($r, $i - 1, "item_id");
+			if ($item_id!="" && $item_id!=NULL){$arr_itm_id.=",$item_id";}
+        }
+		
+		
+		$exclude = " prod_id not in (1134)";
+        $used_id = array();
+        if ($arr_itm_id != "") {
+            $query = "select * from item where $exclude and id IN ($arr_itm_id);";
+            $r = $odb->query_td($query);
+            $list = "";  $kt = -1; $k = 0;  $i = 0;
+            while (odbc_fetch_row($r)) {
+                $prm = 0;
+                $price1 = "";
+                $i++;
+                $icon_flag = "";
+                $id = odbc_result($r, "id");
+                //наличие
+                list($quant, $quant1, $quant_r, $quant_p) = $this->getItemQuant($id);
+                if ($quant != "") {
+                    array_push($used_id, $id);
+
+                    $code = odbc_result($r, "code");
+                    $scode = odbc_result($r, "scode");
+                    $name = odbc_result($r, "name");
+                    $name = wordwrap($name, 45, '&shy;', true);
+                    $flag = odbc_result($r, "flag");
+                    $help = odbc_result($r, "help");
+
+                    $prod_id = odbc_result($r, "prod_id");
+                    $proda[$i] = $prod_id;
+                    $valuta_id = odbc_result($r, "val_id");
+                    $discount_id = odbc_result($r, "discount_id");
+                    $price = $slave->tomoney(odbc_result($r, "pricePro"));
+                    //Цена клиента
+                    //					$price_client=$this->getItemPrice($id,$valuta_id,$price,$discount_id);
+                    $price_client = $this->getItemPrice2($id);
+
+                    $isImage = odbc_result($r, "isImage");
+                    $img = "<a href='javascript:showItemPhoto(\"" . strtoupper($id) . "\")'><img src='theme/images/photo_icon.png' border='0' alt='Фото' title='Фото'></a>";
+
+                    $quant_r_img = "";
+                    if ($quant_r > 0) {
+                        $quant_r_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_reserv_icon.png' border='0' alt='Товар в резерв' title='Товар в резерв' align='middle' hspace='2'></a>";
+                    }
+                    $quant_p_img = "";
+                    if ($quant_p > 0) {
+                        $quant_p_img = "<a href='javascript:showItemSklad(\"$id\")'><img src='theme/images/sklad_prihod_icon.png' border='0' alt='Товар в приходе' title='Товар в приходе' align='middle' hspace='2'></a>";
+                    }
+                    $add_busket = "";//if ($price>0 and $quant!=""){$add_busket="<a href='javascript:show_busket_form(\"$id\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";}
+                    $add_busket = "<a href='javascript:show_busket_maslo_form(\"$id\",\"$category\")'><img src='theme/images/add_icon.png' border='0' alt='Добавить в заказ' title='Добавить в заказ'></a>";
+                    if ($flag == 7) {
+                        $icon_flag = "<img src='theme/images/action_icon.png' border='0' alt='Акция' class='icon_button' onmouseover=\"tooltip.pop(this, '#a$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='a$id" . "_tip'>$help</div></div> onclick='showItemActionRemark(\"$id\");'>";
+                    }
+                    if ((($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) & ($quant > 0)) {
+                        $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
+                    }
+
+                    $k++;
+                    $list .= "<tr><td colspan=10 style='border-bottom:1px solid #8c8c8c; font-size:2px;' height=2>&nbsp;</td></tr>
+					<tr align='center' id='ri$id' height='25'>
+						<td>$icon_flag</td>
+						<td>$code</td>
+						<td align='left'><a href='javascript:showMasloItemInfo(\"$id\",\"$category\");'>$name</a></td>
+						<td align='right'>$price</td>
+						<td align='right'>$price_client</td>
+						<td>$quant_p_img $quant_r_img <a href='javascript:showItemSklad(\"$id\")'>$quant</a></td>
+						<td><a href='javascript:showItemSklad(\"$id\")'>$quant1</a></td>
+						<td>$img</td>
+						<td><a href='javascript:showItemAnalog(\"$id\")'><img src='theme/images/analog_icon.jpg' border='0' alt='Аналоги' title='Аналоги'></a></td>
+						<td>$add_busket</td>
+					</tr>
+				";
+                }
+            }
+        }
+        $form_htm = RD . "/tpl/catalogue_tecdoc_result_list.htm"; if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}		
+		$form = str_replace("{items_list}", $list, $form);
+		$form = str_replace("{kol_items}", $k, $form);
+		
+		$manufacture_caption = $this->get_manufacture_caption($manufacture);
+        $model_caption = $this->get_tecmodel_caption($manufacture, $model);
+        $modification_caption = $this->get_modification_caption($manufacture, $model, $modification);
+        $form = str_replace("{car_caption}", $manufacture_caption . " - " . $model_caption . " - " . $modification_caption, $form);		
+		$form = str_replace("{tec_groups}", $this->loadTecGroupsNav($manufacture,$model,$modification,$lvl,$prnt,""), $form);		
+				
+		return $form;
+	}
+	
 
     function catalogue_art_find($art, $by_code, $by_sklad, $by_name, $by_producent) {
 //@todo добавить этот признак в переменную метода и в обработку скрипта
@@ -2297,48 +2370,62 @@ SELECT G.Sort, G.ID_grp,G.Standard,G.Name,G.Intended, tart.*, G.*, SG.*, TR.* FR
 */
 
 
-    function loadTecGroupsList($manufacture, $model, $modification){$slave = new slave; $db_td = new db_ltd; $level=$_REQUEST["lvl"]; $parent_id=$_REQUEST["prnt"];
-        $form_htm = RD."/tpl/catalogue_tecdoc_groups.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}$list="";
-		
-		if ($parent_id==""){$parent_id="10001";}if ($level==""){$level="1";}
-		
-        $r = $db_td->query("SELECT TR.*, SG.*
-			FROM cat_alt_tree TR
-			INNER JOIN cat_alt_link_str_grp SG ON TR.`ID_tree`=SG.`ID_tree`
-			INNER JOIN cat_alt_link_typ_art tart ON tart.`ID_grp`=SG.`ID_grp`
-			
+    function loadTecGroupsList($manufacture, $model, $modification) {$slave = new slave;$db_td = new db_ltd;$level = $_REQUEST["lvl"];$parent_id = $_REQUEST["prnt"];
+        $form_htm = RD . "/tpl/catalogue_tecdoc_groups.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);} $list = "";
+        if ($parent_id == "") {$parent_id = "10001"; }if ($level == "") {$level = "1";}
+        $r = $db_td->query("SELECT TR.*, SG.* FROM cat_alt_tree TR
+			INNER JOIN cat_alt_link_str_grp SG ON TR.`ID_tree`=SG.`ID_tree` INNER JOIN cat_alt_link_typ_art tart ON tart.`ID_grp`=SG.`ID_grp`
 			WHERE tart.`ID_typ`='$modification'  AND TR.`ID_parent`>0 AND TR.`Level`='$level' and TR.`ID_parent`='$parent_id'
-			
-			GROUP BY TR.`ID_tree`,TR.`Sort`
-			
-			ORDER BY 1;");$n=$db_td->num_rows($r);
-			
-			print "n=$n";
-			
-        for ($i=1;$i<=$n;$i++) { 
-            $sort = $db_td->result($r, $i-1,"sort");
-			$id_grp = $db_td->result($r, $i-1,"id_grp");
-			$id_tree = $db_td->result($r, $i-1,"id_tree");
-			$caption = $db_td->result($r, $i-1,"name");
-			$child = $db_td->result($r, $i-1,"Childs");
-			$id_parent= $db_td->result($r, $i-1,"id_parent");
-			
-			$new_level=$level;
-			if ($child>0){$new_level=$level+1;
-	            $list.="<li><a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
-			}if ($child<=0){
-				$list.="<li><a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
-			}
-			
-		}
+			GROUP BY TR.`ID_tree`,TR.`Sort` ORDER BY 1;"); $n = $db_td->num_rows($r);
+        for ($i = 1; $i <= $n; $i++) {
+            $sort = $db_td->result($r, $i - 1, "sort");
+            $id_grp = $db_td->result($r, $i - 1, "id_grp");
+            $id_tree = $db_td->result($r, $i - 1, "id_tree");
+            $caption = $db_td->result($r, $i - 1, "name");
+            $child = $db_td->result($r, $i - 1, "Childs");
+            $id_parent = $db_td->result($r, $i - 1, "id_parent");
+
+            $new_level = $level;
+            if ($child > 0) {$new_level = $level + 1;
+                $list .= "<li><a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+            }
+            if ($child <= 0) {
+                $list .= "<li><a href='?dep=23&dep_up=0&dep_cur=3&w=tdfind&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+            }
+
+        }
         $form = str_replace("{menu}", $list, $form);
-		
+
         $manufacture_caption = $this->get_manufacture_caption($manufacture);
         $model_caption = $this->get_tecmodel_caption($manufacture, $model);
         $modification_caption = $this->get_modification_caption($manufacture, $model, $modification);
         $form = str_replace("{navigation_caption}", $manufacture_caption . " - " . $model_caption . " - " . $modification_caption, $form);
         return $form;
     }
+
+	function loadTecGroupsNav($manufacture,$model,$modification,$level,$parent_id,$info) {$slave = new slave;$db_td = new db_ltd; if ($parent_id == "") {$parent_id = "10001"; }if ($level == "") {$level = "1";}
+        $r = $db_td->query("SELECT TR.* FROM cat_alt_tree TR
+			INNER JOIN cat_alt_link_str_grp SG ON TR.`ID_tree`=SG.`ID_tree` INNER JOIN cat_alt_link_typ_art tart ON tart.`ID_grp`=SG.`ID_grp`
+			WHERE tart.`ID_typ`='$modification'  AND TR.`ID_parent`>0 AND TR.`Level`='$level' and TR.`ID_tree`='$parent_id'
+			GROUP BY TR.`ID_tree`,TR.`Sort` ORDER BY 1 limit 0,1;"); $n = $db_td->num_rows($r);
+        for ($i = 1; $i <= $n; $i++) {
+            $caption = $db_td->result($r,$i-1,"name");
+            $id_tree = $db_td->result($r,$i-1,"id_tree");
+			$id_parent = $db_td->result($r,$i-1,"id_parent");
+
+            $new_level = $level;
+            if ($level > 1) {$new_level = $level -1;
+                $recurs_inf=$this->loadTecGroupsNav($manufacture,$model,$modification,$new_level,$id_parent,$info);
+				$info=$recurs_inf."&rsaquo; <a href='?dep=23&dep_up=0&dep_cur=3&w=tdfind&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' style='text-transform:lowercase'>$caption</a> ".$info;
+            }
+            if ($level <= 1) {
+                $info="<a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' style='text-transform:lowercase'>$caption</a> ".$info;
+            }
+
+        }
+        return $info;
+    }
+
 
     function get_manufacture_caption($manufacture){$db_td = new db_ltd;$caption="";
 		$r = $db_td->query("SELECT Name FROM  cat_alt_manufacturer WHERE id_mfa='$manufacture' limit 0,1;");$n=$db_td->num_rows($r);
