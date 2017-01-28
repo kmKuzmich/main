@@ -23,11 +23,13 @@ class odb{
             }
         }
     }
+
     function auth_lider_param(){
         $this->source_lider = 'Lider';
         $this->username_lider = 'dba';
         $this->password_lider = 'sql';
     }
+
     function query_td($query){
         $this->connect_td();
         if (!$this->db_td) {

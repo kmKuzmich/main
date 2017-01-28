@@ -342,7 +342,6 @@ class shop
         $query = "select id,doc_id,doc_num from orders   where (session_id='$session' $where) and status='12' order by id asc limit 10;";
         $r = $odb->query_td($query);
         $n = $odb->num_rows($r);
-
 //Если активных заявок нет - то создать пустую заявку и показать
         if ($n == 0) {
             $odb->query_lider("create variable @last_id integer ");
