@@ -21,12 +21,12 @@ $dep_ud = $slave->get_dep_up();
 $dep_cur = $slave->get_dep_cur();
 $w = $slave->get_w();
 
-//если $dep не пустое и не равно 0 и интереджер то прочитать часть имени управл€ющего файла
+//если $dep не пустое и не равно 0 и интереджер то прочитать часть имени управл§ющего файла
 if ($dep != "" and $dep != "0" and is_numeric($dep)) {
 //if ($dep != "" and $dep != "0") {
     $fn = $config->get_module_file($dep, 1);
 }
-//вот в этом месте вызываетс€ dep.php 
+//вот в этом месте вызываетс§ dep.php 
 if ($fn != "") {
     if (file_exists("event/" . $fn . ".php")) {
         include 'event/' . $fn . '.php';

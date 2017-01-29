@@ -126,30 +126,16 @@ class shop
         return $form;
     }
 
-    function show_busket_maslo_form($category, $model)
-    {
-        include_once RD . '/lib/catalogue_class.php';
-        session_start();
-        $er = 1;
-        $odb = new odb;
-        $slave = new slave;
-        $cat = new catalogue;
+    function show_busket_maslo_form($category, $model) {include_once RD . '/lib/catalogue_class.php';session_start();
+        $er = 1;$odb = new odb;$slave = new slave;$cat = new catalogue;
         if ($_SESSION["client"] == "") {
-            $busket_form_htm = RD . "/tpl/need_auth_maslo.htm";
-            if (file_exists("$busket_form_htm")) {
-                $busket_form = file_get_contents($busket_form_htm);
-            }
+            $busket_form_htm = RD . "/tpl/need_auth_maslo.htm";if (file_exists("$busket_form_htm")) {$busket_form = file_get_contents($busket_form_htm);}
         }
         if ($_SESSION["client"] != "") {
-            $busket_form_htm = RD . "/tpl/busket_maslo_form.htm";
-            if (file_exists("$busket_form_htm")) {
-                $busket_form = file_get_contents($busket_form_htm);
-            }
+            $busket_form_htm = RD . "/tpl/busket_maslo_form.htm";if (file_exists("$busket_form_htm")) {$busket_form = file_get_contents($busket_form_htm);}
             list($code, $name, $price, $sklad, $image) = $cat->getItemInfo($model);
             $kol = $this->getOrderModelKol('', $model);
-            if ($kol == 0) {
-                $kol = 1;
-            }
+            if ($kol == 0) {$kol = 1;}
             $summ = $kol * $price;
             $busket_form = str_replace("{model}", $model, $busket_form);
             $busket_form = str_replace("{model_price}", $price, $busket_form);
@@ -173,7 +159,38 @@ class shop
         }
         return $busket_form;
     }
-
+	function show_busket_akb_form($model) {include_once RD . '/lib/catalogue_class.php';session_start();
+        $er = 1;$odb = new odb;$slave = new slave;$cat = new catalogue;
+        if ($_SESSION["client"] == "") {
+            $busket_form_htm = RD . "/tpl/need_auth_maslo.htm";if (file_exists("$busket_form_htm")) {$busket_form = file_get_contents($busket_form_htm);}
+        }
+        if ($_SESSION["client"] != "") {
+            $busket_form_htm = RD . "/tpl/busket_akb_form.htm";if (file_exists("$busket_form_htm")) {$busket_form = file_get_contents($busket_form_htm);}
+            list($code, $name, $price, $sklad, $image) = $cat->getItemInfo($model);
+            $kol = $this->getOrderModelKol('', $model);
+            if ($kol == 0) {$kol = 1;}
+            $summ = $kol * $price;
+            $busket_form = str_replace("{model}", $model, $busket_form);
+            $busket_form = str_replace("{model_price}", $price, $busket_form);
+            $busket_form = str_replace("{model_kol}", $kol, $busket_form);
+            $busket_form = str_replace("{summ}", $summ, $busket_form);
+            $busket_form = str_replace("{code}", $code, $busket_form);
+            $busket_form = str_replace("{caption}", wordwrap($name, 45, '&shy;', true), $busket_form);
+            $busket_form = str_replace("{price}", $price, $busket_form);
+            $busket_form = str_replace("{image}", $image, $busket_form);
+            $busket_form = str_replace("{sklad}", $sklad, $busket_form);
+            $busket_form = str_replace("{cash}", "грн", $busket_form);
+            $busket_form = str_replace("{orders_list}", $this->show_orders_active_list(0), $busket_form);
+            if ($_SESSION["client"] == "") {
+                $busket_form = str_replace("{hidden}", " style='visibility:hidden;'", $busket_form);
+            }
+            if ($_SESSION["client"] != "") {
+                $busket_form = str_replace("{hidden}", "", $busket_form);
+            }
+            $busket_form = str_replace("{action_info}", $this->showActionInfoByItem($model), $busket_form);
+        }
+        return $busket_form;
+    }
     function show_busket_form($model)
     {
         include_once RD . '/lib/catalogue_class.php';
@@ -325,7 +342,6 @@ class shop
         $query = "select id,doc_id,doc_num from orders   where (session_id='$session' $where) and status='12' order by id asc limit 10;";
         $r = $odb->query_td($query);
         $n = $odb->num_rows($r);
-
 //Если активных заявок нет - то создать пустую заявку и показать
         if ($n == 0) {
             $odb->query_lider("create variable @last_id integer ");

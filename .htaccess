@@ -1,2 +1,3 @@
 Options -Indexes
-AddDefaultCharset windows-1251
+AddDefaultCharset "windows-1251"
+Require all granted

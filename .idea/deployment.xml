@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="zakaz1">
+    <serverData>
+      <paths name="zakaz1">
+        <serverdata>
+          <mappings>
+            <mapping deploy="zakaz1@avtolider-ua.com" local="O:" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="zakaz_pg">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

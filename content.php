@@ -8,15 +8,14 @@ define('RD', dirname(__FILE__));
 $content = null;
 
 //require_once (RD."/lib/mysql_class.php");      //Для работы новостей с сайта Бестхостинга
-require_once(RD . "/lib/mysql_lider_class.php");  //Для работы новостей с базы данных Lder MySQL
-require_once(RD . "/lib/odbc_class.php");
-require_once(RD . "/lib/config_class.php");
-require_once(RD . "/lib/slave_class.php");
-require_once(RD . "/lib/kours_class.php");
+require_once(RD."/lib/mysql_lider_class.php");  //Для работы новостей с базы данных Lder MySQL
+require_once(RD."/lib/odbc_class.php");
+require_once(RD."/lib/config_class.php");
+require_once(RD."/lib/slave_class.php");
+require_once(RD."/lib/kours_class.php");
+require_once(RD."/lib/mysql_ltd_class.php"); //Для работы с Техдоком
 $slave = new slave;
-if ($content == null) {
-    require_once(RD . "/engine.php");
-}
+if ($content == null) {require_once(RD . "/engine.php");}
 if ($style == "ok") {
     $style = "<meta http-equiv='Content-Type' content='text/html; charset=windows-1251'><link rel='STYLESHEET' type='text/css' href='theme/main_style.css'>";
 }

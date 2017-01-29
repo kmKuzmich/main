@@ -70,6 +70,7 @@ function search_biartTec(art, producent) {
     closeHistorySearchFrom();
     window.location.hash = "#search=" + art;
 }
+
 function search_biart(art) {
     document.getElementById("by_producent").value = "";
 //	if (document.getElementById("art").value==""){document.getElementById("art").value=art;}
@@ -79,6 +80,17 @@ function search_biart(art) {
     closeHistorySearchFrom();
     window.location.hash = "#search=" + art;
 }
+
+function search_by_id(item_id) {
+//	if (document.getElementById("art").value==""){document.getElementById("art").value=art;}
+    document.getElementById("item_id").value = item_id;
+    win_close();
+    search_art();
+    closeHistorySearchFrom();
+    window.location.hash = "#search=" + item_id;
+}
+
+
 function search_biproducent(producent) {
     document.getElementById("by_producent").value = producent;
     search_art();

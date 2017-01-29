@@ -1,8 +1,11 @@
 <?php
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', false);
-//if ($_SERVER['REMOTE_ADDR']=="78.152.169.139"){@ini_set('display_errors', true);}
+if ($_SERVER['REMOTE_ADDR']=="78.152.169.139"){@ini_set('display_errors', true);}
 if ($_SERVER['REMOTE_ADDR'] == "192.168.0.39") {
+    @ini_set('display_errors', true);
+}
+if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1") {
     @ini_set('display_errors', true);
 }
 define('RD', dirname (__FILE__));
@@ -18,6 +21,7 @@ require_once (RD."/lib/shop_class.php");
 require_once (RD."/lib/client_class.php");
 require_once (RD."/lib/catalogue_class.php");
 require_once (RD."/lib/news_class.php"); //kuz 24-09-2014
+require_once (RD."/lib/mysql_ltd_class.php"); //Для работы с Техдоком
 
 if ($content==null){require_once (RD."/out.php");}
 echo $content;

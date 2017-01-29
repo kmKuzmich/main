@@ -373,8 +373,6 @@ function loadTecGroupsList(manufacture, model, modification) {
     if (modification == 0 || modification == '' || !modification) {
         modification = document.getElementById("modification")[document.getElementById("modification").selectedIndex].value;
     }
-	location.href = "?dep=23&manufacture=" + manufacture + "&model=" + model + "&modification=" + modification;
-	/*
     JsHttpRequest.query('content.php', {
             'w': 'loadTecGroupsList',
             'manufacture': manufacture,
@@ -403,7 +401,6 @@ function loadTecGroupsList(manufacture, model, modification) {
             }
         }, true);
     stopLoading();
-	*/
 }
 function loadTecDetailsList(manufacture, model, modification, groups, brandNo) {
     startLoading();
@@ -749,44 +746,6 @@ function showMasloItemInfo(item_id, category) {
             if (errors) {
                 alert(errors);
             }
-            if (result) {
-                showInfoForm();
-                document.getElementById("InfoFormInfo").innerHTML = result["content"];
-                document.getElementById("InfoForm").style.height = "auto";
-                stopLoading();
-            }
-        }, true);
-}
-function setAkbFilter(el, col_name, value, page) {
-    startLoading();
-    var cols = document.getElementById("akb_colname").value; cols = cols.split(',');
-    var vals = document.getElementById("akb_value").value; vals = vals.split(',');
-    var new_value = col_name + "=" + value;
-    if (el) {
-        if (el.checked) {
-            if (cols.indexOf(col_name) > -1) {} else {cols.push(col_name);}
-            if (vals.indexOf(new_value) > -1) {} else {vals.push(new_value);}
-        } else {
-            while (vals.indexOf(new_value) !== -1) {
-                vals.splice(vals.indexOf(new_value), 1);
-            }
-        }
-    }
-    document.getElementById("akb_colname").value = cols;
-    document.getElementById("akb_value").value = vals;
-
-    JsHttpRequest.query('content.php', {'w': 'showAkbRange','cols': cols,'vals': vals,'page': page},
-	function (result, errors) {if (errors) {}if (result) {
-		document.getElementById("filters_place").innerHTML = result["filters"];
-		document.getElementById("range_list").innerHTML = result["content"];
-		stopLoading();
-	}}, true);
-
-}
-function showAkbItemInfo(item_id) {startLoading();
-    JsHttpRequest.query('content.php', {'w': 'showAkbItemInfo', 'item_id': item_id},
-        function (result, errors) {
-            if (errors) {alert(errors);}
             if (result) {
                 showInfoForm();
                 document.getElementById("InfoFormInfo").innerHTML = result["content"];
