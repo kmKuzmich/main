@@ -2,7 +2,12 @@
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', false);
 if ($_SERVER['REMOTE_ADDR']=="78.152.169.139"){@ini_set('display_errors', true);}
-//if ($_SERVER['REMOTE_ADDR'] == "192.168.0.39") { @ini_set('display_errors', true);}
+if ($_SERVER['REMOTE_ADDR'] == "192.168.0.39") {
+    @ini_set('display_errors', true);
+}
+if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1") {
+    @ini_set('display_errors', true);
+}
 define('RD', dirname (__FILE__));
 $content=null; 
 //require_once (RD."/lib/mysql_class.php");  //Для работы новостей с сайта Бестхостинга
