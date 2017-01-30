@@ -6,6 +6,9 @@ uploads/images/lider
 #ignoring files to upload
 uploads/file/
 
+#folder
+.idea/
+install/
 
 #ignoring all images
 *.img
