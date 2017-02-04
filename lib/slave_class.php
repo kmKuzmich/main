@@ -8,8 +8,10 @@ class slave
         if (
             !strpos($text, "select") && //
             !strpos($text, "union") && //
-            !strpos($text, "select") && //
-            !strpos($text, "order") && // Ищем вхождение слов в параметре
+//            !strpos($text, "order") && // Ищем вхождение слов в параметре //4.02.2017 закоментировал по причине westruckorders@gmail.com кл 26846
+            !strpos($text, "delete") && //
+            !strpos($text, "update") && //
+            !strpos($text, "insert") && //
             !strpos($text, "where") && //
             !strpos($text, "from") //
         ) {
