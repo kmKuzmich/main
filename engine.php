@@ -134,7 +134,7 @@ if ($_REQUEST["w"] == "showAplicability") {
 }
 
 if ($_REQUEST["w"] == "catalogue_art_find") {
-    $GLOBALS['_RESULT'] = array("content" => $cat->catalogue_art_find($_REQUEST["art"], $_REQUEST["by_code"], $_REQUEST["by_sklad"], $_REQUEST["by_name"], $_REQUEST["by_producent"]));
+    $GLOBALS['_RESULT'] = array("content" => $cat->catalogue_art_find($_REQUEST["art"], $_REQUEST["by_code"], $_REQUEST["by_sklad"], $_REQUEST["by_name"], $_REQUEST["by_producent"], $_REQUEST["item_id"]));
 }
 if ($_REQUEST["w"] == "showItemSklad") {
     $GLOBALS['_RESULT'] = array("content" => $cat->showItemSklad($_REQUEST["item_id"]));

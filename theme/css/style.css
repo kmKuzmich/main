@@ -1949,3 +1949,128 @@ input[type="checkbox"]:checked:disabled + label::before {
     font-weight: bold;
     text-align: center;
 }
+
+.model_col {
+    width: 48%;
+    display: table-cell;
+    margin: 3px;
+}
+
+.manuf_col {
+    width: 300px;
+    display: table-cell;
+    margin: 3px;
+}
+
+.manuf_item {
+    display: block;
+    margin: 2px;
+    padding: 3px;
+    text-align: left;
+    cursor: pointer;
+    color: #0f7ce6;
+    background-color: #FFF;
+    font-size: 13px;
+}
+
+.manuf_item:hover {
+    background-color: #0f7ce6;
+    color: #FFF;
+}
+
+.manuf_item .m_letter {
+    width: 20px;
+    font-weight: 700;
+    display: table-cell;
+}
+
+.manuf_item .m_caption {
+    display: table-cell;
+    text-decoration: none;
+}
+
+.manuf_item .m_caption a {
+    text-decoration: none;
+    color: #626262;
+}
+
+.manuf_item:hover .m_caption a {
+    text-decoration: none;
+    color: #FFF;
+    color: #626262;
+}
+
+.manuf_item:hover .m_caption a:hover {
+    text-decoration: none;
+    color: #FFF;
+}
+
+.letter_list a {
+    color: #083f97;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.letter_list a {
+    color: #0f7ce6;
+}
+
+.model_item {
+    display: block;
+    margin: 2px;
+    padding: 3px;
+    text-align: left;
+    cursor: pointer;
+    color: #0f7ce6;
+    background-color: #FFF;
+    font-size: 13px;
+}
+
+.model_item:hover {
+    background-color: #0f7ce6;
+    color: #FFF;
+}
+
+.model_item .m_caption {
+    display: table-cell;
+    text-decoration: none;
+}
+
+.model_item .m_caption a {
+    text-decoration: none;
+    color: #626262;
+}
+
+.model_item:hover .m_caption a {
+    text-decoration: none;
+    color: #FFF;
+    color: #626262;
+}
+
+.model_item:hover .m_caption a:hover {
+    text-decoration: none;
+    color: #FFF;
+}
+
+.model_item .m_years {
+    text-decoration: none;
+}
+
+.model_item .m_years a {
+    text-decoration: none;
+    color: #CCC;
+    font-style: italic;
+}
+
+.model_item:hover .m_caption a {
+    text-decoration: none;
+    color: #FFF;
+    color: #ccc;
+}
+
+.model_item:hover .m_caption a:hover {
+    text-decoration: none;
+    color: #FFF;
+}
+
+

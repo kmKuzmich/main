@@ -10,6 +10,9 @@ uploads/file/
 .idea/
 install/
 
+#ignore root htaccess
+.htaccess
+
 #ignoring all images
 *.img
 *.jpg

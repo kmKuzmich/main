@@ -1,5 +1,12 @@
-<div style="font-size:16px;">Каталог TecDoc</div>
-<div style="font-size:10px; font-weight:bold; margin-bottom:3px;">отбор: <span style="font-size:10px;color:#09449e;">{navigation_caption}</span></div>
+<h3 align="center">Каталог запчастей заменителей</h3>
+<div class="navigation"><strong>Автомобиль:</strong>
+    <a href="?dep=23&w=td&manufacture={manufacture_id}">{manufacture_caption}</a> | <a
+            href="?dep=23&w=td&manufacture={manufacture_id}&model={model_id}">{model_caption}</a> |
+    <a href="?dep=23&w=td&manufacture={manufacture_id}&model={model_id}&modification={modification_id}">{model_caption}</a>
+</div>
+<strong>Группа запчатей: </strong>{groups_navigation}<br>
+
+<br>
 <div> 
     {menu}
 </div>

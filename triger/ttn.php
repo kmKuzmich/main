@@ -42,7 +42,6 @@ $odb->query_lider("SET OPTION DATE_ORDER = 'DMY';");
 $odb->query_lider("SET OPTION DATE_FORMAT = 'DD-MM-YYYY';");
 $odb->query_lider("SET OPTION Timestamp_format = 'DD-MM-YYYY HH:NN:SS.SSS';");
 
-
 if (!empty($_POST['min'])) {
     $min = $_POST['min'];
 } else {
@@ -52,6 +51,12 @@ if (!empty($_POST['max'])) {
     $max = $_POST['max'];
 } else {
     $max = date('Y-m-d');
+}
+
+if (!empty($_POST['phone'])) {
+    $min = '2015-11-24';
+    $max = date('Y-m-d');
+    $phone = $_POST['phone'];
 }
 
 $r = $odb->query_lider("select // Проверяем документы
@@ -65,7 +70,9 @@ $r = $odb->query_lider("select // Проверяем документы
             c.id IDDEL,
             d1.sNum TTN,
             di.phone PHONE,
-            di.contperson PERSON
+            di.contperson PERSON,
+			d.kinddoc_id TYPE,
+			s1.name SUBCONTO
             
         from doc d left outer join doc dV on d.id1=dV.id left outer join docinfo di on di.doc_id = (if isnull(dV.kinddoc_id,0)=2 then dV.id1 else d.id1 endif)
             left outer join kinddoc k on d.kinddoc_id=k.id
@@ -73,7 +80,8 @@ $r = $odb->query_lider("select // Проверяем документы
             left outer join carrier c on di.carrier_id=c.id
             left outer join doclink dl on doc_id2=d.id
             left outer join doc d1 on dl.doc_id1=d1.id
-        where d.kinddoc_id in (3,16)
+			left outer join subconto s1 on d.subconto_id1=s1.id
+        where d.kinddoc_id in (3,16,6)
             and d.place_id=170000005
             and d.opl<>3
             and d.day >= date('$min')
@@ -104,13 +112,46 @@ $r1 = $odb->query_lider("select  // Проверяем выданные счета
         and d.opl=0
       order by 1 desc");
 
+/*
+-----------------
+Поиск по телефону
+-----------------
+*/
+$r2 = $odb->query_lider("select
+            d.day as DAY,
+            k.name as DOC,
+            d.num as NUM,
+            s.name as NAME,
+            d.sum as SUM,
+            (if d.kinddoc_id=16 then 1 else d.opl endif) as DOLG,
+            c.name DEL,
+            c.id IDDEL,
+            d1.sNum TTN,
+            di.phone PHONE,
+            di.contperson PERSON,
+			d.kinddoc_id TYPE,
+			s1.name SUBCONTO
+            
+        from doc d left outer join doc dV on d.id1=dV.id left outer join docinfo di on di.doc_id = (if isnull(dV.kinddoc_id,0)=2 then dV.id1 else d.id1 endif)
+            left outer join kinddoc k on d.kinddoc_id=k.id
+            left outer join subconto s on d.subconto_id=s.id
+            left outer join carrier c on di.carrier_id=c.id
+            left outer join doclink dl on doc_id2=d.id
+            left outer join doc d1 on dl.doc_id1=d1.id
+			left outer join subconto s1 on d.subconto_id1=s1.id
+        where d.kinddoc_id in (3,16,6)
+            and d.place_id=170000005
+            and d.opl<>3
+			and PHONE like ('%$phone%')
+        order by 1 desc");
+/*
+--------------------------------------------------------------------------
+*/
+
 
 //Вывод результатов
-#echo "<h3>Состоянием на <u>".date('H:i:s')."</u></h3>".$min ;
 echo "<h3>Отчет по документам за период с <u>" . $min . "</u> по <u>" . $max . "</u>. Состояниием на <u>" . date('H:i:s') . "</u></h3>";
 
-
-/*echo 'Привет, <b>' .$_SESSION['login'].'</b> <a href="/triger/web.php?logout=1">Выйти</a><br><br>';*/
 
 ?>
 <html>
@@ -120,6 +161,10 @@ echo "<h3>Отчет по документам за период с <u>" . $min . "</u> по <u>" . $max . "
     по: <input type="date" name="max">
     <input type="submit" value="Выбрать диапазон">
 </form>
+<form action="ttn.php" method="post">
+    Поиск по номеру телефона: <input type="text" name="phone">
+    <input type="submit" value="Поиск">
+</form>
 </body>
 </html>
 
@@ -128,7 +173,7 @@ echo "<h3>Отчет по документам за период с <u>" . $min . "</u> по <u>" . $max . "
     <tbody>
     <tr>
         <td style="width: 7%"><b> Дата</td>
-        <td style="width: 18%"><b> Вид документа</td>
+        <td style="width: 17%"><b> Вид документа</td>
         <td style="width: 3%"><b>
                 <center>Номер</center></td>
         <td style="width: 19%"><b>Клиент</td>
@@ -136,7 +181,7 @@ echo "<h3>Отчет по документам за период с <u>" . $min . "</u> по <u>" . $max . "
         <td style="width: 4%"><b>
                 <center>Сумма</center></td>
         <td style="width: 5%"><b>Оплата</td>
-        <td style="width: 15%"><b>Перевозчик</td>
+        <td style="width: 12%"><b>Перевозчик</td>
         <td style="width: 5%"><b>
                 <center>ТТН</center></td>
         <td style="width: 5%"><b>
@@ -144,6 +189,11 @@ echo "<h3>Отчет по документам за период с <u>" . $min . "</u> по <u>" . $max . "
     </tr>
 
     <?php
+    if (!empty($_POST['phone'])) {
+        $r = $r2;
+        $r1 = $r2;
+    }
+
     while ($row = odbc_fetch_array($r1)) {
         $i = $row['IP'];
         echo '<tr>';
@@ -170,16 +220,29 @@ echo "<h3>Отчет по документам за период с <u>" . $min . "</u> по <u>" . $max . "
         echo '		<td>' . $row['DAY'] . '</td>';
         echo '		<td>' . $row['DOC'] . '</td>';
         echo '		<td align="center">' . $row['NUM'] . '</td>';
-        echo '		<td>' . $row['NAME'] . '</td>';
+
+        if ($row['TYPE'] == 6) {
+            echo '		<td>' . $row['SUBCONTO'] . '</td>';
+        } else {
+            echo '		<td>' . $row['NAME'] . '</td>';
+        }
+		
         echo '		<td>' . $row['PERSON'] . '</td>';
-        echo '		<td align="right">' . $row['SUM'] . '</center></td>';
+
+        if ($row['TYPE'] == 6) {
+            echo '		<td align="right"> -' . $row['SUM'] . '</center></td>';
+        } else {
+            echo '		<td align="right"> ' . $row['SUM'] . '</center></td>';
+        }
+
         if ($row['DOLG'] == 1) {
             echo '		<td>Оплачено</td>';
         } else {
             echo '		<td bgcolor="#ff0000">Долг</td>';
         }
         echo '		<td>' . $row['DEL'] . '</td>';
-        if (($row['IDDEL'] == 1 or $row['IDDEL'] == 8 or $row['IDDEL'] == 9 or $row['IDDEL'] == 5) and empty($row['TTN'])) {
+
+        if (($row['IDDEL'] == 1 or $row['IDDEL'] == 3 or $row['IDDEL'] == 8 or $row['IDDEL'] == 9 or $row['IDDEL'] == 5 or $row['IDDEL'] == 7) and empty($row['TTN'])) {
             echo '		<td bgcolor="#ff0000">' . $row['TTN'] . '</td>';
         } else {
             echo '		<td>' . $row['TTN'] . '</td>';

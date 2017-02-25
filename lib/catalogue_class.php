@@ -225,14 +225,29 @@ class catalogue{
         }
         if ($w == "") {
             if (($_REQUEST["manufacture"] == "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "") and ($_REQUEST["category"] == "")) {
-                $form = str_replace("{range_list}", $this->catalogue_art_find($_POST["art"], $_POST["by_code"], $_POST["by_sklad"], $_POST["by_name"], $_POST["by_producent"]), $form);
+                $form = str_replace("{range_list}", $this->catalogue_art_find($_POST["art"], $_POST["by_code"], $_POST["by_sklad"], $_POST["by_name"], $_POST["by_producent"], $_POST["item_id"]), $form);
             }
             if (($_REQUEST["manufacture"] == "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "") and ($_REQUEST["category"] != "")) {
                 $form = str_replace("{range_list}", $this->catalogue_sto_items($_POST["producent"], $_POST["category"], $_POST["otype"]), $form);
             }
             if ($_REQUEST["manufacture"] != "" and $_REQUEST["model"] != "" and $_REQUEST["modification"] != "") {
-                $form = str_replace("{range_list}", $this->loadTecGroupsList($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"]), $form);
+                $form = str_replace("{range_list}", $this->loadTecGroupsList2($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"]), $form);
             }
+        }
+        if ($w == "td") {
+            if ($_REQUEST["manufacture"] == "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "" and $_REQUEST["category"] == "") {
+                $form = str_replace("{range_list}", $this->show_td_manufacture_list(), $form);
+            }
+            if ($_REQUEST["manufacture"] != "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "" and $_REQUEST["category"] == "") {
+                $form = str_replace("{range_list}", $this->show_td_model_list($_REQUEST["manufacture"]), $form);
+            }
+            if ($_REQUEST["manufacture"] != "" and $_REQUEST["model"] != "" and $_REQUEST["modification"] == "" and $_REQUEST["category"] == "") {
+                $form = str_replace("{range_list}", $this->show_td_modification_list($_REQUEST["manufacture"], $_REQUEST["model"]), $form);
+            }
+            if ($_REQUEST["manufacture"] != "" and $_REQUEST["model"] != "" and $_REQUEST["modification"] != "") {
+                $form = str_replace("{range_list}", $this->loadTecGroupsList2($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"]), $form);
+            }
+            //$form = str_replace("{range_list}", $this->catalogue_art_td_find($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"],$_REQUEST["lvl"],$_REQUEST["prnt"]), $form);
         }
 		if ($w == "tdfind") {
              $form = str_replace("{range_list}", $this->catalogue_art_td_find($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"],$_REQUEST["lvl"],$_REQUEST["prnt"]), $form);
@@ -241,6 +256,216 @@ class catalogue{
         $form = str_replace("{recomend_list}", $this->showRecomendList(""), $form);
         return $form;
     }
+
+
+    function show_td_manufacture_list()
+    {
+        $slave = new slave;
+        $db_td = new db_ltd;
+        $form = "";
+        $item = "";
+        $list = "";
+        $letter_list = "";
+        $form_htm = RD . "/tpl/catalogue_manufacture_list.htm";
+        if (file_exists("$form_htm")) {
+            $form = file_get_contents($form_htm);
+        }
+        $item_htm = RD . "/tpl/catalogue_manufacture_item.htm";
+        if (file_exists("$item_htm")) {
+            $item = file_get_contents($item_htm);
+        }
+        $where = "";
+        $lt = substr($_REQUEST["lt"], 0, 1);
+        if ($lt != "") {
+            $where = " and  name like '$lt%' ";
+        }
+        $r = $db_td->query("SELECT * FROM cat_alt_manufacturer where isVisible='1' $where and isDeleted='0';");
+        $n = $db_td->num_rows($r);
+        $kkol = round($n / 3);
+        $r = $db_td->query("SELECT * FROM cat_alt_manufacturer where isVisible='1' and isDeleted='0';");
+        $n = $db_td->num_rows($r);
+        $kk = 0;
+        $prev_letter = "";
+        $rk = 0;
+        for ($i = 1; $i <= $n; $i++) {
+            $id = $db_td->result($r, $i - 1, "id_mfa");
+            $caption = $db_td->result($r, $i - 1, "name");
+            $letter = substr($caption, 0, 1);
+            if ($lt != "" && $letter != $lt) {
+                if ($prev_letter != $letter) {
+                    $prev_letter = $letter;
+                    $letter_list .= "<a href='?dep=23&w=td&lt=$letter'>$letter</a> &nbsp;";
+                }
+            }
+            if (($lt != "" && $letter == $lt) || ($lt == "")) {
+                $kk += 1;
+                $list .= $item;
+                if ($prev_letter != $letter) {
+                    $prev_letter = $letter;
+                    $letter_list .= "<a href='?dep=23&w=td&lt=$letter'>$letter</a> &nbsp;";
+                    $list = str_replace("{letter}", $letter, $list);
+                }
+                $letter = "";
+                $list = str_replace("{letter}", $letter, $list);
+                $list = str_replace("{id}", $id, $list);
+                $list = str_replace("{caption}", $caption, $list);
+                if ($kk == $kkol) {
+                    $rk += 1;
+                    $form = str_replace("{list$rk}", $list, $form);
+                    $list = "";
+                    $kk = 0;
+                }
+            }
+        }
+        $form = str_replace("{letter_list}", $letter_list, $form);
+        $form = str_replace("{list1}", "", $form);
+        $form = str_replace("{list2}", "", $form);
+        $form = str_replace("{list3}", "", $form);
+        return $form;
+    }
+
+    function show_td_model_list($manufacture)
+    {
+        $slave = new slave;
+        $db_td = new db_ltd;
+        $form = "";
+        $item = "";
+        $list = "";
+        $letter_list = "";
+        $form_htm = RD . "/tpl/catalogue_model_list.htm";
+        if (file_exists("$form_htm")) {
+            $form = file_get_contents($form_htm);
+        }
+        $item_htm = RD . "/tpl/catalogue_model_item.htm";
+        if (file_exists("$item_htm")) {
+            $item = file_get_contents($item_htm);
+        }
+        $where = "";
+
+        $ys = $_REQUEST["ys"];
+        if ($ys != "") {
+            $where = " and ((datestart <= '01.$ys' OR datestart=NULL) OR (dateend >='12.$ys' OR dateend=NULL))";
+        }
+        $form = str_replace("{manufacture_id}", $manufacture, $form);
+        $form = str_replace("{manufacture_caption}", $this->get_manufacture_caption($manufacture), $form);
+        $form = str_replace("{years_list}", $this->showModelYears($manufacture, $ys), $form);
+
+        $query = "SELECT * FROM cat_alt_models where id_mfa='$manufacture' and isVisible='1' and isDeleted='0' $where order by name asc;";
+        $r = $db_td->query($query);
+        $n = $db_td->num_rows($r);
+        $kk = 0;
+        $kkol = round($n / 2);
+        $rk = 0;
+        for ($i = 1; $i <= $n; $i++) {
+            $kk += 1;
+            $id = $db_td->result($r, $i - 1, "id_mod");
+            $caption = $db_td->result($r, $i - 1, "name");
+            $year_from = $db_td->result($r, $i - 1, "datestart");
+            $year_to = $db_td->result($r, $i - 1, "dateend");
+            $list .= $item;
+            $list = str_replace("{manufacture_id}", $manufacture, $list);
+            $list = str_replace("{model_id}", $id, $list);
+            if ($year_to == "") {
+                $year_to = "наст.время";
+            }
+            $list = str_replace("{caption}", "$caption", $list);
+            $list = str_replace("{years}", "($year_from - $year_to)", $list);
+            if ($kk == $kkol) {
+                $rk += 1;
+                $form = str_replace("{list$rk}", $list, $form);
+                $list = "";
+                $kk = 0;
+            }
+        }
+        $form = str_replace("{list1}", "", $form);
+        $form = str_replace("{list2}", "", $form);
+        $form = str_replace("{list3}", "", $form);
+        return $form;
+    }
+
+    function show_td_modification_list($manufacture, $model)
+    {
+        $slave = new slave;
+        $db_td = new db_ltd;
+        $form = "";
+        $item = "";
+        $list = "";
+        $form_htm = RD . "/tpl/catalogue_modification_list.htm";
+        if (file_exists("$form_htm")) {
+            $form = file_get_contents($form_htm);
+        }
+        $where = "";
+
+        $form = str_replace("{manufacture_id}", $manufacture, $form);
+        $form = str_replace("{manufacture_caption}", $this->get_manufacture_caption($manufacture), $form);
+        $form = str_replace("{model_id}", $model, $form);
+        $form = str_replace("{model_caption}", $this->get_tecmodel_caption($manufacture, $model), $form);
+
+        $query = "SELECT * FROM `cat_alt_types` WHERE id_mod='$model' and id_mfa='$manufacture' and isVisible='1' and isDeleted='0' order by name asc;";
+        $r = $db_td->query($query);
+        $n = $db_td->num_rows($r);
+        $kk = 0;
+        $kkol = round($n / 2);
+        $rk = 0;
+        for ($i = 1; $i <= $n; $i++) {
+            $kk += 1;
+            $id = $db_td->result($r, $i - 1, "id_typ");
+            $caption = $db_td->result($r, $i - 1, "name");
+            $powerHpFrom = $db_td->result($r, $i - 1, "KwHp");
+            $ccm = $db_td->result($r, $i - 1, "CCM");
+            $fuel = $db_td->result($r, $i - 1, "fuel");
+            $engines = $db_td->result($r, $i - 1, "Engines");
+            $drive = $db_td->result($r, $i - 1, "Drive");
+            $list .= "<tr onClick='location.href=\"?dep=23&w=td&manufacture=$manufacture&model=$model&modification=$id\"'>
+				<td class='trh' scope='col'>$caption</td>
+				<td class='trh' scope='col'>$fuel</td>
+				<td class='trh' scope='col'> $engines</td>
+				<td class='trh' scope='col'$ccm</td>
+				<td class='trh' scope='col'>$powerHpFrom л.с.</td>
+				<td scope='col'>$drive</td>
+			</tr>";
+        }
+        $form = str_replace("{modification_list}", $list, $form);
+        return $form;
+    }
+
+
+    function showModelYears($manufacture, $ys)
+    {
+        $slave = new slave;
+        $db_td = new db_ltd;
+        $years = array();
+        $list = "";
+        $r = $db_td->query("SELECT * FROM cat_alt_models where id_mfa='$manufacture' and isVisible='1' and isDeleted='0' order by name asc;");
+        $n = $db_td->num_rows($r);
+        for ($i = 1; $i <= $n; $i++) {
+            $year_from = $db_td->result($r, $i - 1, "datestart");
+            $yf = explode(".", $year_from);
+            $yf = $yf[1];
+            $year_to = $db_td->result($r, $i - 1, "dateend");
+            $yt = explode(".", $year_to);
+            $yt = $yt[1];
+            if ($yf != '') {
+                $years[$yf] = $yf;
+            }
+            if ($yt != '') {
+                $years[$yt] = $yt;
+            }
+        }
+        arsort($years);
+        foreach ($years as $year) {
+            if (substr($year, -1, 0) == "0") {
+                $list .= "<option value='$year' style='font-weight:bold'>$year-e</option>";
+            }
+            $sel = "";
+            if ($year == $ys) {
+                $sel = " selected";
+            }
+            $list .= "<option value='$year'$sel>$year</option>";
+        }
+        return $list;
+    }
+	
 	
 	function show_akb_search_form(){
         $form_htm = RD . "/tpl/catalogue_akb_search_form.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
@@ -1227,9 +1452,10 @@ class catalogue{
 				
 		return $form;
 	}
-	
 
-    function catalogue_art_find($art, $by_code, $by_sklad, $by_name, $by_producent) {
+
+    function catalogue_art_find($art, $by_code, $by_sklad, $by_name, $by_producent, $by_item_id)
+    {
 //@todo добавить этот признак в переменную метода и в обработку скрипта
 //@todo в поиске должна быть сортировка по совпадению, боле точные результаты должны быть первыми например '207 045' по HP
         $byTD = 0; //основной Признак что поиск проведён по TecDoc
@@ -1257,196 +1483,204 @@ class catalogue{
 //            $exclude = " and prod_id not in (1134) and nvl( bitand(sign,2),0)=0";
             $exclude = " and prod_id not in (1134) and COALESCE( (sign & 2),0)=0";
             //Эта переменная добавляет фильтр по производителю, если указан
-            $where2 = "";
-            if ($by_producent != "") {
-                $where2 = " and prod_id='$by_producent' ";
-                //Записываем в список "История поисков" и в WebSearch
-                //print "$by_producent";
-                $this->saveArtSearch($art, $by_name, $by_producent, $byTD);
-            }
-            //Если был выбран поиск по коду и не по наименованию, то нам сюда. обычно поиск по коду по умолчанию, эта опция отключена уже в прайсе, раньше там был крыжик
-//                    $by_name=1;
+            if ($by_item_id == "") {
+                $where2 = "";
+                if ($by_producent != "") {
+                    $where2 = " and prod_id='$by_producent' ";
+                    //Записываем в список "История поисков" и в WebSearch
+                    //print "$by_producent";
+                    $this->saveArtSearch($art, $by_name, $by_producent, $byTD);
+                }
+                //Если был выбран поиск по коду и не по наименованию, то нам сюда. обычно поиск по коду по умолчанию, эта опция отключена уже в прайсе, раньше там был крыжик
+                //                    $by_name=1;
 
-//            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
-            if ($by_name == 0) {
-                //Ищем по полям Code или sCode  по "точному" совпадению art% art1%
-//                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
-                $where = "(scode LIKE '$art1%' or scode LIKE '$art')";
-                $query = "select * from item where ($where) $where2 $exclude order by id asc;";
-                $r = $odb->query_td($query); $n = $odb->num_rows($r);
+                //            if ($by_code == 0 and ($by_name == 0 or $by_name == "")) {
+                if ($by_name == 0) {
+                    //Ищем по полям Code или sCode  по "точному" совпадению art% art1%
+                    //                $where = "(code LIKE '$art%') or (code LIKE '$art1%') or (scode LIKE '$art%') or (scode LIKE '$art1%')";
+                    $where = "(scode LIKE '$art1%' or scode LIKE '$art')";
+                    $query = "select * from item where ($where) $where2 $exclude order by id asc;";
+                    $r = $odb->query_td($query);
+                    $n = $odb->num_rows($r);
 
-                //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
-                // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
-                //
-                if ($n == 0) {
+                    //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
+                    // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
+                    //
+                    if ($n == 0) {
+                        $where = "";
+                        $to_tsquery = "";
+                        $artn = explode(" ", strtolower($art));
+
+                        foreach ($artn as $artan) {
+                            if (!empty($artan)) {
+                                $to_tsquery .= "& $artan:*";
+                            }
+                        }
+
+                        if (!empty($artn) | $artn != '') {
+                            $where = " and  to_tsvector('english',I.Code||' '||I.name) @@ to_tsquery('";
+                            $to_tsquery = substr($to_tsquery, 2);
+                            $where .= $to_tsquery . "')";
+                        }
+                        //                echo $where ;
+                        $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 55;";
+                        $r = $odb->query_td($query);
+                        $n = $odb->num_rows($r);
+                    }
+                    //-------
+
+                    //--------
+                    //нафига эта переменна не пойму, вроде нигде не использвется пока что убираю
+                    $kol = $n;
+
+                    /*                дальше отключаю для тестов с строки 1104 по 1163
+    
+                                    if ($n == 0) {
+                                        //Если по точному не нашли ищем по полям Code и sCode  по  совпадению спереди кода %art% кроме sCode art1 и art2
+                                        $where = "(code LIKE '%$art%') or (code LIKE '$art1%') or (scode LIKE '%$art%') or (scode LIKE '$art1%')";
+                                        $query = "select * from item where ($where) $where2  $exclude order by id asc;";
+                                        $r = $odb->query_td($query);
+                                        $n = $odb->num_rows($r);
+                                    }
+                                    if ($n == 0) {
+                                        //Если и так ничего не нашли ищем по совпадению спереди кода для всех вариантов
+                                        $where = "(code LIKE '%$art%') or (code LIKE '%$art1%') or (scode LIKE '%$art%') or (scode LIKE '%$art1%')";
+                                        $query = "select * from item where ($where) $where2 $where2  $exclude order by id asc;";
+                                        $r = $odb->query_td($query);
+                                        $n = $odb->num_rows($r);
+                                    }
+                                }
+                    */
+                    //               если результат =0 или поиск в техдоке и не по наименованию
+                    if ((($n == 0) or ($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
+                        $query = "select
+													  I.id as id,
+													  I.code,
+													  I.scode,
+													  I.name,
+													  I.flag,
+													  I.help,
+													  I.prod_id,
+													  I.isImage
+											from (select
+														DISTINCT P.code as code,
+														P.brand_id as prod_id1
+												  from car.ProductLookup L
+													join car.Product P on P.id=L.product_id
+												  where scode=upper('$art1') ) T
+											left outer join tdBrand B on B.brand_id=T.prod_id1
+											left outer join Producent P on P.id=B.prod_id
+											left outer join Item I on upper(I.scode)=T.code and I.prod_id=P.id
+											where I.id is not null
+											limit 150;
+											";
+                        $r = $odb->query_td($query);
+                        $n = $odb->num_rows($r);
+                        $byTD = 1; //основной Признак что поиск проведён по TecDoc
+
+                    }
+                }
+                //            Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
+                if (($n == 0) or ($by_name == 1)) {
+                    //                echo $by_name;
+                    //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
+                    // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
+                    //
                     $where = "";
                     $to_tsquery = "";
-                    $artn = explode(" ", strtolower($art));
+                    $artn = explode(" ", strtolower($artName));
 
                     foreach ($artn as $artan) {
                         if (!empty($artan)) {
                             $to_tsquery .= "& $artan:*";
                         }
                     }
-
-                    if (!empty($artn) | $artn != '') {
-                        $where = " and  to_tsvector('english',I.Code||' '||I.name) @@ to_tsquery('";
+                    if (!empty($artn)) {
+                        $where = " and to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
                         $to_tsquery = substr($to_tsquery, 2);
                         $where .= $to_tsquery . "')";
                     }
-//                echo $where ;
-                    $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 55;";
+                    //                        echo $where ;
+                    $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 155;";
                     $r = $odb->query_td($query);
                     $n = $odb->num_rows($r);
+
                 }
-//-------
 
-//--------
-//нафига эта переменна не пойму, вроде нигде не использвется пока что убираю
-                $kol = $n;
+                /*
+                 * 
+                 */
 
-                /*                дальше отключаю для тестов с строки 1104 по 1163
 
-                                if ($n == 0) {
-                                    //Если по точному не нашли ищем по полям Code и sCode  по  совпадению спереди кода %art% кроме sCode art1 и art2
-                                    $where = "(code LIKE '%$art%') or (code LIKE '$art1%') or (scode LIKE '%$art%') or (scode LIKE '$art1%')";
-                                    $query = "select * from item where ($where) $where2  $exclude order by id asc;";
-                                    $r = $odb->query_td($query);
-                                    $n = $odb->num_rows($r);
-                                }
-                                if ($n == 0) {
-                                    //Если и так ничего не нашли ищем по совпадению спереди кода для всех вариантов
-                                    $where = "(code LIKE '%$art%') or (code LIKE '%$art1%') or (scode LIKE '%$art%') or (scode LIKE '%$art1%')";
-                                    $query = "select * from item where ($where) $where2 $where2  $exclude order by id asc;";
-                                    $r = $odb->query_td($query);
-                                    $n = $odb->num_rows($r);
-                                }
-                            }
-                */
-                //               если результат =0 или поиск в техдоке и не по наименованию
-                if ((($n == 0) or ($n == 0) or ($byTD == 1)) and ($by_name == 0)) {
-                    $query = "select
-                                                  I.id as id,
-                                                  I.code,
-                                                  I.scode,
-                                                  I.name,
-                                                  I.flag,
-                                                  I.help,
-                                                  I.prod_id,
-                                                  I.isImage
-                                        from (select
-                                                    DISTINCT P.code as code,
-                                                    P.brand_id as prod_id1
-                                              from car.ProductLookup L
-                                                join car.Product P on P.id=L.product_id
-                                              where scode=upper('$art1') ) T
-                                        left outer join tdBrand B on B.brand_id=T.prod_id1
-                                        left outer join Producent P on P.id=B.prod_id
-                                        left outer join Item I on upper(I.scode)=T.code and I.prod_id=P.id
-                                        where I.id is not null
-                                        limit 150;
-                                        ";
+                //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
+                /*            if ($by_code == 0 and $by_name == 1) {
+                    $where = "";
+                    $artn = explode(" ", strtolower($artName));
+                    foreach ($artn as $artan) {
+                        $where .= " and locate('$artan',sname)>0";
+                    }
+                    $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
                     $r = $odb->query_td($query);
                     $n = $odb->num_rows($r);
-                    $byTD = 1; //основной Признак что поиск проведён по TecDoc
+                    $kol = $n;
+    
+                }*/
 
+                //нафига повторно запускать???? отключаю!
+                $r = $odb->query_td($query);
+                $list = "";
+
+
+                //Если результат поисков больше 1 строк и пр-ль не выбран и поиск не через TecDoc, вывод таблицы произв. //исправлено 10/11/2015 раньше было $n>2
+                if ($n > 1 and $by_producent == "" and $byTD <> 1) {
+                    $kt = -1;
+                    $k = 0;
+                    $proda_w = ""; //строка с несколькими prod_id  передаётся дальше в процедуру вывода табов
+                    while (odbc_fetch_row($r)) {
+                        $prm = 0;
+                        $k += 1;
+                        $prod_id = odbc_result($r, "prod_id");
+                        //                    $proda[$k] = $prod_id;
+                        //                    $proda_w .= "or id= $prod_id";
+                        $proda_w .= ",$prod_id";
+                    }
+                    //                строка с несколькими prod_id  передаётся дальше в процедуру вывода табов
+                    //                $proda_w .="where ".substr($proda_w, 3);
+                    $proda_w = "id in (" . substr($proda_w, 1) . ")";
+                    //Вывод табов производителей
+                    $form = $this->showProducentTabs($proda_w);
+                }
+                //Если результат поисков больше 16 строк и (выбран пр-ль или поиск по TD) и искали не по наименованию, готовим вывод результата поиска с аналогами
+                if ($n > 16 and ($by_producent != "" or $byTD == 1) and ($by_name == 0 or $by_name == "")) {
+                    $form_htm = RD . "/tpl/catalogue_items1_list.htm";
+                    if (file_exists("$form_htm")) {
+                        $form = file_get_contents($form_htm);
+                    }
+                    while (odbc_fetch_row($r)) {
+                        $style = "";
+                        $id = odbc_result($r, "id");
+                        $code = odbc_result($r, "code");
+                        if (strlen($code) > 11) {
+                            $style = " style='font-size:12px;' ";
+                        }
+                        $list .= "<div class='ItemsTab' onclick='location.href=\"#search=$code\"'><a href='#search=$code' $style>$code</a></div>";
+                        if ($i == 24) {
+                            $i = $n + 1;
+                            $list .= "<h3 style='color:red'>Результат поиска больше выведенного списка - конкретизируйте поиск</h3>";
+                        }
+                    }
+                    $form = str_replace("{list}", $list, $form);
+                }
+
+                //Если результат поисков больше 16 строк и НЕ выбран пр-ль и искали  по наименованию, готовим вывод результата
+                if ($n > 16 and $by_producent != "" and $by_name == 1) {
+                    $n = 16;
                 }
             }
-            //            Если ничего не нашли по коду или был выбран поиск по наименованию пробуем искать по наименованию
-            if (($n == 0) or ($by_name == 1)) {
-//                echo $by_name;
-                //Это абсолютно новый поиск по индексам по коду и по наименованию по НАЧАЛАМ СЛОВ! например не найдёт P2064 если искать 2064,
-                // раньше в DB2 поиск ведётся по sName - это поле только в DB2,
-                //
-                $where = "";
-                $to_tsquery = "";
-                $artn = explode(" ", strtolower($artName));
-
-                foreach ($artn as $artan) {
-                    if (!empty($artan)) {
-                        $to_tsquery .= "& $artan:*";
-                    }
-                }
-                if (!empty($artn)) {
-                    $where = " and to_tsvector('english',I.code||' '||I.name) @@ to_tsquery('";
-                    $to_tsquery = substr($to_tsquery, 2);
-                    $where .= $to_tsquery . "')";
-                }
-//                        echo $where ;
-                $query = "select * from Item I where id is not NULL $where $where2 $exclude order by id asc limit 155;";
+            if ($by_item_id != "" && $by_item_id > 0) {
+                $query = "select * from Item I where id='$by_item_id' limit 0,1;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
-
-            }
-
-            /*
-             * 
-             */
-
-
-            //Это поиск только по наименованию, поиск ведётся по sName - это поле только в DB2, надо уточнить чем оно отличается от обычного
-            /*            if ($by_code == 0 and $by_name == 1) {
-                $where = "";
-                $artn = explode(" ", strtolower($artName));
-                foreach ($artn as $artan) {
-                    $where .= " and locate('$artan',sname)>0";
-                }
-                $query = "select * from item where id is not NULL $where $where2 $exclude order by id asc;";
-                $r = $odb->query_td($query);
-                $n = $odb->num_rows($r);
-                $kol = $n;
-
-            }*/
-
-//нафига повторно запускать???? отключаю!
-            $r = $odb->query_td($query);
-            $list = "";
-
-
-            //Если результат поисков больше 1 строк и пр-ль не выбран и поиск не через TecDoc, вывод таблицы произв. //исправлено 10/11/2015 раньше было $n>2
-            if ($n > 1 and $by_producent == "" and $byTD <> 1) {
-                $kt = -1;
-                $k = 0;
-                $proda_w = ""; //строка с несколькими prod_id  передаётся дальше в процедуру вывода табов
-                while (odbc_fetch_row($r)) {
-                    $prm = 0;
-                    $k += 1;
-                    $prod_id = odbc_result($r, "prod_id");
-//                    $proda[$k] = $prod_id;
-//                    $proda_w .= "or id= $prod_id";
-                    $proda_w .= ",$prod_id";
-                }
-//                строка с несколькими prod_id  передаётся дальше в процедуру вывода табов
-//                $proda_w .="where ".substr($proda_w, 3);
-                $proda_w = "id in (" . substr($proda_w, 1) . ")";
-                //Вывод табов производителей
-                $form = $this->showProducentTabs($proda_w);
-            }
-            //Если результат поисков больше 16 строк и (выбран пр-ль или поиск по TD) и искали не по наименованию, готовим вывод результата поиска с аналогами
-            if ($n > 16 and ($by_producent != "" or $byTD == 1) and ($by_name == 0 or $by_name == "")) {
-                $form_htm = RD . "/tpl/catalogue_items1_list.htm";
-                if (file_exists("$form_htm")) {
-                    $form = file_get_contents($form_htm);
-                }
-                while (odbc_fetch_row($r)) {
-                    $style = "";
-                    $id = odbc_result($r, "id");
-                    $code = odbc_result($r, "code");
-                    if (strlen($code) > 11) {
-                        $style = " style='font-size:12px;' ";
-                    }
-                    $list .= "<div class='ItemsTab' onclick='location.href=\"#search=$code\"'><a href='#search=$code' $style>$code</a></div>";
-                    if ($i == 24) {
-                        $i = $n + 1;
-                        $list .= "<h3 style='color:red'>Результат поиска больше выведенного списка - конкретизируйте поиск</h3>";
-                    }
-                }
-                $form = str_replace("{list}", $list, $form);
-            }
-
-            //Если результат поисков больше 16 строк и НЕ выбран пр-ль и искали  по наименованию, готовим вывод результата
-            if ($n > 16 and $by_producent != "" and $by_name == 1) {
-                $n = 16;
             }
             //Результат есть и не больше 16 строк - выводим список
             if (($n > 0 and $n <= 16)) {
@@ -1588,19 +1822,33 @@ class catalogue{
     }
 
     function get_art() { return $_REQUEST["art"];}
-    function saveArtSearch($art, $by_name, $by_producent, $byTD){
+
+    function saveArtSearch($art, $by_name, $by_producent, $byTD)
+    {
         //пока нет таблицы history_search и websearch тупо вываливаемся, когда появятся будем пробовать в них записывать.
         //return;
 
-        session_start();$odb = new odb;$client = $_SESSION["client"];
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {$remip = $_SERVER['HTTP_CLIENT_IP'];} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {$remip = $_SERVER['HTTP_X_FORWARDED_FOR'];} else {$remip = $_SERVER['REMOTE_ADDR'];}
-        if ($by_name == 1) {$by_code = 0;} else { $by_code = 1; }
+        session_start();
+        $odb = new odb;
+        $client = $_SESSION["client"];
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $remip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $remip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $remip = $_SERVER['REMOTE_ADDR'];
+        }
+        if ($by_name == 1) {
+            $by_code = 0;
+        } else {
+            $by_code = 1;
+        }
         $data = date("Y-m-d H:i:s");
         $client = $client + 0;
         $by_producent = $by_producent + 0;
         $query1 = "insert into history_search (client,art,data,ip,prod_id) values ('$client','" . strtolower($art) . "','$data','$remip',$by_producent)";
         // $query1="insert into history_search (client,art,data,ip) values ('$client','$art','$data','$remip')";
-        $query2 = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id) values ($client,'$remip','" . strtolower($art) . "','$by_code',$by_producent)";
+        $query2 = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id) values ($client,'$remip','" . strtolower($art) . "','" . strtolower($art) . "','$by_code',$by_producent)";
 
         //если клиент пусто то выполнить какую то ерунду????
         if ($client == 0) {
@@ -2387,10 +2635,10 @@ SELECT G.Sort, G.ID_grp,G.Standard,G.Name,G.Intended, tart.*, G.*, SG.*, TR.* FR
 
             $new_level = $level;
             if ($child > 0) {$new_level = $level + 1;
-                $list .= "<li><a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+                $list .= "<li><a href='?dep=23&w=td&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
             }
             if ($child <= 0) {
-                $list .= "<li><a href='?dep=23&dep_up=0&dep_cur=3&w=tdfind&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+                $list .= "<li><a href='?dep=23&w=td&w=tdfind&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
             }
 
         }
@@ -2402,6 +2650,59 @@ SELECT G.Sort, G.ID_grp,G.Standard,G.Name,G.Intended, tart.*, G.*, SG.*, TR.* FR
         $form = str_replace("{navigation_caption}", $manufacture_caption . " - " . $model_caption . " - " . $modification_caption, $form);
         return $form;
     }
+
+    function loadTecGroupsList2($manufacture, $model, $modification)
+    {
+        $slave = new slave;
+        $db_td = new db_ltd;
+        $level = $_REQUEST["lvl"];
+        $parent_id = $_REQUEST["prnt"];
+        $form_htm = RD . "/tpl/catalogue_tecdoc_groups.htm";
+        if (file_exists("$form_htm")) {
+            $form = file_get_contents($form_htm);
+        }
+        $list = "";
+        if ($parent_id == "") {
+            $parent_id = "10001";
+        }
+        if ($level == "") {
+            $level = "1";
+        }
+        $r = $db_td->query("SELECT TR.*, SG.* FROM cat_alt_tree TR
+			INNER JOIN cat_alt_link_str_grp SG ON TR.`ID_tree`=SG.`ID_tree` INNER JOIN cat_alt_link_typ_art tart ON tart.`ID_grp`=SG.`ID_grp`
+			WHERE tart.`ID_typ`='$modification'  AND TR.`ID_parent`>0 AND TR.`Level`='$level' and TR.`ID_parent`='$parent_id'
+			GROUP BY TR.`ID_tree`,TR.`Sort` ORDER BY 1;");
+        $n = $db_td->num_rows($r);
+        for ($i = 1; $i <= $n; $i++) {
+            $sort = $db_td->result($r, $i - 1, "sort");
+            $id_grp = $db_td->result($r, $i - 1, "id_grp");
+            $id_tree = $db_td->result($r, $i - 1, "id_tree");
+            $caption = $db_td->result($r, $i - 1, "name");
+            $child = $db_td->result($r, $i - 1, "Childs");
+            $id_parent = $db_td->result($r, $i - 1, "id_parent");
+
+            $new_level = $level;
+            if ($child > 0) {
+                $new_level = $level + 1;
+                $list .= "<li><a href='?dep=23&w=td&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+            }
+            if ($child <= 0) {
+                $list .= "<li><a href='?dep=23&w=td&w=tdfind&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' class='catalogue'>$caption</a></li>";
+            }
+
+        }
+        $form = str_replace("{menu}", $list, $form);
+
+        $form = str_replace("{manufacture_id}", $manufacture, $form);
+        $form = str_replace("{manufacture_caption}", $this->get_manufacture_caption($manufacture), $form);
+        $form = str_replace("{model_id}", $model, $form);
+        $form = str_replace("{model_caption}", $this->get_tecmodel_caption($manufacture, $model), $form);
+        $form = str_replace("{modification_id}", $modification, $form);
+        $form = str_replace("{modification_caption}", $this->get_modification_caption($manufacture, $model, $modification), $form);
+        $form = str_replace("{groups_navigation}", $this->loadTecGroupsNav($manufacture, $model, $modification, $_REQUEST["lvl"], $_REQUEST["prnt"], ""), $form);
+        return $form;
+    }
+	
 
 	function loadTecGroupsNav($manufacture,$model,$modification,$level,$parent_id,$info) {$slave = new slave;$db_td = new db_ltd; if ($parent_id == "") {$parent_id = "10001"; }if ($level == "") {$level = "1";}
         $r = $db_td->query("SELECT TR.* FROM cat_alt_tree TR
@@ -2416,10 +2717,10 @@ SELECT G.Sort, G.ID_grp,G.Standard,G.Name,G.Intended, tart.*, G.*, SG.*, TR.* FR
             $new_level = $level;
             if ($level > 1) {$new_level = $level -1;
                 $recurs_inf=$this->loadTecGroupsNav($manufacture,$model,$modification,$new_level,$id_parent,$info);
-				$info=$recurs_inf."&rsaquo; <a href='?dep=23&dep_up=0&dep_cur=3&w=tdfind&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' style='text-transform:lowercase'>$caption</a> ".$info;
+                $info = $recurs_inf . "&rsaquo; <a href='?dep=23&w=td&w=tdfind&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' style='text-transform:lowercase'>$caption</a> " . $info;
             }
             if ($level <= 1) {
-                $info="<a href='?dep=23&dep_up=0&dep_cur=3&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' style='text-transform:lowercase'>$caption</a> ".$info;
+                $info = "<a href='?dep=23&w=td&manufacture=$manufacture&model=$model&modification=$modification&lvl=$new_level&prnt=$id_tree' style='text-transform:lowercase'>$caption</a> " . $info;
             }
 
         }
@@ -2457,7 +2758,9 @@ SELECT G.Sort, G.ID_grp,G.Standard,G.Name,G.Intended, tart.*, G.*, SG.*, TR.* FR
             list($name, $code) = $this->getItemCaptionCode($model);
             $pic = $this->getItemPhoto($model, 75, 75, "left", "newsImg", 0);
             if ($place == "") {
-                $url = "javascript:search_biart('$code');";
+                //$url = "javascript:search_biart('$code');";
+                $url = "javascript:search_by_id('$model');";
+				
             }
             if ($place != "") {
                 $url = "?dep=23&dep_up=0&dep_cur=3#search=$code";

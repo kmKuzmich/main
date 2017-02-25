@@ -38,6 +38,7 @@ function search_art() {
             by_name = 1;
         }
         var by_producent = document.getElementById("by_producent").value;
+        var item_id = document.getElementById("item_id").value;
 
         JsHttpRequest.query('content.php', {
                 'w': 'catalogue_art_find',
@@ -45,7 +46,8 @@ function search_art() {
                 'by_code': by_code,
                 'by_sklad': by_sklad,
                 'by_name': by_name,
-                'by_producent': by_producent
+                'by_producent': by_producent,
+                'item_id': item_id
             },
             function (result, errors) {
                 if (errors) {
@@ -73,6 +75,15 @@ function search_biartTec(art, producent) {
 
 function search_biart(art) {
     document.getElementById("by_producent").value = "";
+//	if (document.getElementById("art").value==""){document.getElementById("art").value=art;}
+    document.getElementById("art").value = art;
+    win_close();
+    search_art();
+    closeHistorySearchFrom();
+    window.location.hash = "#search=" + art;
+}
+function search_biart2(art, producent) {
+    document.getElementById("by_producent").value = producent;
 //	if (document.getElementById("art").value==""){document.getElementById("art").value=art;}
     document.getElementById("art").value = art;
     win_close();

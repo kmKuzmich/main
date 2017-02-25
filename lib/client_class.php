@@ -1003,7 +1003,8 @@ class client
                             CASE WHEN(s1.sday < s1.cDT) 
                             THEN GetDolg(s1.id, DATE(s1.cDT) ) ELSE 
                             GetDolg(s1.id, DATE(s1.ssday) ) END AS os,
-                            GetDolg(s1.id, DATE(s1.scDT) ) as dolg,
+//                            GetDolg(s1.id, DATE(s1.scDT) ) as dolg,
+                            GetDolg(s1.id) as dolg,
                             s1.K_Code
                         FROM(select K.id,
                                 date(now())+1 AS cDT,
