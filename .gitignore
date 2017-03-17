@@ -30,6 +30,8 @@ leonov25/
 #ignoring logs
 lib/odbc_errors/
 
+#ignoring service files
+.htaccess
 
 #ignoring lonely logs
 admin/php_errors.log
