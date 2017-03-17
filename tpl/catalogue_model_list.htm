@@ -1,0 +1,12 @@
+<script language="javascript">
+	function selectYs(){
+		location.href='?dep=23&w=td&manufacture={manufacture_id}&ys='+$("#ys option:selected").val();
+	}
+</script>
+<h3 align="center">Выберете модель автомобиля</h3>
+<div class="navigation"><strong>Автомобиль:</strong> <a href="?dep=23&w=td&manufacture={manufacture_id}">{manufacture_caption}</a></div>
+<div class="years_list"><strong>Года выпуска:</strong> <select id="ys" name="ys" size="1" onChange="selectYs();"><option value=""> - все года -</option>{years_list}</select></div>
+<div class="model_list">
+	<div class="model_col">{list1}</div>
+    <div class="model_col">{list2}</div>
+</div>

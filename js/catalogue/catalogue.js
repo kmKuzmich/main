@@ -94,11 +94,12 @@ function search_biart2(art, producent) {
 
 function search_by_id(item_id) {
 //	if (document.getElementById("art").value==""){document.getElementById("art").value=art;}
-    document.getElementById("item_id").value = item_id;
+/*    document.getElementById("item_id").value = item_id;
     win_close();
     search_art();
     closeHistorySearchFrom();
-    window.location.hash = "#search=" + item_id;
+	*/
+    window.location.href = "?dep=23&dep_up=0&dep_cur=3&w=by_id&item_id=" + item_id;
 }
 
 

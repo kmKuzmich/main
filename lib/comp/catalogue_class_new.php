@@ -1815,7 +1815,8 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 					<tr align='center' id='ri$id' height='25' style='color:#000;'>
 						<td></td>
 						<td>$dop_icon</td>
-						<td><a href='javascript:search_biart(\"$code\");'>$code</a></td>
+//						<td><a href='javascript:search_biart(\"$code\");'>$code</a></td>
+						<td><a href='javascript:search_by_id(\"$item_id\");'>$item_id</a></td>
 						<td align='left'>$name</td>
 						<td align='right'>$price</td>
 						<td align='right'>$price_client</td>
@@ -1879,7 +1880,8 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 						<tr align='center' id='ri$id' height='25' style='background-color:#dcdcdc;color:#000;'>
 							<td width='5'>$icon_flag</td>
 							<td></td>
-							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
+//							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
+							<td><a class='desc' href='javascript:search_by_id(\"$item_id\");' style='text-decoration:none;'>$item_id</a></td>
 							<td align='left'>$name</td>
 							<td align='right'>$price</td>
 							<td align='right'>$price_client</td>
@@ -1895,7 +1897,8 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 						<tr align='center' id='ri$id' height='25' style='background-color:#dcdcdc;color:#000;'>
 							<td width='5'>$icon_flag</td>
 							<td>$dop_icon</td>
-							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
+//							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
+							<td><a class='desc' href='javascript:search_by_id(\"$item_id\");' style='text-decoration:none;'>$item_id</a></td>
 							<td align='left'>$name</td>
 							<td align='right'>$price</td>
 							<td align='right'>$price_client</td>

@@ -234,6 +234,9 @@ class catalogue{
                 $form = str_replace("{range_list}", $this->loadTecGroupsList2($_REQUEST["manufacture"], $_REQUEST["model"], $_REQUEST["modification"]), $form);
             }
         }
+		if ($w=="by_id"){
+			$form = str_replace("{range_list}", $this->catalogue_art_find("", "", "", "", "", $_REQUEST["item_id"]), $form);
+		}
         if ($w == "td") {
             if ($_REQUEST["manufacture"] == "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "" and $_REQUEST["category"] == "") {
                 $form = str_replace("{range_list}", $this->show_td_manufacture_list(), $form);
@@ -1454,15 +1457,14 @@ class catalogue{
 	}
 
 
-    function catalogue_art_find($art, $by_code, $by_sklad, $by_name, $by_producent, $by_item_id)
-    {
+    function catalogue_art_find($art, $by_code, $by_sklad, $by_name, $by_producent, $by_item_id){
 //@todo добавить этот признак в переменную метода и в обработку скрипта
 //@todo в поиске должна быть сортировка по совпадению, боле точные результаты должны быть первыми например '207 045' по HP
         $byTD = 0; //основной Признак что поиск проведён по TecDoc
         session_start(); $odb = new odb; $slave = new slave; $clnt = new client;  $dep = "23"; $client_id = $_SESSION["client"];
         if ($art == "") { $art = $this->get_art(); }if ($by_code == "") { $by_code = 0; }if ($by_sklad == "") {$by_sklad = 0;}if ($by_name == "") {$by_name = 0;}
         $form_htm = RD . "/tpl/catalogue_items_list.htm"; if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
-        if (strlen($art) > 2 and $art != "Поиск запчастей") {
+        if ((strlen($art) > 2 and $art != "Поиск запчастей") || ($by_item_id>0 && $by_item_id!="")) {
             //запоминаем первоначальный поиск чтоб потом по нему потом поискатьпо наименованию
             $artName = mb_convert_case($art, MB_CASE_LOWER, "CP1251");
             //избавляемся от лишних пробелов в искомой строке (отключил , чуть ниже избавимся)
@@ -1677,8 +1679,8 @@ class catalogue{
                     $n = 16;
                 }
             }
-            if ($by_item_id != "" && $by_item_id > 0) {
-                $query = "select * from Item I where id='$by_item_id' limit 0,1;";
+            if ($by_item_id != "" && $by_item_id > 0) { $odb=new odb;
+				$query = "select * from Item I where id is not NULL and id = '$by_item_id' limit 155;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
             }
@@ -1687,7 +1689,11 @@ class catalogue{
                 $kt = -1;
                 $k = 0;
                 $i = 1;
-                while (odbc_fetch_row($r)) {
+				if ($by_item_id != "" && $by_item_id > 0){
+					$query = "select * from Item I where id is not NULL and id = '$by_item_id' limit 155;";
+					$r = $odb->query_td($query);
+				}
+                while (odbc_fetch_row($r)) { 
                     $prm = 0;
                     $price1 = "";
                     $i++;
@@ -1749,7 +1755,6 @@ class catalogue{
                     if ((($flag == 1) | ($flag == 2) | ($flag == 5) | ($flag == 6)) & ($quant > 0)) {
                         $icon_flag = "<img src='theme/images/best_price_icon.png' border='0' alt='СуперЦена' class='icon_button' onmouseover=\"tooltip.pop(this, '#d$id" . "_tip')\" onclick='showItemActionRemark(\"$id\");'><div style='display:none;'><div id='d$id" . "_tip'>$help</div></div>";
                     }
-
                     if ($producent == $prod_id or $by_producent == $prod_id) {
                         $k++;
                         if ($k <= 15) {
@@ -1801,7 +1806,7 @@ class catalogue{
         }
 
 
-        if (strlen($art) < 3) {
+        if (strlen($art) < 3 && ($by_item_id=="" || $by_item_id==0)) {
             $form = str_replace("{items_list}", "", $form);
         }
         $filter = "по коду";
@@ -1813,6 +1818,9 @@ class catalogue{
         }
         if ($by_sklad == "1") {
             $filter .= ", только наличие";
+        }
+		if ($by_item_id != "" && $by_item_id>0) {
+            $filter = " по индексу базы";
         }
         $form = str_replace("{art}", $art, $form);
         $form = str_replace("{filter}", $filter, $form);

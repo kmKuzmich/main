@@ -1,5 +1,13 @@
 #git ignor list of file & folders
 
+#hide auth
+/lib/mysql_class.php
+/lib/mysql_lider_class.php
+/lib/mysql_lider2_class.php
+/lib/mysql_ltd_class.php
+/lib/odbc_class.php
+/lib/pdo_class.php
+
 #ignoring images
 uploads/images/lider
 

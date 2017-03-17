@@ -1,0 +1,30 @@
+
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+<link href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" type="text/css" rel="stylesheet"/>
+
+<h3 align="center">Выберете двигатель автомобиля</h3>
+<div class="navigation"><strong>Автомобиль:</strong> <a href="?dep=23&w=td&manufacture={manufacture_id}">{manufacture_caption}</a> | <a href="?dep=23&w=td&manufacture={manufacture_id}&model={model_id}">{model_caption}</a></div>
+
+
+<table width="100%" id="datatable" class="table hover stripe">
+	<thead>
+    	<tr>
+        	<th class="trh" scope="col">Модификация</th>
+            <th class="trh" scope="col">Тип двиг.</th>
+            <th class="trh" scope="col">Модель двиг.</th>
+            <th class="trh" scope="col">Объем двиг. л</th>
+            <th class="trh" scope="col">Мощность, л.с.</th>
+            <th scope="col">Даты выпуска</th>
+        </tr>
+    </thead>
+    <tbody>
+    	{modification_list}
+    </tbody>
+</table>
+
+<script>
+$(document).ready(function() {
+    $('#datatable').DataTable();
+} );
+</script>
