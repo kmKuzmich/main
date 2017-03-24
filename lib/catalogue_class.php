@@ -164,7 +164,7 @@ class catalogue{
 
     function show_range(){session_start();$dep = "23"; require_once(RD . "/lib/news_class.php");$news = new news; $slave = new slave; $dep = $slave->get_dep(); $w = $slave->get_w();
 		$form_htm = RD . "/tpl/catalogue_range.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}
-
+		if ($w=="td"){$form_htm = RD . "/tpl/catalogue_range_wide.htm";if (file_exists("$form_htm")) {$form = file_get_contents($form_htm);}}
 
         if ($dep == 24 or $dep == 23) {
             $form = str_replace("{fast1}", "class='FastAct'", $form);
@@ -238,6 +238,7 @@ class catalogue{
 			$form = str_replace("{range_list}", $this->catalogue_art_find("", "", "", "", "", $_REQUEST["item_id"]), $form);
 		}
         if ($w == "td") {
+			
             if ($_REQUEST["manufacture"] == "" and $_REQUEST["model"] == "" and $_REQUEST["modification"] == "" and $_REQUEST["category"] == "") {
                 $form = str_replace("{range_list}", $this->show_td_manufacture_list(), $form);
             }
@@ -357,7 +358,7 @@ class catalogue{
         $r = $db_td->query($query);
         $n = $db_td->num_rows($r);
         $kk = 0;
-        $kkol = round($n / 2);
+        $kkol = round($n / 4);
         $rk = 0;
         for ($i = 1; $i <= $n; $i++) {
             $kk += 1;
@@ -380,9 +381,11 @@ class catalogue{
                 $kk = 0;
             }
         }
+		if ($list!=""){$rk += 1;$form = str_replace("{list$rk}", $list, $form);$list = "";$kk = 0;}
         $form = str_replace("{list1}", "", $form);
         $form = str_replace("{list2}", "", $form);
         $form = str_replace("{list3}", "", $form);
+		$form = str_replace("{list4}", "", $form);
         return $form;
     }
 
@@ -2707,7 +2710,7 @@ SELECT G.Sort, G.ID_grp,G.Standard,G.Name,G.Intended, tart.*, G.*, SG.*, TR.* FR
         $form = str_replace("{model_caption}", $this->get_tecmodel_caption($manufacture, $model), $form);
         $form = str_replace("{modification_id}", $modification, $form);
         $form = str_replace("{modification_caption}", $this->get_modification_caption($manufacture, $model, $modification), $form);
-        $form = str_replace("{groups_navigation}", $this->loadTecGroupsNav($manufacture, $model, $modification, $_REQUEST["lvl"], $_REQUEST["prnt"], ""), $form);
+        $form = str_replace("{groups_navigation}", $this->loadTecGroupsNav($manufacture, $model, $modification, $level-1, $id_parent, ""), $form);
         return $form;
     }
 	

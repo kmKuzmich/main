@@ -1776,6 +1776,181 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
         $form = str_replace("{ost_summ}", round($ost_summ, 2), $form);
         return $form;
     }
+	
+	function show_client_report($period){if (isset($_REQUEST[session_name()])) session_start();$client = $_SESSION["client"];
+        if (empty($client)) {
+            $form_htm = RD . "/tpl/need_auth.htm";if (file_exists("$form_htm")) { $form = file_get_contents($form_htm); }
+        } else {
+            
+        
+
+        $odb = new odb;
+        $slave = new slave;
+        $cat = new catalogue;
+        $dep = $slave->get_dep();
+        list($dep_up, $dep_cur) = $slave->get_file_deps("client_report");
+		
+		$list = "";
+        $i = 0;
+        $summ_deb = 0;
+        $summ_kred = 0;
+		$summ_saldo = 0;
+		
+        $form_htm = RD . "/tpl/client_report_list.htm";if (file_exists("$form_htm")) { $form = file_get_contents($form_htm); }
+		/// step 0
+		$data_start=date("Y-m-01", strtotime("-1 month"));$data_end=date("Y-m-d");
+		if ($period!="" && $period>1 && $period<=12){$data_start=date("Y-m-01", strtotime("-$period month"));}
+		
+        $query="
+		SET OPTION DATE_ORDER = 'DMY';
+		SET OPTION DATE_FORMAT = 'DD-MM-YYYY';
+		SET OPTION DATE_FORMAT = 'DD-MM-YYYY'; 
+		SET OPTION Timestamp_format = 'DD-MM-YYYY HH:NN:SS.SSS';
+		select cast(null as smallint) as lev,
+								  DATE( null )  as Day,
+								  cast(null as char(80)) as docName,
+								  cast(null as integer) as Num,
+								  cast(null as smallint)  KindDoc_id,
+								  cast(null as numeric(12,2))  as s1,
+								  cast(null as numeric(12,2)) as s2,
+								  cast(null as integer) as place_id,
+								  cast(null as smallint) user_id,
+								  DATE( null ) as sDay,
+								  cast(null as smallint) as opl,
+								  cast(null as numeric(12,2)) as osum,
+								  cast(null as integer)  as doc_id,
+								  cast(null as smallint) as base_id,
+								  cast(null as numeric(12,2))  as accounts,
+								  cast(null as char(255) )  as Remark,
+								  cast(null as integer)  as id1 into #2
+								where lev is not null; 
+								
+		call KlientReport($client,'','$data_start','$data_end',null);
+		delete from #2  where  isnull(s1,0)=0 and isnull(s2,0)=0 and lev=0;
+		select lev, T.Day as data,
+										  T.docName as docName,
+										  T.Num as nomber,
+										  B.id as base_id,
+										  cast(T.s1 as numeric(12,2)) as deb,
+										  cast(T.s2 as numeric(12,2)) as kred,
+										  T.sDay as sday,
+										  T.accounts as saldo,
+										  cast( (case when T.osum<>0 then T.osum end) as numeric(12,2)) as to_pay,
+										  T.Remark as remark,
+										  S.Name as otdel,
+										  T.user_id as pp,
+										  isnull(T.opl,0)-1 as icon_id,
+										  doc_id,
+										  D.id1 sel_id
+										from #2 T left outer join SubConto S on S.id=T.place_id 
+										   left outer join Doc D on D.id=T.doc_id 
+										   left outer join Base B on B.id=T.base_id 
+										
+										order by T.lev,T.day,T.doc_id;";		//print $query;
+		$r=$odb->query_lider($query); $kol_rows=odbc_num_rows($r);$saldo_end=0;$saldo_start=0;
+		while (odbc_fetch_row($r)) {$i += 1;
+            $lev = odbc_result($r, "lev");
+			$data = odbc_result($r, "data");
+            $type = odbc_result($r, "docName");
+            $nomber = odbc_result($r, "nomber");
+            $base = odbc_result($r, "base_id");
+            $deb = odbc_result($r, "deb");
+            $kred = odbc_result($r, "kred");
+            $sday = odbc_result($r, "sday");
+			$saldo = odbc_result($r, "saldo");
+			$to_pay = odbc_result($r, "to_pay");
+			$remark = odbc_result($r, "remark");
+			$otdel = odbc_result($r, "otdel");
+			$pp = odbc_result($r, "pp");
+			$doc_id = odbc_result($r, "doc_id");
+			$sel_id = odbc_result($r, "sel_id");
+			
+			if ($i==1){$saldo_start=$deb;}$saldo_end=$deb;
+
+            $list .= "
+			<tr onClick='showReportDocStr(\"$doc_id\",\"$nomber\",\"$type\")'>
+				<td align='center'>$data</td>
+				<td>&nbsp; $type</td>
+				<td align='center'>" . $nomber . "</td>
+				<td align='center' $style>" . $base . "</td>
+				<td align='right'>$deb</td>
+				<td align='right'>$kred</td>
+				<td align='center'>$sday</td>
+				<td align='right'>$saldo</td>
+				<td align='left'> &nbsp; $otdel</td>
+			</tr>";
+        }
+        if ($list == "") {
+            $list = "
+			<tr align='left'>
+				<td colspan=10 align='center'><h3>Документы не создано</h3></td>
+			</tr>";
+        }
+
+        $form = str_replace("{list}", $list, $form);
+		$form = str_replace("{saldo_start}", $saldo_start, $form);
+		$form = str_replace("{saldo_end}", $saldo_end, $form);
+		$form = str_replace("{data_start}", $data_start, $form);
+		$form = str_replace("{period_list}", $this->showReportPeriodList($period), $form);
+        }
+        return $form;
+		
+	}
+	function showReportPeriodList($sel){$list="";$slave=new slave;
+		for ($i=0;$i<=12;$i++){
+			$selected="";if ($i==$sel){$selected=" selected='selected'";}
+			$cmonth=$slave->data_word(date("Y-m-01", strtotime("-$i month")));
+			$list.="<option value='$i' $selected>$cmonth</option>";
+		}
+	
+		return $list;
+	}
+	
+	 function showReportDocStr($doc_id,$doc_nom,$doc_type){ if (isset($_REQUEST[session_name()])) session_start();
+        if (empty($_SESSION["client"])) {
+			$form_htm = RD . "/tpl/need_auth.htm";if (file_exists("$form_htm")) { $form = file_get_contents($form_htm); }
+        } else {
+            $client = $_SESSION["client"];
+
+			$odb = new odb;
+			$slave = new slave;
+			$cat = new catalogue;
+			$dep = $slave->get_dep();
+			list($dep_up, $dep_cur) = $slave->get_file_deps("doc");
+			$block_htm = RD . "/tpl/doc_client2.htm"; if (file_exists("$block_htm")) {$block = file_get_contents($block_htm);}
+			
+            $r1 = $odb->query_td("select dr.*, i.code as item_code, i.name as item_name from docrow dr inner join item i on (i.id=dr.item_id) where dr.doc_id='$doc_id';");
+            $drlist = "";
+            $j = 0;
+            while (odbc_fetch_row($r1)) {
+                $j++;
+                $doc_item_id = odbc_result($r1, "item_id");
+                $doc_price = $slave->tomoney(odbc_result($r1, "price"));
+                $doc_quant = $slave->tomoney(odbc_result($r1, "quant"));
+                $item_code = odbc_result($r1, "item_code");
+                $item_name = odbc_result($r1, "item_name");
+                if ($doc_flag == 1) {
+                    $doc_price = "0.00";
+                    list($p, $p, $doc_price, $p, $p) = $cat->getItemInfo($doc_item_id);
+                }
+
+                $drlist .= "
+				<tr align='center' height='35' class='t14'>
+					<td align='left'>&nbsp;&nbsp;$j</td>
+					<td align='left'>&nbsp;&nbsp;$item_code</td>
+					<td align='left'>&nbsp;&nbsp;$item_name</td>
+					<td align='right'>$doc_quant</td>
+					<td align='right'>$doc_price</td>
+				</tr>
+				<tr><td colspan='8' bgcolor='#282828' height='1'></td></tr>";
+            }
+            $block = str_replace("{docrow_list}", $drlist, $block);
+			$block = str_replace("{doc_nom}", $doc_nom, $block);
+			$block = str_replace("{doc_type}", $doc_type, $block);
+        }
+        return $block;
+    }
+	
 }
 
 ?>

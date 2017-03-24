@@ -59,6 +59,18 @@ function closeDocStr(docId) {
 	document.getElementById("row"+docId).style.borderBottom="1px solid #ffffff";
 }
 
+function showReportDocStr(docId,docNom,doc_type) {var er=0;startLoading();
+	document.body.style.cursor='wait';
+	JsHttpRequest.query('content.php',{ 'w': 'showReportDocStr', 'doc_id':docId, 'doc_nom':docNom,'doc_type':doc_type}, 
+	function (result, errors){ if (errors) {alert(errors);} if (result){ 
+		showAlertForm(result["content"]);
+		document.getElementById("AlertForm").style.width="900px";
+		document.getElementById("AlertForm").style.left="50%";
+		document.getElementById("AlertForm").style.marginLeft="-450px";
+		stopLoading();document.body.style.cursor='default';
+	}}, true);	
+}
+
 function PlusOneOrder() {
 	JsHttpRequest.query('content.php',{ 'w': 'PlusOneOrder'}, 
 	function (result, errors){ if (errors) {alert(errors);} if (result){ 

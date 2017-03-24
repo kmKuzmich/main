@@ -102,6 +102,52 @@ class config
         $form = str_replace("{content_side}", $content_side, $form);
         return $form;
     }
+	function one_side_content2($content, $content_side, $bottom_side)
+    {
+        $slave = new slave;
+        $dep = $slave->get_dep();
+        $ww_htm = RD . "/tpl/one_side_content2.htm";
+        if (file_exists("$ww_htm")) {
+            $form = file_get_contents($ww_htm);
+        }
+        $form = str_replace("{content}", $content, $form);
+
+        if ($dep == 24 or $dep == 23) {
+            $form = str_replace("{fast1}", "class='FastAct'", $form);
+        }
+        if ($dep == 32) {
+            $form = str_replace("{fast2}", "class='FastAct'", $form);
+        }
+        if ($dep == 31) {
+            $form = str_replace("{fast3}", "class='FastAct'", $form);
+        }
+        if ($dep == 31 or $dep == 1 or $dep == 2 or $dep == "news") {
+            $form = str_replace("{width1}", "65px;", $form);
+            $form = str_replace("{width2}", "55px;", $form);
+            $form = str_replace("{width3}", "1050px;", $form);
+            $form = str_replace("{width4}", "1040px;", $form);
+
+        }
+
+        for ($i = 1; $i <= 4; $i++) {
+            $form = str_replace("{fast$i}", "class='Fast'", $form);
+        }
+        $form = str_replace("{width1}", "315px;", $form);
+        $form = str_replace("{width2}", "235px;", $form);
+        $form = str_replace("{width3}", "800px;", $form);
+        $form = str_replace("{width4}", "790px;", $form);
+        if ($bottom_side == "") {
+            $news = new news;
+            $bottom_side = $news->show_range_news();
+        }
+        if ($bottom_side == "spo") {
+            $cat = new catalogue;
+            $bottom_side = $cat->showRecomendList("news");
+        }
+        $form = str_replace("{bottom_side}", $bottom_side, $form);
+        $form = str_replace("{content_side}", $content_side, $form);
+        return $form;
+    }
 
     function ident_user()
     {

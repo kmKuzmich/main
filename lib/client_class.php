@@ -39,10 +39,7 @@ class client
             list($form, $forms) = $this->show_login_form();
         }
         if ($is_logout == 0) {
-            $form_htm = RD . "/tpl/client_form.htm";
-            if (file_exists("$form_htm")) {
-                $form = file_get_contents($form_htm);
-            }
+            $form_htm = RD . "/tpl/client_form.htm"; if (file_exists("$form_htm")) { $form = file_get_contents($form_htm); }
             $r = $odb->query_td("select * from SUBCONTO where ID='$client_id' limit 1 offset 0;");
             $sDolg = "";
             while (odbc_fetch_row($r)) {

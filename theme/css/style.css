@@ -1951,7 +1951,7 @@ input[type="checkbox"]:checked:disabled + label::before {
 }
 
 .model_col {
-    width: 48%;
+    width: 250px;
     display: table-cell;
     margin: 3px;
 }

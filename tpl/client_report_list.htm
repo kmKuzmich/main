@@ -1,0 +1,40 @@
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+<link href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" type="text/css" rel="stylesheet"/>
+<script language="javascript">
+	function changePeriod(){
+		var period=$("#period option:selected").val();
+		window.location.href="?dep=33&dep_up=4&dep_cur=23&period="+period
+	}
+</script>
+<table width="100%" border="0"><tr>
+	<td><h3>Отчет по клиенту</h3></td>
+    <td>За период от: 
+    	<select size="1" name="period" id="period" onChange="changePeriod();">{period_list}</select>
+    </td>
+    <td>Долг на {data_start}: <strong>{saldo_start}</strong></td>
+    <td>Текущий долг:  <strong>{saldo_end}</strong></td>
+</tr></table>
+<table width="100%" id="datatable" class="table hover stripe" style="font-size:11px; color:#000;">
+	<thead>
+        <tr>
+            <th width="100">Дата</th>
+            <th>Документ</th>
+            <th width="30">Номер</th>
+            <th width="30">База</th>
+            <th width="80">Расход</th>
+            <th width="80">Приход</th>
+            <th>Срок оплаты</th>
+            <th width="70">Сальдо</th>
+            <th>Отдел</th>
+        </tr>
+    </thead>
+    <tbody>
+        {list}
+    </tbody>
+</table>
+<script>
+$(document).ready(function() {
+$('#datatable').DataTable({"searching": true,fixedHeader: true,"bFilter" : false,"bSort" : false,  "pageLength": 10, "bLengthChange": false, "language": {"url": "//cdn.datatables.net/plug-ins/1.10.12/i18n/Russian.json"}});
+} );
+</script>

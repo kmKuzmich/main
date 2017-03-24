@@ -217,6 +217,10 @@ if ($_REQUEST["w"] == "SaveModelBusket") {
 }
 
 
+
+if ($_REQUEST["w"] == "showReportDocStr") {
+    $GLOBALS['_RESULT'] = array("content" => $shop->showReportDocStr($_REQUEST["doc_id"],$_REQUEST["doc_nom"],$_REQUEST["doc_type"]));
+}
 if ($_REQUEST["w"] == "showDocOrder") {
     $GLOBALS['_RESULT'] = array("content" => $shop->showDocOrder($_REQUEST["doc_id"]));
 }
