@@ -961,6 +961,7 @@ class client
         return $name;
     }
 
+
 //Эта функция определяет ближайшую дату, сумму и общий долг и записывает их в сессию.
     function getSubcontoNearDataSumNew($client)
     {
@@ -988,7 +989,7 @@ class client
 //			setcookie("needUpdate", $needUpdate, $data_to);
 //        };
 //отключаю  - пока в PG нет функций GetDolg и GetDolgDate
-//        $needUpdate = 1;
+//            $needUpdate = 1;
         if (($needUpdate == 1)) {
             $odb = new odb;
             $slave = new slave;
@@ -1000,13 +1001,11 @@ class client
                             CASE WHEN(s1.sday < s1.cDT) 
                             THEN GetDolg(s1.id, DATE(s1.cDT) ) ELSE 
                             GetDolg(s1.id, DATE(s1.ssday) ) END AS os,
-//                            GetDolg(s1.id, DATE(s1.scDT) ) as dolg,
-                            GetDolg(s1.id) as dolg,
+                            GetDolg(s1.id) as dolg,                            
                             s1.K_Code
                         FROM(select K.id,
                                 date(now())+1 AS cDT,
-                                date(now()) + interval '1 year' AS scDT,
-                                GetDolgDate(K . id) AS sday,
+                                GetDolgDate(K.id) AS sday,
                                 date(GetDolgDate(K.id)) + interval '1 day' AS ssday,
                                 k.code AS K_Code
                             FROM klient K

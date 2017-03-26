@@ -1919,7 +1919,22 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
 			list($dep_up, $dep_cur) = $slave->get_file_deps("doc");
 			$block_htm = RD . "/tpl/doc_client2.htm"; if (file_exists("$block_htm")) {$block = file_get_contents($block_htm);}
 			
-            $r1 = $odb->query_td("select dr.*, i.code as item_code, i.name as item_name from docrow dr inner join item i on (i.id=dr.item_id) where dr.doc_id='$doc_id';");
+//            $r1 = $odb->query_td("select dr.*, i.code as item_code, i.name as item_name from docrow dr inner join item i on (i.id=dr.item_id) where dr.rdoc_id='$doc_id';");
+            $r1 = $odb->query_td("
+                    SELECT dr.quant,dr.price,dr.rdoc_id,i.code as item_code, i.name as item_name, i.id as item_id, S1.doc_flag
+                    FROM 
+                    (SELECT 
+                       d.flag AS doc_flag,
+                        CASE 
+                          WHEN (D.kinddoc_id IN (6,8,17,40)) THEN (DP.id)
+                         ELSE D.id
+                        END AS Doc_idR
+                      FROM Doc D LEFT OUTER JOIN Doc DP on DP.id1=D.id
+                      WHERE D.id ='$doc_id') AS S1 ,
+                    DocRow DR JOIN Item I ON DR.item_id=I.id
+                    WHERE 
+                    dr.rdoc_id=S1.Doc_idR;");
+
             $drlist = "";
             $j = 0;
             while (odbc_fetch_row($r1)) {
@@ -1929,6 +1944,7 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
                 $doc_quant = $slave->tomoney(odbc_result($r1, "quant"));
                 $item_code = odbc_result($r1, "item_code");
                 $item_name = odbc_result($r1, "item_name");
+                $doc_flag = odbc_result($r1, "doc_flag");
                 if ($doc_flag == 1) {
                     $doc_price = "0.00";
                     list($p, $p, $doc_price, $p, $p) = $cat->getItemInfo($doc_item_id);

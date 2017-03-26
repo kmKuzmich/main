@@ -1494,7 +1494,8 @@ class catalogue{
                     $where2 = " and prod_id='$by_producent' ";
                     //Записываем в список "История поисков" и в WebSearch
                     //print "$by_producent";
-                    $this->saveArtSearch($art, $by_name, $by_producent, $byTD);
+                    //переношу это дальше где уже есть item_id
+//                    $this->saveArtSearch($art, $by_name, $by_producent, $byTD,'');
                 }
                 //Если был выбран поиск по коду и не по наименованию, то нам сюда. обычно поиск по коду по умолчанию, эта опция отключена уже в прайсе, раньше там был крыжик
                 //                    $by_name=1;
@@ -1683,7 +1684,7 @@ class catalogue{
                 }
             }
             if ($by_item_id != "" && $by_item_id > 0) { $odb=new odb;
-				$query = "select * from Item I where id is not NULL and id = '$by_item_id' limit 155;";
+				$query = "select * from Item I where id is not NULL and id = '$by_item_id' limit 55;";
                 $r = $odb->query_td($query);
                 $n = $odb->num_rows($r);
             }
@@ -1693,7 +1694,7 @@ class catalogue{
                 $k = 0;
                 $i = 1;
 				if ($by_item_id != "" && $by_item_id > 0){
-					$query = "select * from Item I where id is not NULL and id = '$by_item_id' limit 155;";
+					$query = "select * from Item I where id is not NULL and id = '$by_item_id' limit 55;";
 					$r = $odb->query_td($query);
 				}
                 while (odbc_fetch_row($r)) { 
@@ -1714,13 +1715,17 @@ class catalogue{
                     if ($by_producent == "") {
                         $producent = $prod_id;
                     }
+                    if ($by_item_id != "" && $by_item_id > 0){
+                        $art=$code;
+                    }
                     //Добавлено Кузичкин 10/11/2015
                     //Если Результат поиска =1 и производитель не выбирался Записываем в список "История поисков" и в WebSearch
                     //print "$by_producent";
-                    if (($n = 1) and $by_producent == "") {
-                        $this->saveArtSearch($art, $by_name, $producent, $byTD);
+//                    if (($n = 1) and $by_producent == "") {
+//                    if ($n = 1)  {
+                        $this->saveArtSearch($art, $by_name, $prod_id, $byTD, $id);
+//                    }
 
-                    }
                     $valuta_id = odbc_result($r, "val_id");
                     $discount_id = odbc_result($r, "discount_id");
                     $price = $slave->tomoney(odbc_result($r, "pricePro"));
@@ -1834,11 +1839,8 @@ class catalogue{
 
     function get_art() { return $_REQUEST["art"];}
 
-    function saveArtSearch($art, $by_name, $by_producent, $byTD)
+    function saveArtSearch($art, $by_name, $by_producent, $byTD, $item_id)
     {
-        //пока нет таблицы history_search и websearch тупо вываливаемся, когда появятся будем пробовать в них записывать.
-        //return;
-
         session_start();
         $odb = new odb;
         $client = $_SESSION["client"];
@@ -1859,7 +1861,12 @@ class catalogue{
         $by_producent = $by_producent + 0;
         $query1 = "insert into history_search (client,art,data,ip,prod_id) values ('$client','" . strtolower($art) . "','$data','$remip',$by_producent)";
         // $query1="insert into history_search (client,art,data,ip) values ('$client','$art','$data','$remip')";
-        $query2 = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id) values ($client,'$remip','" . strtolower($art) . "','" . strtolower($art) . "','$by_code',$by_producent)";
+//        $query2 = "insert into websearch (klient_id,nodeaddress,str,iscode,prod_id)
+//          values ($client,'$remip','" . strtolower($art) . "','" . strtolower($art) . "','$by_code',$by_producent)";
+        $lart="lower(translate('$art', ' -/.+', ''))";
+//        print $lart.' item_id = '.$item_id;
+        $query2 = "insert into websearch (klient_id,nodeaddress,str,sstr,iscode,item_id,prod_id,prog_id)
+          values ('$client','$remip','" . strtolower($art) . "',$lart,'$by_code','$item_id','$by_producent',1)";
 
         //если клиент пусто то выполнить какую то ерунду????
         if ($client == 0) {
@@ -2044,7 +2051,7 @@ class catalogue{
 						<tr align='center' id='ri$id' height='25' style='background-color:#dcdcdc;color:#000;'>
 							<td width='5'>$icon_flag</td>
 							<td></td>
-							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
+							<td><a class='desc' href='javascript:search_by_id(\"$id\");' style='text-decoration:none;'>$code</a></td>
 							<td align='left'>$name</td>
 							<td align='left'>$price</td>
 							<td align='right'>$price_client</td>
@@ -2060,7 +2067,7 @@ class catalogue{
 						<tr align='center' id='ri$id' height='25' style='background-color:#dcdcdc;color:#000;'>
 							<td width='5'>$icon_flag</td>
 							<td>$dop_icon</td>
-							<td><a class='desc' href='javascript:search_biart(\"$code\");' style='text-decoration:none;'>$code</a></td>
+							<td><a class='desc' href='javascript:search_by_id(\"$id\");' style='text-decoration:none;'>$code</a></td>
 							<td align='left'>$name</td>
 							<td align='left'>$price</td>
 							<td align='right'>$price_client</td>
@@ -3851,7 +3858,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 					<tr align='center' id='ri$id' height='25' style='color:#000;'>
 						<td></td>
 						<td></td>
-						<td><a href='javascript:search_biart(\"$code\");'>$code</a></td>
+						<td><a href='javascript:search_by_id(\"$id\");'>$code</a></td>
 						<td align='left'>$name</td>
 						<td align='right'>$price</td>
 						<td align='right'>$price_client</td>
@@ -3867,7 +3874,7 @@ while(odbc_fetch_row($r)){ $prm=0; $price1=""; $i++;
 					<tr align='center' id='ri$id' height='25' style='color:#000;'>
 						<td></td>
 						<td>$dop_icon</td>
-						<td><a href='javascript:search_biart(\"$code\");'>$code</a></td>
+						<td><a href='javascript:search_by_id(\"$id\");'>$code</a></td>
 						<td align='left'>$name</td>
 						<td align='right'>$price</td>
 						<td align='right'>$price_client</td>
