@@ -1798,7 +1798,9 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
 		
         $form_htm = RD . "/tpl/client_report_list.htm";if (file_exists("$form_htm")) { $form = file_get_contents($form_htm); }
 		/// step 0
-		$data_start=date("Y-m-01", strtotime("-1 month"));$data_end=date("Y-m-d");
+//		$data_start=date("Y-m-01", strtotime("-1 month"));$data_end=date("Y-m-d");
+            $data_start = date("Y-m-01", strtotime("0 month"));
+            $data_end = date("Y-m-d");
 		if ($period!="" && $period>1 && $period<=12){$data_start=date("Y-m-01", strtotime("-$period month"));}
 		
         $query="
@@ -1846,7 +1848,7 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
 										   left outer join Doc D on D.id=T.doc_id 
 										   left outer join Base B on B.id=T.base_id 
 										
-										order by T.lev,T.day,T.doc_id;";		//print $query;
+										order by T.lev asc,T.day asc,T.doc_id asc;";        //print $query;
 		$r=$odb->query_lider($query); $kol_rows=odbc_num_rows($r);$saldo_end=0;$saldo_start=0;
 		while (odbc_fetch_row($r)) {$i += 1;
             $lev = odbc_result($r, "lev");
@@ -1886,7 +1888,7 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
 				<td colspan=10 align='center'><h3>Документы не создано</h3></td>
 			</tr>";
         }
-
+            $data_start = date("d.m.Y", strtotime("$data_start GMT"));
         $form = str_replace("{list}", $list, $form);
 		$form = str_replace("{saldo_start}", $saldo_start, $form);
 		$form = str_replace("{saldo_end}", $saldo_end, $form);

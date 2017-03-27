@@ -8,11 +8,11 @@
 	}
 </script>
 <table width="100%" border="0"><tr>
-	<td><h3>Отчет по клиенту</h3></td>
-    <td>За период от: 
+    <td><h3>Отчет по документам</h3></td>
+    <td>За период с:
     	<select size="1" name="period" id="period" onChange="changePeriod();">{period_list}</select>
     </td>
-    <td>Долг на {data_start}: <strong>{saldo_start}</strong></td>
+    <td>Долг на начало {data_start}: <strong>{saldo_start}</strong></td>
     <td>Текущий долг:  <strong>{saldo_end}</strong></td>
 </tr></table>
 <table width="100%" id="datatable" class="table hover stripe" style="font-size:11px; color:#000;">
