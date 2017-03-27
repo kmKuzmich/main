@@ -1801,7 +1801,9 @@ insert into docrow (doc_id,id,price,price1,quant,item_id) values ($doc_id,$j,$or
 //		$data_start=date("Y-m-01", strtotime("-1 month"));$data_end=date("Y-m-d");
             $data_start = date("Y-m-01", strtotime("0 month"));
             $data_end = date("Y-m-d");
-		if ($period!="" && $period>1 && $period<=12){$data_start=date("Y-m-01", strtotime("-$period month"));}
+            if ($period != "" && $period >= 0 && $period <= 12) {
+                $data_start = date("Y-m-01", strtotime("-$period month"));
+            }
 		
         $query="
 		SET OPTION DATE_ORDER = 'DMY';
